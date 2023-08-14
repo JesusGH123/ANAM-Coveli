@@ -1,0 +1,14 @@
+{
+  "name": "anam_coveli",
+  "version": "1.0.0",
+  "description": "mesa de servicios",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jesus Garcia",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
