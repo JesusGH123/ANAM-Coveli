@@ -1,10 +1,6 @@
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
 const USERS = 'users';
-
-let admin = require("firebase-admin");
-let serviceAccount = require("../key.json");
 
 const db = getFirestore();
 
