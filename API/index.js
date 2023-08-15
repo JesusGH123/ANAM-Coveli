@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const bodyParser = require('body-parser');
 
 let login = require('./routes/login');
 let home = require('./routes/home');
 
+app.use(bodyParser.json());
 app.listen(port, () => {
     console.log(`App listening on port ${port}!`)
 })
