@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 let login = require('./routes/login');
 let home = require('./routes/home');
+let users = require('./routes/user');
 
 app.use(bodyParser.json());
 app.listen(port, () => {
@@ -13,4 +14,5 @@ app.listen(port, () => {
 
 //Routes
 app.use('/', login);
-app.use('/home', home)
+app.use('/home', home);
+app.use('/users', users);

@@ -35,7 +35,11 @@ module.exports.get_ticket = async (req, res) => {
 
 //Add a ticket
 module.exports.add_ticket = async (req, res) => {
-  await db.collection(TICKETS).add(req.body);
+  await db.collection(TICKETS).add(req.body).then(() => {
+    res.send("1");
+  }).catch((error) => {
+    res.send("-1");
+  });
 }
 
 //Delete a ticket
