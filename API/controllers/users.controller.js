@@ -18,12 +18,11 @@ module.exports.get_users = async (req, res) => {
 
 //Get a single user
 module.exports.get_user = (req, res) => {
-    db.collection(USERS).where("email", "==", req.body.email)
+    db.collection(USERS).where("email", "==", req.params.email)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                res.send(doc.data());
-                console.log(doc.id, " => ", doc.data());
+                res.json(doc.data());
             })
         })
         .catch((error) => {
