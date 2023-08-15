@@ -16,6 +16,21 @@ module.exports.get_users = async (req, res) => {
     res.send(users);
 }
 
+//Get a single user
+module.exports.get_user = (req, res) => {
+    db.collection(USERS).where("email", "==", req.body.email)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                res.send(doc.data());
+                console.log(doc.id, " => ", doc.data());
+            })
+        })
+        .catch((error) => {
+            console.log("Error getting the document: " + error);
+        })
+}
+
 //Add a new user
 module.exports.add_user = async (req, res) => {
     await db.collection(USERS).add(req.body).then(() => {
