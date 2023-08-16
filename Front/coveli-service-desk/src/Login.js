@@ -39,6 +39,7 @@ function Login() {
 
         <Col>
           <h1>Iniciar sesi&oacute;n</h1>
+          <hr></hr>
 
           <Form onSubmit={(e) => handleSubmit(e)}>
             <Form.Label for="email">Usuario</Form.Label>

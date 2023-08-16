@@ -31,7 +31,6 @@ a {
 }
 
 .btn-primary {
-    color: #66CCC5;
     background-color: #51177D;
     stroke: 0px;
     border-radius: 50px;
@@ -39,7 +38,7 @@ a {
 }
 
 h1 {
-    margin: 20px 0px;
+    margin: 20px 0px 0px 0px;
 }
 
 .col:first-of-type {
@@ -48,4 +47,9 @@ h1 {
 
 .form-control {
     width: 90%;
+}
+
+hr {
+    width: 5rem;
+    border-width: 5px;
 }
