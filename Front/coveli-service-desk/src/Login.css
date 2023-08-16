@@ -19,7 +19,6 @@ body, html {
 
 .form-label {
     font-weight: bold;
-    margin: 5px 0px;
 }
 
 h1, .form-label, a {
@@ -41,12 +40,12 @@ h1 {
     margin: 20px 0px 0px 0px;
 }
 
-.col:first-of-type {
-    padding: 0px;
-}
-
 .form-control {
     width: 90%;
+}
+
+.col {
+    margin: 10px;
 }
 
 hr {
