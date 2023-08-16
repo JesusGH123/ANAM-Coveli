@@ -52,3 +52,7 @@ hr {
     width: 5rem;
     border-width: 5px;
 }
+
+p {
+    color: red;
+}
