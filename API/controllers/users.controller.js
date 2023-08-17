@@ -1,4 +1,4 @@
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, QuerySnapshot } = require('firebase-admin/firestore');
 
 const USERS = 'users';
 
@@ -46,4 +46,19 @@ module.exports.delete_user = async (req, res) => {
     }).catch((error) => {
         res.send("-1");
     })
+}
+
+//Validate a user
+module.exports.validate_user = async (req, res) => {
+    let result = false;
+    const user = await db.collection(USERS)
+        .where("email", "==", req.body.email)
+        .where("password", "==", req.body.password)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                 result = true;
+            })
+        })
+        res.send(result)
 }

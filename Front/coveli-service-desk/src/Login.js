@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Image, Container, Col, Row, Form, Button} from "react-bootstrap";
+import { Image, Container, Col, Row, Form, Button } from "react-bootstrap";
+import Cookies from "universal-cookie";
 
 import './Login.css';
 
@@ -9,25 +10,40 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(true);
+  const cookies = new Cookies();
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
 
-    const configuration = {
-      method: "get",
-      url: `http://localhost:3001/users/user/${email}`
+      const configuration = {
+        method: "post",
+        url: `http://localhost:3001/users/user/validate`,
+        data: {
+          email: email,
+          password: password,
+        }
+      }
+
+      axios(configuration)
+        .then((result) => {
+          console.log("Result: " + result.data);
+          if(result.data) {
+            cookies.set("USER_TOKEN", result.data.token, {
+              path: "/",
+            });
+            window.location.href = "/home";
+          } else {
+            setLogin(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert(error)
+        })
+    } catch(error) {
+      console.log("Error: " + error);
     }
-
-    axios(configuration)
-      .then((result) => {
-        if(password === result.data.password)
-          setLogin(true)
-        else
-          setLogin(false)
-      })
-      .catch((error) => {
-        alert("Not registered user")
-      })
   }
 
   return (
