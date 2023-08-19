@@ -6,7 +6,7 @@ import Cookies from "universal-cookie";
 
 import './Login.css';
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(true);
@@ -47,13 +47,13 @@ function Login() {
   }
 
   return (
-    <Container>
-      <Row>
+    <Container className="containerLogin">
+      <Row className="rowLogin">
         <Col className="d-none d-lg-block" lg={8}>
-          <Image src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
+          <Image id="loginImg"src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
         </Col>
 
-        <Col>
+        <Col lg={3}>
           <h1>Iniciar sesi&oacute;n</h1>
           <hr></hr>
 
@@ -76,7 +76,7 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            {login ? (<></>) : (<p className="LoginError">Usuario o contrase&ntilde;a incorrecta</p>)}
+            {login ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
             
             <a href="">Olvid&eacute; mi contrase&ntilde;a</a>
             <Button type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
@@ -86,5 +86,3 @@ function Login() {
     </Container>
   );
 }
-
-export default Login;

@@ -1,0 +1,47 @@
+#containerHomeSupervisor {
+    height: 4rem;
+    background-color: white;
+}
+
+#logoImg {
+    width: 10rem;
+    height: 5rem;
+    margin-top: auto;
+    color: #1979FF;
+}
+
+.rowHomeSupervisor {
+    align-items: center;
+    height: fit-content;
+}
+
+.dashboardIcon {
+    width: 5rem;
+    height: 5rem;
+}
+
+.dashboardButton {
+    width: 27rem;
+    height: 9.5rem;
+    background-color: #1979FF;
+    border-radius: 1.5rem;
+    color: white;
+    margin: 1rem auto;
+    padding: 10px;
+}
+
+.divSeparator {
+    border-left: 1px solid white;
+    height: 7.5rem;            
+}
+
+#navContainer {
+    max-width: 100%;
+    margin-top: 0;
+}
+
+.smallIcon {
+    width: 25px;
+    height: 25px;
+    margin: 10px;
+}

@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import Login from './Login/Login';
-import Home from './Home/Home';
+import HomeSupervisor from "./HomeSupervisor/HomeSupervisor";
 import ProtectedRoutes from './ProtectedRoutes';
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
     <div className="App">
         <Switch>
             <Route exact path="/" component={Login}/>
-            <ProtectedRoutes path="/home" component={Home}/>
+            <ProtectedRoutes path="/home" component={HomeSupervisor}/>
         </Switch>
     </div>
   );
