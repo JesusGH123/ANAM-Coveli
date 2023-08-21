@@ -1,0 +1,39 @@
+
+.dashboardButton {
+    background-color: #1979FF;
+    width: 27rem;     
+    height: 8.5rem;     
+    border-radius: 1.5rem;      
+    color:white ;     
+    margin:1rem auto;
+    padding: 10px;    
+    
+}
+
+.divSeparator {
+    border-left: 1px solid white;
+    height: 7.5rem;                
+}
+
+
+.imgNav {
+    width: 10rem;
+    height: 5rem;
+    margin-top: auto;
+}
+
+.imgInformation {
+    width: 5rem;
+    height: 5rem;    
+}
+
+.rowTecnical  { 
+    height: fit-content;            
+    align-items: center;             
+    
+}
+
+
+#containerNav{
+    max-width: 100%;    
+}

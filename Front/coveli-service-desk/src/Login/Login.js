@@ -47,8 +47,8 @@ function Login() {
   }
 
   return (
-    <Container>
-      <Row>
+    <Container className="containerLogin">
+      <Row className="rowLogin">
         <Col className="d-none d-lg-block" lg={8}>
           <Image src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
         </Col>
