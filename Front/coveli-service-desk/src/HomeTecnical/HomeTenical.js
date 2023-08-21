@@ -2,14 +2,22 @@ import { useState } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Col, Row, Container, Nav, Navbar, Table, Button, Modal,NavDropdown} from "react-bootstrap";
+import Cookies from "universal-cookie";
 
 import './HomeTecnical.css'
 
+
 export default function HomeTecnical(){
 
+    const cookies = new Cookies();
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const logout = () => {
+        cookies.remove("USER_TOKEN", {path: "/"});
+        window.location.href = "/";
+    }
 
     return(
         <div>    
@@ -29,7 +37,7 @@ export default function HomeTecnical(){
                                 </Col>
                                 <Col>
                                     <NavDropdown title="Tecnical" id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item href="#action/3.1">Cerrar Sesión</NavDropdown.Item>                            
+                                        <NavDropdown.Item href="#action/3.1" onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
                                         isc_mbm@yahoo.com.mx
@@ -114,7 +122,7 @@ export default function HomeTecnical(){
             </Row>   
             <Row>
                 <Col>
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -146,7 +154,7 @@ export default function HomeTecnical(){
                             <td><Button onClick={handleShow} variant='warning' style={{borderRadius:20}}>Pausar</Button><Button variant='secondary'style={{borderRadius:20}}>Cerrar</Button></td>
                         </tr>                        
                     </tbody>
-                    </Table>
+                </Table>
 
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
@@ -175,7 +183,7 @@ export default function HomeTecnical(){
                         <Button variant="primary" onClick={handleClose}>
                             Cancelar
                         </Button>
-                        <Button variant="primary" onClick={handleClose} style={{marginLeft:'1rem'}}>
+                        <Button variant="primary" onClick={handleClose} style={{margin:'1rem'}}>
                             Cerrar ticket
                         </Button>
                         </Modal.Footer>
