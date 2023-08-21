@@ -6,43 +6,39 @@ import Cookies from "universal-cookie";
 
 import './Login.css';
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(true);
   const cookies = new Cookies();
 
   const handleSubmit = (e) => {
-    try {
-      e.preventDefault();
+    e.preventDefault();
 
-      const configuration = {
-        method: "post",
-        url: `http://localhost:3001/users/user/validate`,
-        data: {
-          email: email,
-          password: password,
-        }
+    const configuration = {
+      method: "post",
+      url: `http://localhost:3001/users/user/validate`,
+      data: {
+        email: email,
+        password: password,
       }
+    }
 
-      axios(configuration)
-        .then((result) => {
-          console.log("Result: " + result.data);
-          if(result.data) {
-            cookies.set("USER_TOKEN", result.data.token, {
-              path: "/",
-            });
-            window.location.href = "/home";
-          } else {
-            setLogin(false);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          alert(error)
-        })
-    } catch(error) {
-      console.log("Error: " + error);
+    axios(configuration)
+      .then((result) => {
+        if(result.data) {
+          cookies.set("USER_TOKEN", result.data.token, {
+            path: "/",
+          });
+          window.location.href = "/home";
+        } else {
+          setLogin(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error)
+      })
     }
   }
 
@@ -50,10 +46,10 @@ function Login() {
     <Container className="containerLogin">
       <Row className="rowLogin">
         <Col className="d-none d-lg-block" lg={8}>
-          <Image src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
+          <Image id="loginImg"src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
         </Col>
 
-        <Col>
+        <Col lg={3}>
           <h1>Iniciar sesi&oacute;n</h1>
           <hr></hr>
 
@@ -76,15 +72,13 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            {login ? (<></>) : (<p className="LoginError">Usuario o contrase&ntilde;a incorrecta</p>)}
+            {login ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
             
             <a href="">Olvid&eacute; mi contrase&ntilde;a</a>
-            <Button type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
+            <Button className="btnLogin" type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
           </Form>
         </Col>
       </Row>
     </Container>
   );
 }
-
-export default Login;
