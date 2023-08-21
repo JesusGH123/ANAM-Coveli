@@ -3,14 +3,12 @@ import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Col, Row, Container, Nav, Navbar, Table, Button, Modal,NavDropdown} from "react-bootstrap";
 import Cookies from "universal-cookie";
-import Cookies from "universal-cookie";
 
 import './HomeTecnical.css'
 
 
 export default function HomeTecnical(){
 
-    const cookies = new Cookies();
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
