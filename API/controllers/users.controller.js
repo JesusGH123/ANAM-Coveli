@@ -50,15 +50,16 @@ module.exports.delete_user = async (req, res) => {
 
 //Validate a user
 module.exports.validate_user = async (req, res) => {
-    let result = false;
+    let result = 0;
     const user = await db.collection(USERS)
         .where("email", "==", req.body.email)
         .where("password", "==", req.body.password)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                 result = true;
+                result = doc.id;
             })
         })
-        res.send(result)
+    console.log(result);
+    res.send(result)
 }

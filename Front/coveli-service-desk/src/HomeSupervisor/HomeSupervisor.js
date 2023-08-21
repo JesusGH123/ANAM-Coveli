@@ -49,8 +49,8 @@ export default function HomeSupervisor() {
                             </Col>
                             <Col>
                                 <NavDropdown title="Tecnical" id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item href="#action/3.1">Cerrar Sesión</NavDropdown.Item>                            
-                                </NavDropdown>                        
+                                    <NavDropdown.Item onClick={logout}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
+                                </NavDropdown>
                                 <label style={{color:'#51177D'}}>
                                     isc_mbm@yahoo.com.mx
                                 </label>                        
