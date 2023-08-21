@@ -13,36 +13,32 @@ export default function Login() {
   const cookies = new Cookies();
 
   const handleSubmit = (e) => {
-    try {
-      e.preventDefault();
+    e.preventDefault();
 
-      const configuration = {
-        method: "post",
-        url: `http://localhost:3001/users/user/validate`,
-        data: {
-          email: email,
-          password: password,
-        }
+    const configuration = {
+      method: "post",
+      url: `http://localhost:3001/users/user/validate`,
+      data: {
+        email: email,
+        password: password,
       }
+    }
 
-      axios(configuration)
-        .then((result) => {
-          console.log("Result: " + result.data);
-          if(result.data) {
-            cookies.set("USER_TOKEN", result.data.token, {
-              path: "/",
-            });
-            window.location.href = "/home";
-          } else {
-            setLogin(false);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          alert(error)
-        })
-    } catch(error) {
-      console.log("Error: " + error);
+    axios(configuration)
+      .then((result) => {
+        if(result.data) {
+          cookies.set("USER_TOKEN", result.data.token, {
+            path: "/",
+          });
+          window.location.href = "/home";
+        } else {
+          setLogin(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error)
+      })
     }
   }
 
