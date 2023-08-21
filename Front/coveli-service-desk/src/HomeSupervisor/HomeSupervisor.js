@@ -14,7 +14,6 @@ import {
     Legend,
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import faker from 'faker';
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -207,7 +206,7 @@ export default function HomeSupervisor() {
 
             <Row className="graphicsArea">
                 <h2>Tickets</h2>
-                <Table responsive>
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -257,7 +256,7 @@ export default function HomeSupervisor() {
 
             <Row className="graphicsArea">
                 <h2>Historial</h2>
-                <Table responsive>
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr>
                             <th>Id</th>
