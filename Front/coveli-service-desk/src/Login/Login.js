@@ -79,7 +79,7 @@ export default function Login() {
             {login ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
             
             <a href="">Olvid&eacute; mi contrase&ntilde;a</a>
-            <Button type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
+            <Button className="btnLogin" type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
           </Form>
         </Col>
       </Row>

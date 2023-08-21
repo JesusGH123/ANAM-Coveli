@@ -45,3 +45,19 @@
     height: 25px;
     margin: 10px;
 }
+
+.graphicsArea {
+    margin: 50px;
+}
+
+.btnClose {
+    background-color: #717171;
+    margin: 0px;
+    border-radius: 50px;
+    border: 0px;
+    color: white;
+}
+
+.dashboardTitle {
+    font-size: 3rem;
+}
