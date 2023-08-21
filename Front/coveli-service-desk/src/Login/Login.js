@@ -27,10 +27,11 @@ export default function Login() {
     axios(configuration)
       .then((result) => {
         if(result.data) {
-          cookies.set("USER_TOKEN", result.data.token, {
+          cookies.set("USER_TOKEN", result.id, {
             path: "/",
           });
-          window.location.href = "/home";
+
+          window.location.href = result.data;
         } else {
           setLogin(false);
         }
@@ -39,14 +40,13 @@ export default function Login() {
         console.log(error);
         alert(error)
       })
-    }
   }
 
   return (
     <Container className="containerLogin">
       <Row className="rowLogin">
         <Col className="d-none d-lg-block" lg={8}>
-          <Image id="loginImg"src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
+          <Image id="loginImg" src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
         </Col>
 
         <Col lg={3}>
@@ -72,7 +72,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            {login ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
+            {login != "" ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
             
             <a href="">Olvid&eacute; mi contrase&ntilde;a</a>
             <Button className="btnLogin" type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>

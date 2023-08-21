@@ -25,8 +25,8 @@ import { Line } from 'react-chartjs-2';
   );
 
 export default function HomeSupervisor() {
-    const cookies = new Cookies();
     const logout = () => {
+        const cookies = new Cookies();
         cookies.remove("USER_TOKEN", {path: "/"});
         window.location.href = "/";
     }
