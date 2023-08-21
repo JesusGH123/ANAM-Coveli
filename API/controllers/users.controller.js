@@ -1,6 +1,7 @@
 const { getFirestore, QuerySnapshot } = require('firebase-admin/firestore');
 
-const USERS = 'users';
+const USERS = 'Users';
+const VIEWSBYROLE = 'ViewsRole'
 
 const db = getFirestore();
 
@@ -50,15 +51,25 @@ module.exports.delete_user = async (req, res) => {
 
 //Validate a user
 module.exports.validate_user = async (req, res) => {
-    let result = false;
-    const user = await db.collection(USERS)
+    let result = "";
+    await db.collection(USERS)
         .where("email", "==", req.body.email)
         .where("password", "==", req.body.password)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                 result = true;
+                result = doc.data().role;
             })
         })
-        res.send(result)
+        
+    await db.collection(VIEWSBYROLE)
+        .where("role", "==", result)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                result = doc.data();
+            })
+        })
+
+    res.send(result.path);
 }

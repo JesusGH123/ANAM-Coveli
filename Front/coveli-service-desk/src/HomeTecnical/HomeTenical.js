@@ -3,6 +3,7 @@ import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Col, Row, Container, Nav, Navbar, Table, Button, Modal,NavDropdown} from "react-bootstrap";
 import Cookies from "universal-cookie";
+import Cookies from "universal-cookie";
 
 import './HomeTecnical.css'
 
@@ -13,8 +14,8 @@ export default function HomeTecnical(){
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
     const logout = () => {
+        const cookies = new Cookies();
         cookies.remove("USER_TOKEN", {path: "/"});
         window.location.href = "/";
     }
@@ -37,7 +38,7 @@ export default function HomeTecnical(){
                                 </Col>
                                 <Col>
                                     <NavDropdown title="Tecnical" id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item href="#action/3.1" onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
+                                        <NavDropdown.Item onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
                                         isc_mbm@yahoo.com.mx

@@ -11,7 +11,7 @@ admin.initializeApp({
 });
 const db = getFirestore();
 
-//Get tickets for current user (needs validation)
+//Get all tickets for current user (needs validation)
 module.exports.get_tickets = async (req, res) => {
   const ticketsRef = db.collection(TICKETS);
   const snapshot = await ticketsRef.get();
@@ -23,6 +23,8 @@ module.exports.get_tickets = async (req, res) => {
 
   res.send(tickets);
 }
+
+//Get tickets for the current user only
 
 //Get a single ticket
 module.exports.get_ticket = async (req, res) => {
