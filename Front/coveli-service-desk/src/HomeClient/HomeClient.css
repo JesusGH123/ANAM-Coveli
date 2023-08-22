@@ -1,0 +1,54 @@
+
+.dashboardButtonCliente {
+    background-color: #1979FF;
+    width: 27rem;     
+    height: 8.5rem;     
+    border-radius: 1.5rem;      
+    color:white ;         
+    margin:1rem auto;
+    padding: 10px;    
+}
+
+.divSeparator {
+    border-left: 1px solid white;
+    height: 7.5rem;                
+}
+
+
+.imgNav {
+    width: 10rem;
+    height: 5rem;
+    margin-top: auto;
+}
+
+.imgInformation {
+    width: 5rem;
+    height: 5rem;    
+}
+
+.rowClient  { 
+    height: fit-content;            
+    align-items: center;        
+}
+
+
+#containerNav{
+    max-width: 100%;    
+}
+
+.btn-new-client {
+    background-color: #51177D;
+    stroke: 0px;
+    border-radius: 50px;
+    align-items: center;
+    margin-left: 2rem;
+    margin-top: 1rem;
+}
+
+.btn-save-client {
+    background-color: #51177D;
+    stroke: 0px;
+    border-radius: 50px;
+    align-items: center;    
+    margin-top: 1rem;
+}

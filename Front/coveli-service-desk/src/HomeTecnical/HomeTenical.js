@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 
 import './HomeTecnical.css'
 
+
 export default function HomeTecnical(){
 
     const [show, setShow] = useState(false);
@@ -120,7 +121,7 @@ export default function HomeTecnical(){
             </Row>   
             <Row>
                 <Col>
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -152,7 +153,7 @@ export default function HomeTecnical(){
                             <td><Button onClick={handleShow} variant='warning' style={{borderRadius:20}}>Pausar</Button><Button variant='secondary'style={{borderRadius:20}}>Cerrar</Button></td>
                         </tr>                        
                     </tbody>
-                    </Table>
+                </Table>
 
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
@@ -181,7 +182,7 @@ export default function HomeTecnical(){
                         <Button variant="primary" onClick={handleClose}>
                             Cancelar
                         </Button>
-                        <Button variant="primary" onClick={handleClose} style={{marginLeft:'1rem'}}>
+                        <Button variant="primary" onClick={handleClose} style={{margin:'1rem'}}>
                             Cerrar ticket
                         </Button>
                         </Modal.Footer>
