@@ -1,12 +1,13 @@
 
-.dashboardButtonCliente {
+.dashboardButton {
     background-color: #1979FF;
     width: 27rem;     
     height: 8.5rem;     
     border-radius: 1.5rem;      
-    color:white ;         
+    color:white ;     
     margin:1rem auto;
     padding: 10px;    
+    
 }
 
 .divSeparator {
@@ -26,29 +27,13 @@
     height: 5rem;    
 }
 
-.rowClient  { 
+.rowAdmin  { 
     height: fit-content;            
-    align-items: center;        
+    align-items: center;             
+    
 }
 
 
 #containerNav{
     max-width: 100%;    
-}
-
-.btn-new-client {
-    background-color: #51177D;
-    stroke: 0px;
-    border-radius: 50px;
-    align-items: center;
-    margin-left: 2rem;
-    margin-top: 1rem;
-}
-
-.btn-save-client {
-    background-color: #51177D;
-    stroke: 0px;
-    border-radius: 50px;
-    align-items: center;    
-    margin-top: 1rem; 
 }
