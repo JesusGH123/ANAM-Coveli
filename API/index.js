@@ -1,8 +1,9 @@
-const express = require('express');
-const app = express();
-const port = 3001;
-const bodyParser = require('body-parser');
-const cors = require('cors')
+let express = require('express');
+let app = express();
+let bodyParser = require('body-parser');
+let cors = require('cors')
+
+let port = 3001;
 
 let login = require('./routes/login');
 let home = require('./routes/home');
