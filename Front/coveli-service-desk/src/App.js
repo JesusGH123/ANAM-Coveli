@@ -5,6 +5,7 @@ import Login from './Login/Login';
 import HomeSupervisor from "./HomeSupervisor/HomeSupervisor";
 import ProtectedRoutes from './ProtectedRoutes';
 import HomeTecnical from "./HomeTecnical/HomeTenical";
+import HomeClient from  "./HomeClient/HomeClient"
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Route exact path="/" component={Login}/>
             <ProtectedRoutes path="/homeT" component={HomeTecnical}/>                        
             <ProtectedRoutes path="/homeS" component={HomeSupervisor}/>
+            <ProtectedRoutes path="/homeC" component={HomeClient}/>
         </Switch>
     </div>
   );
