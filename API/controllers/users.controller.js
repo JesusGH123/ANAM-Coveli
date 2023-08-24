@@ -13,6 +13,7 @@ module.exports.get_users = async (req, res) => {
         }
         res.send(results[0]);
     });
+}
 
 //Get a single user
 module.exports.get_user = (req, res) => {
