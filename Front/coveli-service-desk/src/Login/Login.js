@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Image, Container, Col, Row, Form, Button } from "react-bootstrap";
 import Cookies from "universal-cookie";
 
+import { API_BASE_URL } from "../constants.js";
+
 import './Login.css';
 
 export default function Login() {
@@ -15,29 +17,39 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const configuration = {
+    let validationConfig = {
       method: "post",
-      url: `http://localhost:3001/users/user/validate`,
+      url: `${API_BASE_URL}/users/user/validate`,
       data: {
         email: email,
         password: password,
       }
     }
 
-    axios(configuration)
-      .then((result) => {
-        if(result.data) {
-          cookies.set("USER_TOKEN", result.id, {
+    axios(validationConfig)
+      .then((valResult) => {
+        if(valResult.data["@p_result"] != 0) {
+          cookies.set("USER_TOKEN", valResult.id, {
             path: "/",
           });
 
-          window.location.href = result.data;
+          let authConfig = {
+            method: "post",
+            url: `${API_BASE_URL}/users/user/getViews`,
+            data: {
+              role: valResult.data["@p_roleid"]
+            }
+          }
+
+          axios(authConfig)
+            .then((authResult) => {
+              window.location.href = authResult.data[0]["path"];
+            })
         } else {
           setLogin(false);
         }
       })
       .catch((error) => {
-        console.log(error);
         alert(error)
       })
   }
