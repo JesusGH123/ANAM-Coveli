@@ -8,5 +8,6 @@ router.post('/addUser', userController.add_user);
 router.put('/user', userController.update_status_user);
 router.post('/user/', userController.get_user);
 router.post('/user/validate', userController.validate_user);
+router.post('/user/getViews', userController.get_accesible_views);
 
 module.exports = router;
