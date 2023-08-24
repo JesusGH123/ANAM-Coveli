@@ -76,5 +76,4 @@ module.exports.get_ticket = async (req, res) => {}
 module.exports.add_ticket = async (req, res) => {}
 
 //Change status of a ticket
-module.exports.update_ticket = (req, res) => {
-}
+module.exports.update_ticket = (req, res) => {}

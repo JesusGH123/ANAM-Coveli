@@ -1,5 +1,6 @@
 let mysql = require('mysql');
 let config = require('../helpers/config');
+
 let connection = mysql.createConnection(config);
 
 //Get all registered users
@@ -12,7 +13,6 @@ module.exports.get_users = async (req, res) => {
         }
         res.send(results[0]);
     });
-}
 
 //Get a single user
 module.exports.get_user = (req, res) => {
