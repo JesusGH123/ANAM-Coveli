@@ -19,12 +19,12 @@ module.exports.get_users = async (req, res) => {
 module.exports.get_user = (req, res) => {
     connection.query(
         "call get_user(?);",
-        req.body.email,
+        req.params.id,
         (error, results, fields) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[0]);
+        res.send(results[0][0]);
     });
 }
 
@@ -80,7 +80,6 @@ module.exports.validate_user = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        console.log(results[2][0]);
         res.send(results[2][0]);
     });
 }
