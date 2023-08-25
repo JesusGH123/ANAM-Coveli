@@ -41,8 +41,8 @@ module.exports.get_supervisor_home = async(req, res) => {
                           'out_of_time_tickets': out_of_time_tickets[0][0]['count'],
                           'avg_time_for_tickets': {
                             'high_prior': tickets_stats[0][0],
-                            "medium_prior": tickets_stats[0][0],
-                            "low_prior": tickets_stats[0][0]
+                            "medium_prior": tickets_stats[0][1],
+                            "low_prior": tickets_stats[0][2]
                           },
                           'graphic_data': {
                             'monthly': graph_data[0],

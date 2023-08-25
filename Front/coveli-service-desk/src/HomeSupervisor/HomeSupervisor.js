@@ -48,7 +48,6 @@ export default function HomeSupervisor() {
     });
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");
-    let userInfo = [];
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getSupervisorHome`)
@@ -75,33 +74,33 @@ export default function HomeSupervisor() {
 
     //Graphs
     const monthly = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Grafica mensual',
-      },
-    },
-  };
-    const weekly = {
-      responsive: true,
-      plugins: {
+        responsive: true,
+        plugins: {
         legend: {
-          position: 'top',
+            position: 'top',
         },
         title: {
-          display: true,
-          text: 'Grafica semanal',
+            display: true,
+            text: 'Grafica mensual',
         },
-      },
+        },
     };
-  const labels = [1, 2, 3, 4, 5];
+    const weekly = {
+        responsive: true,
+        plugins: {
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: true,
+            text: 'Grafica semanal',
+        },
+        },
+    };
   
-    const data = {
-    labels,
+    const weeklyLabels = [1, 2, 3, 4, 5];
+    const weeklyData = {
+    weeklyLabels,
     datasets: [
       {
         data: [1, 5, 3, 2, 5],
@@ -230,7 +229,7 @@ export default function HomeSupervisor() {
                         <Row className="rowHomeSupervisor">
                             <Col xs={8}>
                                 Tiempo promedio mensual de atención por ticket &#40;prioridad baja&#41;
-                                <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["medium_prior"]["time"]}</h2>
+                                <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["low_prior"]["time"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -277,11 +276,9 @@ export default function HomeSupervisor() {
 
             <Row className="graphicsArea">
                 <Col>
-                    <Line options={monthly} data={data} />
+                    <Line options={weekly} data={weeklyData} />
                 </Col>
-                <Col>
-                    <Line options={weekly} data={data} />
-                </Col>
+                
             </Row>
 
             <Row className="graphicsArea">
