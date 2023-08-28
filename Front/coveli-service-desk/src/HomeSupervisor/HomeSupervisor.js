@@ -103,10 +103,6 @@ export default function HomeSupervisor() {
         }
     }
 
-    //console.log("Closed: ",monthDataClosed)
-    //console.log("Opened: ",monthDataOpened)
-    //console.log("Paused: ", monthDataPaused)
-
     const weeklyData = {
         labels: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
         datasets: [
