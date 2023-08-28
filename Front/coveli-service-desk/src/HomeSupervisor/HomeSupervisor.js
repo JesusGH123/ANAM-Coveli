@@ -73,41 +73,118 @@ export default function HomeSupervisor() {
     }
 
     //Graphs
+    let weekDataOpened = Array(7).fill(0);
+    let weekDataPaused = Array(7).fill(0);
+    let weekDataClosed = Array(7).fill(0);
+    let monthDataOpened = Array(12).fill(0);
+    let monthDataPaused = Array(12).fill(0);
+    let monthDataClosed = Array(12).fill(0);
+
+    for(const elem in info["graphic_data"]["monthly"]) {
+        if(info["graphic_data"]["monthly"][elem]["statusId"] == 9) {
+            monthDataClosed.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["monthly"][elem]["statusId"] == 6) {
+            monthDataPaused.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["monthly"][elem]["statusId"] == 4) {
+            monthDataOpened.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+    }
+    for(const elem in info["graphic_data"]["weekly"]) {
+        if(info["graphic_data"]["weekly"][elem]["statusId"] == 9) {
+            weekDataClosed.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["weekly"][elem]["statusId"] == 6) {
+            weekDataPaused.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["weekly"][elem]["statusId"] == 4) {
+            weekDataOpened.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+    }
+
+    //console.log("Closed: ",monthDataClosed)
+    //console.log("Opened: ",monthDataOpened)
+    //console.log("Paused: ", monthDataPaused)
+
+    const weeklyData = {
+        labels: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        datasets: [
+            {
+                label: 'Tickets abiertos',
+                data: weekDataOpened,
+                borderColor: 'rgb(255, 0, 0)',
+                backgroundColor: 'rgb(255, 0, 0)',
+            },
+            {
+                label: 'Tickets pausados',
+                data: weekDataPaused,
+                borderColor: 'rgb(0, 255, 0)',
+                backgroundColor: 'rgb(0, 255, 0)',
+            },
+            {
+                label: 'Tickets cerrados',
+                data: weekDataClosed,
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgb(0, 0, 255)',
+            },
+        ],
+    };
+    const monthlyData = {
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        datasets: [
+            {
+                label: 'Tickets abiertos',
+                data: monthDataOpened,
+                borderColor: 'rgb(255, 0, 0)',
+                backgroundColor: 'rgb(255, 0, 0)',
+            },
+            {
+                label: 'Tickets pausados',
+                data: monthDataPaused,
+                borderColor: 'rgb(0, 255, 0)',
+                backgroundColor: 'rgb(0, 255, 0)',
+            },
+            {
+                label: 'Tickets cerrados',
+                data: monthDataClosed,
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgb(0, 0, 255)',
+            },
+        ],
+    }
+
     const monthly = {
-        responsive: true,
-        plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Grafica mensual',
-        },
+        type: 'line',
+        data: monthlyData,
+        options: {
+            responsive: true,
+            plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Line Chart'
+            }
+            }
         },
     };
     const weekly = {
-        responsive: true,
-        plugins: {
-        legend: {
-            position: 'top',
+        type: 'line',
+        data: weeklyData,
+        options: {
+            responsive: true,
+            plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Line Chart'
+            }
+            }
         },
-        title: {
-            display: true,
-            text: 'Grafica semanal',
-        },
-        },
-    };
-  
-    const weeklyLabels = [1, 2, 3, 4, 5];
-    const weeklyData = {
-    weeklyLabels,
-    datasets: [
-      {
-        data: [1, 5, 3, 2, 5],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-    ],
     };
 
     return (
@@ -278,7 +355,9 @@ export default function HomeSupervisor() {
                 <Col>
                     <Line options={weekly} data={weeklyData} />
                 </Col>
-                
+                <Col>
+                    <Line options={monthly} data={monthlyData} />
+                </Col>
             </Row>
 
             <Row className="graphicsArea">
