@@ -29,7 +29,7 @@ export default function Login() {
     axios(validationConfig)
       .then((valResult) => {
         if(valResult.data["@p_result"] != 0) {
-          cookies.set("USER_TOKEN", valResult.id, {
+          cookies.set("USER_TOKEN", valResult.data["@p_userid"], {
             path: "/",
           });
 
@@ -43,7 +43,7 @@ export default function Login() {
 
           axios(authConfig)
             .then((authResult) => {
-              window.location.href = authResult.data[0]["path"];
+              window.location.href = `${authResult.data[0]["path"]}`;
             })
         } else {
           setLogin(false);
