@@ -4,6 +4,7 @@ import { Button, Table, Image, Navbar, Container, Nav, Row, Col, NavDropdown } f
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
 import { API_BASE_URL } from '../constants.js';
+import Swal from 'sweetalert2';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -70,6 +71,31 @@ export default function HomeSupervisor() {
         } catch(error) {
             console.log(error);
         }
+    }
+
+    const closeTicket = (props) => {
+        Swal.fire({
+            title: '¿Seguro que deseas cerrar el ticket?',
+            showDenyButton: true,
+            confirmButtonText: 'Aceptar',
+            denyButtonText: `Cancelar`,
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire('El ticket ha sido cerrado', '', 'success');
+
+                await axios.put(
+                `${API_BASE_URL}/home/ticket`,
+                {
+                    userId: cookies.get("USER_TOKEN"),
+                    ticketId: props.ticketId,
+                    statusId: 9,
+                    comment: "Se cierra el ticket",
+                    technicalId: props.technicalId
+                });
+            } else if (result.isDenied) {
+              Swal.fire('El ticket no se cerró', '', 'info');
+            }
+          })
     }
 
     //Graphs
@@ -382,7 +408,9 @@ export default function HomeSupervisor() {
                                     <td>{ticket.priority}</td>
                                     <td>{ticket.situation}</td>
                                     <td>{ticket.technical}</td>
-                                    <td>{ticket.status}</td>
+                                    <td>
+                                        <Button onClick={() => closeTicket(ticket)} className="btnClose">Cerrar</Button>
+                                    </td>
                                 </tr>
                             )
                         }) }

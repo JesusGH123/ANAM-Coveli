@@ -80,4 +80,23 @@ module.exports.get_ticket = async (req, res) => {}
 module.exports.add_ticket = async (req, res) => {}
 
 //Change status of a ticket
-module.exports.update_ticket = (req, res) => {}
+module.exports.update_ticket = (req, res) => {
+  connection.query(
+    `set @p_result = 0;
+    set @p_message = "";
+    CALL update_ticket(?, ?, ?, ?, ?, @p_result, @p_message);
+    SELECT @p_result, @p_message;`,
+    [
+      req.body.userId,
+      req.body.ticketId,
+      req.body.statusId,
+      req.body.comment,
+      req.body.technicalId,
+    ],
+    (error, results, fields) => {
+      if(error)
+        res.send(error);
+      res.status(1);
+    }
+  );
+}
