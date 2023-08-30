@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Table, Image, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
+import { Button, Table, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
 import { API_BASE_URL } from '../constants.js';
@@ -51,11 +51,10 @@ export default function HomeSupervisor() {
     const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/home/getSupervisorHome`)
+        axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`)
             .then((res) => {
                 setInfo(res.data);
             });
-
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
@@ -64,13 +63,8 @@ export default function HomeSupervisor() {
     });
 
     const logout = () => {
-        axios.CancelToken.source();
-        try {
-            cookies.remove("USER_TOKEN", {path: "/"});
-            window.location.href = "/";
-        } catch(error) {
-            console.log(error);
-        }
+        cookies.remove("USER_TOKEN", {path: "/"});
+        window.location.href = "/";
     }
 
     const closeTicket = (props) => {

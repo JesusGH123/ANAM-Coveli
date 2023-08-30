@@ -3,7 +3,6 @@ let config = {
     user: 'anam',
     password: 'root',
     database: 'db_coveli',
-    multipleStatements: true,
+    multipleStatements: true
 }
-
 module.exports = config;

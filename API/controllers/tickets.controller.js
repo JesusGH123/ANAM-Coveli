@@ -65,7 +65,65 @@ module.exports.get_supervisor_home = async(req, res) => {
   });
 }
 
-module.exports.get_technical_home = async (req, res) => {}
+module.exports.get_technical_home = async (req, res) => {
+  connection.query(
+    'CALL tickets_technical_count_by_status(?, ?)',
+    [req.params.userId, 5],
+    (error, non_attended_tickets, fields) => {
+      if(error) {
+        console.log("Error en 1" + error)
+        res.send(error);
+      }
+      connection.query(
+        'CALL tickets_technical_count_by_status(?, ?)',
+        [req.params.userId, 6],
+        (error, paused_tickets, fields) => {
+          if(error) {
+            res.send(error);
+            console.log("Error en 2")
+          }
+          connection.query(
+            'CALL tickets_technical_count_by_status(?, ?)',
+            [req.params.userId, 9],
+            (error, closed_tickets, fields) => {
+              if(error) {
+                res.send(error)
+                console.log("Error en 3")
+              }
+              connection.query(
+                'CALL tickets_technical_count_by_status(?, ?)',
+                [req.params.userId, 7],
+                (error, on_revision_tickets, fields) => {
+                  if(error) {
+                    res.send(error);
+                    console.log("Error en 4")
+                  }
+                  connection.query(
+                    'CALL get_tickets_by_user(?)',
+                    req.params.userId,
+                    (error, my_tickets, fields) => {
+                      if(error) {
+                        res.send(error);
+                        console.log("Error en 5")
+                      }
+                      res.json({
+                        'tickets_without_attendance': non_attended_tickets[0][0]["count"],
+                        'paused_tickets': paused_tickets[0][0]["count"],
+                        'closed_tickets': closed_tickets[0][0]["count"],
+                        'on_revision_tickets': on_revision_tickets[0][0]["count"],
+                        'my_tickets': my_tickets[0]
+                      });
+                    }
+                  )
+                }
+              )
+            }
+          )
+        }
+      )
+    }
+  )
+}
 
 module.exports.get_client_home = async (req, res) => {}
 
