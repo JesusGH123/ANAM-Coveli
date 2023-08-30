@@ -268,7 +268,7 @@ export default function HomeTecnical(){
                                         updateTicket(currentTicket, 7, comment);
                                         }}
                                         style={{margin:'1rem'}}>
-                                        Cerrar ticket
+                                        Solicitar cierre
                                     </Button>
                                 </Form>
                             </Modal.Body>
