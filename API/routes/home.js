@@ -9,5 +9,6 @@ router.put('/ticket', ticketController.update_ticket);
 
 router.get('/getSupervisorHome/:userId', ticketController.get_supervisor_home);
 router.get('/getTechnicalHome/:userId', ticketController.get_technical_home);
+router.get('/getAdminHome/:userId', ticketController.get_admin_home);
 
 module.exports = router;
