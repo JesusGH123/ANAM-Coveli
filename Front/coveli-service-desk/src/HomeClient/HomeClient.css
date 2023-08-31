@@ -52,3 +52,16 @@
     align-items: center;    
     margin-top: 1rem; 
 }
+
+.graphicsArea {
+    margin: 50px;
+}
+
+.modal-width {
+    width: 100vm;
+    max-width: 700px;
+  }
+
+  
+  
+  
