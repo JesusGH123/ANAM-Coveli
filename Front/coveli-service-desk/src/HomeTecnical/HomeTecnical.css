@@ -6,8 +6,7 @@
     border-radius: 1.5rem;      
     color:white ;     
     margin:1rem auto;
-    padding: 10px;    
-    
+    padding: 10px;  
 }
 
 .divSeparator {
@@ -33,7 +32,16 @@
     
 }
 
-
 #containerNav{
     max-width: 100%;    
+}
+
+.modal {
+    --bs-modal-width: 800px;
+}
+
+.btn-warning {
+    background-color: #FFE500;
+    border: 0px;
+    color: #222D51;
 }

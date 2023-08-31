@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Table, Image, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
+import { Button, Table, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
 import { API_BASE_URL } from '../constants.js';
@@ -28,7 +28,15 @@ import axios from "axios";
   );
 const cookies = new Cookies();
 
+function handleError(e) {
+    if(axios.isCancel(e))
+        console.log(e.message);
+}
+
 export default function HomeSupervisor() {
+    const CancelToken = axios.CancelToken
+    const cancelTokenSource = CancelToken.source()
+
     const [info, setInfo] = React.useState({
             "all_tickets": 0,
             "todays_tickets": 0,
@@ -51,26 +59,20 @@ export default function HomeSupervisor() {
     const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/home/getSupervisorHome`)
+        axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
-            });
-
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
+            }).catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
                 setUsername(res.data["FULLNAME"]);
-            });
+            }).catch((err) => handleError(err));
     });
 
     const logout = () => {
-        axios.CancelToken.source();
-        try {
-            cookies.remove("USER_TOKEN", {path: "/"});
-            window.location.href = "/";
-        } catch(error) {
-            console.log(error);
-        }
+        cookies.remove("USER_TOKEN", {path: "/"});
+        window.location.href = "/";
     }
 
     const closeTicket = (props) => {
@@ -217,7 +219,7 @@ export default function HomeSupervisor() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="/home">Home</Nav.Link>
+                        <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
                     </Nav>
                     <div>
                         <Row>
@@ -226,7 +228,7 @@ export default function HomeSupervisor() {
                             </Col>
                             <Col>
                                 <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item onClick={logout}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
+                                    <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
                                 </NavDropdown>
                                 <label style={{color:'#51177D'}}>
                                     {useremail}
