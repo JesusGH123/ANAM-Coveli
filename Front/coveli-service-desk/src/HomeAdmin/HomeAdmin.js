@@ -107,8 +107,8 @@ export default function HomeAdmin(){
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/homeA" style={{fontWeight:'bold'}}>Home</Nav.Link>
-                            <Nav.Link href="/users" style={{fontWeight:'bold'}}>Usuarios</Nav.Link>
+                            <Nav.Link href="/homeA" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}style={{fontWeight:'bold'}}>Home</Nav.Link>
+                            <Nav.Link href="/users" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}style={{fontWeight:'bold'}}>Usuarios</Nav.Link>
                         </Nav>                         
                         <div>
                             <Row>
@@ -146,7 +146,7 @@ export default function HomeAdmin(){
                             <Col xs={3} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/ticket.png"></img>
                             </Col>
-                        </Row>                
+                        </Row>
                     </div>
                 </Col>
                 <Col>

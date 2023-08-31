@@ -12,7 +12,12 @@ module.exports.get_users = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[0]);
+
+        try {
+            res.send(results[0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -25,7 +30,12 @@ module.exports.get_user = (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[0][0]);
+
+        try {
+            res.send(results[0][0]);
+        } catch(error) {
+            console.log("Check error: " + error);
+        }
     });
 }
 
@@ -46,7 +56,11 @@ module.exports.add_user = async (req, res, rows) => {
             res.send(error);
         }
 
-        res.send(results[1][0]);
+        try {
+            res.send(results[1][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -65,7 +79,12 @@ module.exports.update_status_user = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[1][0]);
+
+        try {
+            res.send(results[1][0]);
+        } catch(error) {
+            console.log(error);
+        }
     });
 }
 
@@ -83,7 +102,12 @@ module.exports.validate_user = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[2][0]);
+
+        try {
+            res.send(results[2][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -95,7 +119,12 @@ module.exports.get_accesible_views = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error)
-            res.send(results[0]);
+            
+            try {
+                res.send(results[0]);
+            } catch (error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -107,7 +136,12 @@ module.exports.get_roles = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error);
-            res.send(results[0]);
+            
+            try {
+                res.send(results[0]);
+            } catch(error) {
+                console.log(error);
+            }
         }
     )
 }
