@@ -39,3 +39,9 @@
 .modal {
     --bs-modal-width: 800px;
 }
+
+.btn-warning {
+    background-color: #FFE500;
+    border: 0px;
+    color: #222D51;
+}

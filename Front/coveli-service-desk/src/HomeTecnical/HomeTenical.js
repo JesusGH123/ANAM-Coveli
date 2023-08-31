@@ -10,7 +10,14 @@ import './HomeTecnical.css'
 
 const cookies = new Cookies();
 
+function handleError(e) {
+    if(axios.isCancel(e))
+        console.log(e.message);
+}
+
 export default function HomeTecnical(){
+    let CancelToken = axios.CancelToken;
+    let cancelTokenSource = CancelToken.source();
 
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
@@ -23,16 +30,15 @@ export default function HomeTecnical(){
     const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/home/getTechnicalHome/${cookies.get("USER_TOKEN")}`)
+        axios.get(`${API_BASE_URL}/home/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
-                console.log(res.data);
                 setInfo(res.data);
-            })
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {mode: 'cors'})
+            }).catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
                 setUsername(res.data["FULLNAME"]);
-            })
+            }).catch((err) => handleError(err));
     });
 
     const [show, setShow] = React.useState(false);
@@ -45,17 +51,13 @@ export default function HomeTecnical(){
         setComment(event.target.value);
     }
 
-    const updateTicket = (ticket, newStatus, comment) => {
+    const updateTicket = (newStatus, comment) => {
         axios.put(`${API_BASE_URL}/home/ticket`, {
             userId: cookies.get("USER_TOKEN"),
-            ticketId: ticket.ticketId,
+            ticketId: currentTicket.ticketId,
             statusId: newStatus,
             comment: comment,
-            technicalId: cookies.get("USER_TOKEN"),
-        })
-        .then((res) => {
-            setUseremail(res.data["EMAIL"]);
-            setUsername(res.data["FULLNAME"]);
+            technicalId: currentTicket.technicalId,
         })
 
         setComment("");
@@ -75,7 +77,7 @@ export default function HomeTecnical(){
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/home" style={{fontWeight:'bold'}}>Home</Nav.Link>
+                            <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Home</Nav.Link>
                         </Nav>                         
                         <div>
                             <Row>
@@ -84,7 +86,7 @@ export default function HomeTecnical(){
                                 </Col>
                                 <Col>
                                     <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
+                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout()}}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
                                         {useremail}
@@ -265,7 +267,7 @@ export default function HomeTecnical(){
                                     </Button>
                                     <Button variant="primary" onClick={ (event) => {
                                         handleClose();
-                                        updateTicket(currentTicket, 7, comment);
+                                        updateTicket(7, comment);
                                         }}
                                         style={{margin:'1rem'}}>
                                         Solicitar cierre
@@ -289,7 +291,7 @@ export default function HomeTecnical(){
                                     </Button>
                                     <Button variant="primary" onClick={() => {
                                         handleClose();
-                                        updateTicket(currentTicket, 6, comment);
+                                        updateTicket(6, comment);
                                     }}>
                                         Pausar ticket
                                     </Button>
@@ -310,7 +312,7 @@ export default function HomeTecnical(){
                                     </Button>
                                     <Button variant="primary" onClick={() => {
                                         handleClose();
-                                        updateTicket(currentTicket, 5, comment);
+                                        updateTicket(5, comment);
                                     }}>
                                         Retomar ticket
                                     </Button>
