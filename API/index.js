@@ -11,7 +11,7 @@ let users = require('./routes/user');
 let clients = require('./routes/homeC');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit:'1gb'}));
 app.listen(port, () => {
     console.log(`App listening on port ${port}!`)
 })
