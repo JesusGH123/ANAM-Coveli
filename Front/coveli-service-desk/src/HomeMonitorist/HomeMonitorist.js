@@ -63,10 +63,10 @@ export default function HomeMonitorist(){
                 handleError(e);
             });      
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {                                
-                setTickets(res.data);       
+            .then((res) => {                                                
+                setTickets(res.data);                  
             }).catch((e) =>{
-                handleError(e);
+                handleError(e);                
             });  
         axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
@@ -328,10 +328,7 @@ export default function HomeMonitorist(){
                     }         
                 });
             } 
-          })
-        // console.log(document.getElementById("ddlPriority" + item).value);
-        // console.log(document.getElementById("ddlTechnical" + item).value);
-        // console.log(document.getElementById("hfticketId" + item).value);
+          })        
     }
 
     const clearSelected = async (item) =>  {
