@@ -36,29 +36,24 @@ export default function HomeClient(){
     const cancelTokenSource = CancelToken.source()
 
     const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");// const [show, setShow] = useState(false);    
+    const [useremail, setUseremail] = React.useState("");
     const [mdlNewUser, setShowNewUser] = useState(false);    
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
-
     
-    
-
-    
-    
-    const [svlocations, setsvlocations] = useState(3);
-   
-
     const [info, setInfo] = React.useState({
-        "recent_tickets": [],
-        "reassigned_tickets": []        
+        "tickets": []
     });       
     
 
     const [locations, setLocations] = React.useState([]);
     const [equipments, setEquipments] = React.useState([]);
     const [serials, setSerials] = React.useState([]);
-    const [ticketResult, setticketResult] = React.useState([]);
+    const [ticketResult, setticketResult] = React.useState([{
+        "p_ticketHistoyID":0,
+        "p_result":0,
+        "p_message":""
+    }]);
     
 
     useEffect(() =>{        
@@ -84,8 +79,7 @@ export default function HomeClient(){
         window.location.href = "/";
     }    
     
-    function getEquipmentByLocation(locationId){
-        setsvlocations(locationId);
+    function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
                 .then((res) => {                
                     setEquipments(res.data["equipments"]);     
@@ -134,10 +128,10 @@ export default function HomeClient(){
             p_userid: userId, 
          })
          .then((res) => {
-            setticketResult(res.data);            
-        });
+            setticketResult(res.data);                        
+        });        
         
-        if(ticketResult["@p_result"] != 0){
+        if(ticketResult["@p_result"] == 1){
             if ('files' in fileInput) {
                 if (fileInput.files.length == 0) {
                     message = "¡Ingresar al menos una evidencia!";
