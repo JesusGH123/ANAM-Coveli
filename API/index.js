@@ -10,6 +10,7 @@ let login = require('./routes/login');
 let home = require('./routes/home');
 let users = require('./routes/user');
 let clients = require('./routes/homeC');
+let monitorist = require('./routes/homeM');
 
 app.use(cors());
 app.use(bodyParser.json({limit:'1gb'}));
@@ -29,3 +30,4 @@ app.use('/', login);
 app.use('/home', home);
 app.use('/users', users);
 app.use('/homeC', clients);
+app.use('/homeM', monitorist);
