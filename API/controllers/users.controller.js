@@ -90,13 +90,14 @@ module.exports.update_status_user = async (req, res) => {
 
 //Validate a user
 module.exports.validate_user = async (req, res) => {
+    let hashedPassword = crypto.createHash('sha256').update(req.body.password).digest('hex').toString()
     connection.query(
         `set @p_email = ?;
         call validate_user(@p_email, ?, @p_roleid, @p_fullname, @p_userid, @p_result, @p_message);
         select @p_roleid, @p_fullname, @p_userid, @p_result, @p_message;`,
         [
             req.body.email,
-            req.body.password
+            hashedPassword
         ],
         (error, results, fields) => {
         if(error) {
