@@ -63,10 +63,12 @@ export default function HomeMonitorist(){
                 handleError(e);
             });      
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {                                
-                setTickets(res.data);       
+            .then((res) => {                                                
+                setTickets(res.data);  
+                console.log(res.data);
             }).catch((e) =>{
                 handleError(e);
+                console.log(e);
             });  
         axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
