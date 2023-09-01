@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Table, Image, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
+import { Button, Table, Navbar, Container, Nav, Row, Col, NavDropdown } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
 import { API_BASE_URL } from '../constants.js';
+import Swal from 'sweetalert2';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -27,7 +28,15 @@ import axios from "axios";
   );
 const cookies = new Cookies();
 
+function handleError(e) {
+    if(axios.isCancel(e))
+        console.log(e.message);
+}
+
 export default function HomeSupervisor() {
+    const CancelToken = axios.CancelToken
+    const cancelTokenSource = CancelToken.source()
+
     const [info, setInfo] = React.useState({
             "all_tickets": 0,
             "todays_tickets": 0,
@@ -50,64 +59,156 @@ export default function HomeSupervisor() {
     const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/home/getSupervisorHome`)
+        axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
-            });
-
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
+            }).catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
                 setUsername(res.data["FULLNAME"]);
-            });
+            }).catch((err) => handleError(err));
     });
 
     const logout = () => {
-        axios.CancelToken.source();
-        try {
-            cookies.remove("USER_TOKEN", {path: "/"});
-            window.location.href = "/";
-        } catch(error) {
-            console.log(error);
-        }
+        cookies.remove("USER_TOKEN", {path: "/"});
+        window.location.href = "/";
+    }
+
+    const closeTicket = (props) => {
+        Swal.fire({
+            title: '¿Seguro que deseas cerrar el ticket?',
+            showDenyButton: true,
+            confirmButtonText: 'Aceptar',
+            denyButtonText: `Cancelar`,
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire('El ticket ha sido cerrado', '', 'success');
+
+                await axios.put(
+                `${API_BASE_URL}/home/ticket`,
+                {
+                    userId: cookies.get("USER_TOKEN"),
+                    ticketId: props.ticketId,
+                    statusId: 9,
+                    comment: "Se cierra el ticket",
+                    technicalId: props.technicalId
+                });
+            } else if (result.isDenied) {
+              Swal.fire('El ticket no se cerró', '', 'info');
+            }
+          })
     }
 
     //Graphs
+    let weekDataOpened = Array(7).fill(0);
+    let weekDataPaused = Array(7).fill(0);
+    let weekDataClosed = Array(7).fill(0);
+    let monthDataOpened = Array(12).fill(0);
+    let monthDataPaused = Array(12).fill(0);
+    let monthDataClosed = Array(12).fill(0);
+
+    for(const elem in info["graphic_data"]["monthly"]) {
+        if(info["graphic_data"]["monthly"][elem]["statusId"] == 9) {
+            monthDataClosed.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["monthly"][elem]["statusId"] == 6) {
+            monthDataPaused.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["monthly"][elem]["statusId"] == 4) {
+            monthDataOpened.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
+        }
+    }
+    for(const elem in info["graphic_data"]["weekly"]) {
+        if(info["graphic_data"]["weekly"][elem]["statusId"] == 9) {
+            weekDataClosed.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["weekly"][elem]["statusId"] == 6) {
+            weekDataPaused.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+        else if(info["graphic_data"]["weekly"][elem]["statusId"] == 4) {
+            weekDataOpened.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
+        }
+    }
+
+    const weeklyData = {
+        labels: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        datasets: [
+            {
+                label: 'Tickets abiertos',
+                data: weekDataOpened,
+                borderColor: 'rgb(255, 0, 0)',
+                backgroundColor: 'rgb(255, 0, 0)',
+            },
+            {
+                label: 'Tickets pausados',
+                data: weekDataPaused,
+                borderColor: 'rgb(0, 255, 0)',
+                backgroundColor: 'rgb(0, 255, 0)',
+            },
+            {
+                label: 'Tickets cerrados',
+                data: weekDataClosed,
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgb(0, 0, 255)',
+            },
+        ],
+    };
+    const monthlyData = {
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        datasets: [
+            {
+                label: 'Tickets abiertos',
+                data: monthDataOpened,
+                borderColor: 'rgb(255, 0, 0)',
+                backgroundColor: 'rgb(255, 0, 0)',
+            },
+            {
+                label: 'Tickets pausados',
+                data: monthDataPaused,
+                borderColor: 'rgb(0, 255, 0)',
+                backgroundColor: 'rgb(0, 255, 0)',
+            },
+            {
+                label: 'Tickets cerrados',
+                data: monthDataClosed,
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgb(0, 0, 255)',
+            },
+        ],
+    }
+
     const monthly = {
-        responsive: true,
-        plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Grafica mensual',
-        },
+        type: 'line',
+        data: monthlyData,
+        options: {
+            responsive: true,
+            plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Line Chart'
+            }
+            }
         },
     };
     const weekly = {
-        responsive: true,
-        plugins: {
-        legend: {
-            position: 'top',
+        type: 'line',
+        data: weeklyData,
+        options: {
+            responsive: true,
+            plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Line Chart'
+            }
+            }
         },
-        title: {
-            display: true,
-            text: 'Grafica semanal',
-        },
-        },
-    };
-  
-    const weeklyLabels = [1, 2, 3, 4, 5];
-    const weeklyData = {
-    weeklyLabels,
-    datasets: [
-      {
-        data: [1, 5, 3, 2, 5],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-    ],
     };
 
     return (
@@ -118,7 +219,7 @@ export default function HomeSupervisor() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="/home">Home</Nav.Link>
+                        <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
                     </Nav>
                     <div>
                         <Row>
@@ -127,7 +228,7 @@ export default function HomeSupervisor() {
                             </Col>
                             <Col>
                                 <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item onClick={logout}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
+                                    <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
                                 </NavDropdown>
                                 <label style={{color:'#51177D'}}>
                                     {useremail}
@@ -278,7 +379,9 @@ export default function HomeSupervisor() {
                 <Col>
                     <Line options={weekly} data={weeklyData} />
                 </Col>
-                
+                <Col>
+                    <Line options={monthly} data={monthlyData} />
+                </Col>
             </Row>
 
             <Row className="graphicsArea">
@@ -307,7 +410,9 @@ export default function HomeSupervisor() {
                                     <td>{ticket.priority}</td>
                                     <td>{ticket.situation}</td>
                                     <td>{ticket.technical}</td>
-                                    <td>{ticket.status}</td>
+                                    <td>
+                                        <Button onClick={() => closeTicket(ticket)} className="btnClose">Cerrar</Button>
+                                    </td>
                                 </tr>
                             )
                         }) }

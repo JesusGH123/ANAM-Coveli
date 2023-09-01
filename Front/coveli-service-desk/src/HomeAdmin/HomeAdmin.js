@@ -1,69 +1,102 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from "axios";
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { Col, Row, Container, Nav, Navbar, Table, Button, Modal,NavDropdown} from "react-bootstrap";
+import { Col, Row, Container, Nav, Navbar, Table, Button, Modal, NavDropdown, Form} from "react-bootstrap";
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../constants.js';
 
 import './HomeAdmin.css'
 
+const cookies = new Cookies();
+
+function handleError(e) {
+    if(axios.isCancel(e))
+        console.log(e.message);
+}
 
 export default function HomeAdmin(){
+    const CancelToken = axios.CancelToken
+    const cancelTokenSource = CancelToken.source()
 
+    const [info, setInfo] = React.useState({
+        "tickets_without_attendance": 0,
+        "paused_tickets": 0,
+        "closed_tickets": 0,
+        "on_revision_tickets": 0,
+        "all_tickets": []
+    });
+    const [username, setUsername] = React.useState("");
+    const [useremail, setUseremail] = React.useState("");
+
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+            .then((res) => {
+                setInfo(res.data);
+            })
+            .catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
+            .then((res) => {
+                setUseremail(res.data["EMAIL"]);
+                setUsername(res.data["FULLNAME"]);
+            })
+            .catch((err) => handleError(err));
+    });
+
+    const [currentTicket, setCurrentTicket] = useState({});
+    const [comment, setComment] = useState("");
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const logout = () => {
-        const cookies = new Cookies();
         cookies.remove("USER_TOKEN", {path: "/"});
         window.location.href = "/";
     }
+    const onChange = (event) => {
+        setComment(event.target.value);
+    }
 
-    const ticketPause = async () =>{
-        const { value: text } = await Swal.fire({
-            input: 'textarea',
-            inputLabel: '¿Por qué desea pausar el ticket?',
-            inputPlaceholder: 'Ingrese motivos...',
-            inputAttributes: {
-              'aria-label': 'Type your message here'
-            },
-            showCancelButton: true,
-            cancelButtonText:"Cancelar",
-            confirmButtonText:"Guardar"
-          })
-    };
+    const updateTicket = (newStatus, comment) => {
+        axios.put(`${API_BASE_URL}/home/ticket`, {
+            userId: cookies.get("USER_TOKEN"),
+            ticketId: currentTicket.ticketId,
+            statusId: newStatus,
+            comment: comment,
+            technicalId: currentTicket.technicalId,
+        })
 
-    const ticketClose = async () => {
+        setComment("");
+    }
+
+    const ticketAction = async (action) =>{
+        //6 Pausar
+        //9 Cerrar
+        let actionString = (action == 9) ? ["cerrar", "cerrado"] : ["pausar", "pausado"];
 
         Swal.fire({
-            title: '¿Desea realizar algún cambio?',
-            showDenyButton: true,
+            title: `¿Deseas ${actionString[0]} el ticket ${currentTicket.ticketId}?`,
+            input: 'textarea',
+            inputLabel: `Motivo`,
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
             showCancelButton: true,
-            confirmButtonText: "Cerrar",
-            denyButtonText: "Reasingar",
-            cancelButtonText:"Cancelar"                        
+            cancelButtonText: "Cancelar",
+            confirmButtonText: actionString[0].charAt(0).toUpperCase() + actionString[0].substring(1, actionString[0].length) ,
+            showLoaderOnConfirm: true,
+            preConfirm: (login) => {
+                updateTicket(action, comment);
+            },
+            allowOutsideClick: () => !Swal.isLoading()
           }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                Swal.fire({confirmButtonText:"Aceptar", title:"¡Ticket cerrado!",icon:"success"})
-            } else if (result.isDenied) {
-                const { value: text } = Swal.fire({
-                    input: 'textarea',
-                    inputLabel: '¿Por qué desea reasignar el ticket?',
-                    inputPlaceholder: 'Ingrese motivos...',
-                    inputAttributes: {
-                      'aria-label': 'Type your message here'
-                    },
-                    showCancelButton: true,
-                    cancelButtonText:"Cancelar",
-                    confirmButtonText:"Guardar"
-                  })
-                //Swal.fire({confirmButtonText:"Aceptar", title:"¡Se ha reasignado el ticket!",icon:"info"})              
+              Swal.fire({
+                title: `Ticket ${actionString[1]}`,
+              })
             }
           })
     };
-
-    
 
     return(
         <div>    
@@ -74,7 +107,8 @@ export default function HomeAdmin(){
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/home" style={{fontWeight:'bold'}}>Home</Nav.Link>
+                            <Nav.Link href="/homeA" style={{fontWeight:'bold'}}>Home</Nav.Link>
+                            <Nav.Link href="/users" style={{fontWeight:'bold'}}>Usuarios</Nav.Link>
                         </Nav>                         
                         <div>
                             <Row>
@@ -82,11 +116,11 @@ export default function HomeAdmin(){
                                 <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
                                 </Col>
                                 <Col>
-                                    <NavDropdown title="Administrador" id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
+                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
+                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
-                                        isc_mbm@yahoo.com.mx
+                                        {useremail}
                                     </label>                        
                                 </Col>
                             </Row>                        
@@ -104,7 +138,7 @@ export default function HomeAdmin(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Todos los tickets
-                                <h2 style={{ fontSize:'4rem'}}>250</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["all_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1} >
                                 <div className="divSeparator"></div>
@@ -120,7 +154,7 @@ export default function HomeAdmin(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets sin asignar
-                                <h2 style={{ fontSize:'4rem'}}>25</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["not_assigned_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -152,8 +186,8 @@ export default function HomeAdmin(){
                     <div className="dashboardButton">
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets abiertos
-                                <h2 style={{ fontSize:'4rem'}}>67</h2>
+                                Tickets asignados
+                                <h2 style={{ fontSize:'4rem'}}>{info["assigned_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -169,7 +203,7 @@ export default function HomeAdmin(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets pausados
-                                <h2 style={{ fontSize:'4rem'}}>4</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -185,7 +219,7 @@ export default function HomeAdmin(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets cerrados
-                                <h2 style={{ fontSize:'4rem'}}>140</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -212,62 +246,86 @@ export default function HomeAdmin(){
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>02132</td>
-                            <td>Banda del Equipo</td>
-                            <td>Cliente01</td>
-                            <td>01/06/2023 03:34</td>
-                            <td>Alta</td>
-                            <td>Técnico</td>                            
-                            <td style={{textAlign:"center"}}>
-                                cerrado
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12393</td>
-                            <td>Rodillos</td>
-                            <td>Cliente23</td>
-                            <td>04/04/2023 01:50</td>
-                            <td>Alta</td>
-                            <td>Técnico</td>                            
-                            <td style={{textAlign:"center"}}><Button onClick={ticketPause} variant='warning' style={{borderRadius:20}}>Pausar</Button><Button variant='secondary'style={{borderRadius:20}} onClick={ticketClose}>Cerrar</Button></td>
-                        </tr>                        
+                        {
+                            info["all_tickets"].map((ticket) => {
+                                return (
+                                    <tr>
+                                        <td>{ticket.ticketId}</td>
+                                        <td>{ticket.situation}</td>
+                                        <td>{ticket.client}</td>
+                                        <td>{ticket.openDate}</td>
+                                        <td>{ticket.priority}</td>
+                                        <td>{ticket.technical}</td>
+                                        { (ticket.statusid == 9) ?
+                                            <td style={{textAlign:"center"}}>Cerrado</td>
+                                            :
+                                                (ticket.statusid == 7) ?
+                                                    <td style={{textAlign:"center"}}>
+                                                        <Button onClick={() => {
+                                                            setCurrentTicket(ticket);
+                                                            ticketAction(6)
+                                                            }} variant='warning' style={{borderRadius:20}}>Pausar</Button>
+                                                        <Button  onClick={() => {
+                                                            setCurrentTicket(ticket);
+                                                            ticketAction(9)
+                                                        }}variant='secondary'style={{borderRadius:20}}>Cerrar</Button>
+                                                    </td>
+                                                :
+                                                <td style={{textAlign:"center"}}>{ticket.status}</td>
+                                        }
+                                    </tr>
+                                )
+                            })
+                        }                     
                     </tbody>
                 </Table>                    
                 </Col>
             </Row>
+
             <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                        <Modal.Title className='ms-auto'>Ticket: 23423</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div>
-                                <Row className='rowTecnical'>
-                                    <Col lg={6}>
+                    <Modal.Header closeButton>
+                        <Modal.Title className='ms-auto'>Ticket: {currentTicket.ticketId}</Modal.Title>
+                    </Modal.Header>
+                    {
+                        <Row className='rowTecnical'>
+                            <Modal.Body>
+                                <Form>
+                                    <Col lg={3}>
                                         Fotografia preliminar
                                     </Col>
-                                    <Col lg={6}>
-                                        <Button variant='primary'>Cargar imagen</Button>
+                                    <Col lg={9}>
+                                    <Form.Group controlId="formFileMultiple" className="mb-3">
+                                        <Form.Control type="file" multiple/>
+                                    </Form.Group>
                                     </Col>
-                                    <Col lg={6}>
-                                        Fotografia Terminación
+                                    <Col lg={3}>
+                                        Fotografia terminación
                                     </Col>
-                                    <Col lg={6}>
-                                        <Button variant='primary'>Cargar imagen</Button>
+                                    <Col lg={9}>
+                                    <Form.Group controlId="formFileMultiple" className="mb-3">
+                                        <Form.Control type="file" multiple/>
+                                    </Form.Group>
                                     </Col>
-                                </Row>                                
+
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label>Comentario</Form.Label>
+                                        <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)} />
+                                    </Form.Group>
                                 
-                            </div>                            
-                        </Modal.Body>
-                        <Modal.Footer>
-                        <Button variant="primary" onClick={handleClose}>
-                            Cancelar
-                        </Button>
-                        <Button variant="primary" onClick={handleClose} style={{margin:'1rem'}}>
-                            Cerrar ticket
-                        </Button>
-                        </Modal.Footer>
-                    </Modal>
+                                    <Button variant="primary" onClick={handleClose}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="primary" onClick={ (event) => {
+                                        handleClose();
+                                        }}
+                                        style={{margin:'1rem'}}>
+                                        Solicitar cierre
+                                    </Button>
+                                </Form>
+                            </Modal.Body>
+                        </Row>
+                    }
+                </Modal>
         </div>        
     )
 }

@@ -43,7 +43,7 @@ export default function Login() {
 
           axios(authConfig)
             .then((authResult) => {
-              window.location.href = `${authResult.data[0]["path"]}`;
+              window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
             })
         } else {
           setLogin(false);

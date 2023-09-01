@@ -10,4 +10,6 @@ router.get('/user/:id', userController.get_user);
 router.post('/user/validate', userController.validate_user);
 router.post('/user/getViews', userController.get_accesible_views);
 
+router.get('/roles', userController.get_roles);
+
 module.exports = router;
