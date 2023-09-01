@@ -23,29 +23,26 @@ import { Paper } from '@mui/material';
 
 
 const cookies = new Cookies();
+const CancelToken = axios.CancelToken
+const cancelTokenSource = CancelToken.source()
 
 function handleError(e) {
     if(axios.isCancel(e))
         console.log(e.message);
 }
 
-
 export default function HomeClient(){    
-
-    const CancelToken = axios.CancelToken
-    const cancelTokenSource = CancelToken.source()
 
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");
     const [mdlNewUser, setShowNewUser] = useState(false);    
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
-    
+
     const [info, setInfo] = React.useState({
         "tickets": []
     });       
     
-
     const [locations, setLocations] = React.useState([]);
     const [equipments, setEquipments] = React.useState([]);
     const [serials, setSerials] = React.useState([]);
@@ -83,14 +80,18 @@ export default function HomeClient(){
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
                 .then((res) => {                
                     setEquipments(res.data["equipments"]);     
+                })
+                .catch((err) => {
+                    handleError(err);
                 });
     }
 
     function getSerialsByEquipment(LocationEquipment){        
-        axios.get(`${API_BASE_URL}/homeC/get_serials_by_Location_by_Location_home/${LocationEquipment.split("|")[0]}/${LocationEquipment.split("|")[1]}`)
+        axios.get(`${API_BASE_URL}/homeC/get_serials_by_Location_by_Location_home/${LocationEquipment.split("|")[0]}/${LocationEquipment.split("|")[1]}`, {cancelToken: cancelTokenSource.token})
                 .then((res) => {                
                     setSerials(res.data["serials"]);     
-                });
+                })
+                .catch((err) => handleError(err));
     }
     function clearEquimentsSerials(){
         setEquipments([]);
@@ -99,18 +100,14 @@ export default function HomeClient(){
     }   
 
     function showNewTicket(){
-        axios.get(`${API_BASE_URL}/homeC/get_equipmentsLocations_home/`)
+        axios.get(`${API_BASE_URL}/homeC/get_equipmentsLocations_home/`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setLocations(res.data["locations"]);     
-            });
+            }).catch((err) => handleError(err));
         showNewUser();
     }
 
-    
-
-    async function addTicket() {              
-        
-                      
+    async function addTicket() {               
         let userId = cookies.get("USER_TOKEN");
         var message = "";
         var fileInput = document.getElementById("fileEvindece");
@@ -153,7 +150,7 @@ export default function HomeClient(){
                 }
     
             }
-            else{
+            else {
                 if (fileInput.value == "") {
                     message += "Please browse for one or more files.";
                     message += "<br />Use the Control or Shift key for multiple selection.";
@@ -201,7 +198,7 @@ export default function HomeClient(){
                                 </Col>
                                 <Col>
                                     <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
+                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout(); }}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
                                         {useremail}
@@ -217,16 +214,16 @@ export default function HomeClient(){
             </div>               
             
             <Row>
-                <Col lg={9}>                
+                <Col lg={8}>                
                     <Button className='btn-new-client'  onClick={ showNewTicket} >
                         Nuevo ticket
                     </Button>
                 </Col>
-                <Col lg={3}>
+                <Col lg={4}>
                     <div className="dashboardButtonCliente">
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets Levantados
+                                Tickets levantados
                                 <h2 style={{ fontSize:'4rem'}}>{info["all_tickets"]}</h2>
                             </Col>
                             <Col xs={1}>
@@ -341,11 +338,6 @@ export default function HomeClient(){
     )
 }
 
-
-
-
-
-
 function RowTicket(props){
     
     const [mdlDecline, setShowDecline] = useState(false);    
@@ -429,17 +421,13 @@ function RowTicket(props){
         }
     }
  
-    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`)        
+    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`, { cancelToken: cancelTokenSource.token })        
         .then((res) => {                               
             setTicketHist(res.data);
-            
-        });
-        
-        
-    
+        }).catch((err) => handleError(err));
         
     return(        
-        <React.Fragment>      
+        <React.Fragment>
             <>
             <Modal show={mdlDecline} onHide={closeDecline} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>

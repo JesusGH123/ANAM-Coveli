@@ -12,7 +12,12 @@ module.exports.get_users = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[0]);
+
+        try {
+            res.send(results[0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -25,7 +30,12 @@ module.exports.get_user = (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[0][0]);
+
+        try {
+            res.send(results[0][0]);
+        } catch(error) {
+            console.log("Check error: " + error);
+        }
     });
 }
 
@@ -46,7 +56,11 @@ module.exports.add_user = async (req, res, rows) => {
             res.send(error);
         }
 
-        res.send(results[1][0]);
+        try {
+            res.send(results[1][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -65,25 +79,36 @@ module.exports.update_status_user = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[1][0]);
+
+        try {
+            res.send(results[1][0]);
+        } catch(error) {
+            console.log(error);
+        }
     });
 }
 
 //Validate a user
 module.exports.validate_user = async (req, res) => {
+    let hashedPassword = crypto.createHash('sha256').update(req.body.password).digest('hex').toString()
     connection.query(
         `set @p_email = ?;
         call validate_user(@p_email, ?, @p_roleid, @p_fullname, @p_userid, @p_result, @p_message);
         select @p_roleid, @p_fullname, @p_userid, @p_result, @p_message;`,
         [
             req.body.email,
-            req.body.password
+            hashedPassword
         ],
         (error, results, fields) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[2][0]);
+
+        try {
+            res.send(results[2][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -95,7 +120,12 @@ module.exports.get_accesible_views = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error)
-            res.send(results[0]);
+            
+            try {
+                res.send(results[0]);
+            } catch (error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -107,7 +137,12 @@ module.exports.get_roles = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error);
-            res.send(results[0]);
+            
+            try {
+                res.send(results[0]);
+            } catch(error) {
+                console.log(error);
+            }
         }
     )
 }

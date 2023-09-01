@@ -90,7 +90,11 @@ module.exports.add_ticket = async (req, res, rows) => {
             res.send(error);
         }
 
-        res.send(results[1][0]);
+        try {
+            res.send(results[1][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
@@ -124,7 +128,12 @@ module.exports.update_ticket = async (req, res) => {
         if(error) {
             res.send(error);
         }
-        res.send(results[1][0]);
+
+        try {
+            res.send(results[1][0]);
+        } catch (error) {
+            console.log(error);
+        }
     });
 }
 
