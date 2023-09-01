@@ -50,10 +50,8 @@ export default function HomeClient(){
    
 
     const [info, setInfo] = React.useState({
-        "all_tickets": 0,
-        "tickets": [],
-        "locations": []
-        
+        "recent_tickets": [],
+        "reassigned_tickets": []        
     });       
     
 
@@ -359,7 +357,11 @@ function RowTicket(props){
     const [mdlDecline, setShowDecline] = useState(false);    
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
-    const [ticketResultDecline, setticketResultDecline] = React.useState([]);
+    const [ticketResultDecline, setticketResultDecline] = React.useState({
+    "@p_ticketHistoyID": 57,
+    "@p_result": 1,
+    "@p_message": "¡Ticket asignado correctamente!"
+});
 
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -368,7 +370,7 @@ function RowTicket(props){
     });
 
      
-    const declineTciket = async () =>  {
+    const declineTciket =  async () =>  {
 
         var message = "";
         var fileInputDecline = document.getElementById("fileEvindeceDecline");

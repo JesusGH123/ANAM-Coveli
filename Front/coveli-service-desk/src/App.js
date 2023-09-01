@@ -7,6 +7,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import HomeTecnical from "./HomeTecnical/HomeTenical";
 import HomeClient from  "./HomeClient/HomeClient"
 import HomeAdmin from "./HomeAdmin/HomeAdmin";
+import HomeMonitorist from "./HomeMonitorist/HomeMonitorist";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <ProtectedRoutes path="/homeS" component={HomeSupervisor}/>
             <ProtectedRoutes path="/homeC" component={HomeClient}/>
             <ProtectedRoutes path="/homeA" component={HomeAdmin}/>
+            <ProtectedRoutes path="/homeM" component={HomeMonitorist}/>
         </Switch>
     </div>
   );
