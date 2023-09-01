@@ -1,19 +1,69 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { Col, Row, Container, Nav, Navbar, Table, Button, Modal,NavDropdown} from "react-bootstrap";
+import { Col, Row, Container, Nav, Navbar, Table, Button, Modal, NavDropdown, Form} from "react-bootstrap";
 import Cookies from "universal-cookie";
+import axios from "axios";
+import { API_BASE_URL } from '../constants.js';
 
 import './HomeTecnical.css'
 
+const cookies = new Cookies();
+
+function handleError(e) {
+    if(axios.isCancel(e))
+        console.log(e.message);
+}
 
 export default function HomeTecnical(){
+    let CancelToken = axios.CancelToken;
+    let cancelTokenSource = CancelToken.source();
 
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
+    const [info, setInfo] = React.useState({
+        "tickets_without_attendance": 0,
+        "paused_tickets": 0,
+        "closed_tickets": 0,
+        "on_revision_tickets": 0,
+        "my_tickets": []
+    });
+    const [username, setUsername] = React.useState("");
+    const [useremail, setUseremail] = React.useState("");
+
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/home/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+            .then((res) => {
+                setInfo(res.data);
+            }).catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
+            .then((res) => {
+                setUseremail(res.data["EMAIL"]);
+                setUsername(res.data["FULLNAME"]);
+            }).catch((err) => handleError(err));
+    });
+
+    const [show, setShow] = React.useState(false);
+    const [modalType, setModalType] = React.useState(0);
+    const [currentTicket, setCurrentTicket] = React.useState({});
+    const handleClose = () => setShow(0);
     const handleShow = () => setShow(true);
+    const [comment, setComment] = useState("");
+    const onChange = (event) => {
+        setComment(event.target.value);
+    }
+
+    const updateTicket = (newStatus, comment) => {
+        axios.put(`${API_BASE_URL}/home/ticket`, {
+            userId: cookies.get("USER_TOKEN"),
+            ticketId: currentTicket.ticketId,
+            statusId: newStatus,
+            comment: comment,
+            technicalId: currentTicket.technicalId,
+        })
+
+        setComment("");
+    }
+
     const logout = () => {
-        const cookies = new Cookies();
         cookies.remove("USER_TOKEN", {path: "/"});
         window.location.href = "/";
     }
@@ -27,7 +77,7 @@ export default function HomeTecnical(){
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/home" style={{fontWeight:'bold'}}>Home</Nav.Link>
+                            <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Home</Nav.Link>
                         </Nav>                         
                         <div>
                             <Row>
@@ -35,11 +85,11 @@ export default function HomeTecnical(){
                                 <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
                                 </Col>
                                 <Col>
-                                    <NavDropdown title="Tecnical" id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={logout}>Cerrar Sesión</NavDropdown.Item>                            
+                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
+                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout()}}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
-                                        isc_mbm@yahoo.com.mx
+                                        {useremail}
                                     </label>                        
                                 </Col>
                             </Row>                        
@@ -57,7 +107,7 @@ export default function HomeTecnical(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets sin atender
-                                <h2 style={{ fontSize:'4rem'}}>67</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["tickets_without_attendance"]}</h2>
                             </Col>
                             <Col xs={1} >
                                 <div className="divSeparator"></div>
@@ -73,7 +123,7 @@ export default function HomeTecnical(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets pausados
-                                <h2 style={{ fontSize:'4rem'}}>4</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -91,7 +141,7 @@ export default function HomeTecnical(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets cerrados
-                                <h2 style={{ fontSize:'4rem'}}>140</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -107,7 +157,7 @@ export default function HomeTecnical(){
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
                                 Tickets con petición de cierre
-                                <h2 style={{ fontSize:'4rem'}}>25</h2>
+                                <h2 style={{ fontSize:'4rem'}}>{info["on_revision_tickets"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
@@ -129,64 +179,147 @@ export default function HomeTecnical(){
                             <th>Cliente</th>
                             <th>Fecha Solicitud</th>
                             <th>Prioridad</th>
-                            <th>Técnico</th>
                             <th>Estatus</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>02132</td>
-                            <td>Banda del Equipo</td>
-                            <td>Cliente01</td>
-                            <td>01/06/2023 03:34</td>
-                            <td>Alta</td>
-                            <td>Técnico</td>
-                            <td>Cerrado</td>                            
-                        </tr>
-                        <tr>
-                            <td>12393</td>
-                            <td>Rodillos</td>
-                            <td>Cliente23</td>
-                            <td>04/04/2023 01:50</td>
-                            <td>Alta</td>
-                            <td>Técnico</td>                            
-                            <td><Button onClick={handleShow} variant='warning' style={{borderRadius:20}}>Pausar</Button><Button variant='secondary'style={{borderRadius:20}}>Cerrar</Button></td>
-                        </tr>                        
+                        { info["my_tickets"].map((ticket) => {
+                            return (
+                                <tr>
+                                    <td>{ticket.ticketId}</td>
+                                    <td>{ticket.situation}</td>
+                                    <td>{ticket.fullName}</td>
+                                    <td>{ticket.currentDate}</td>
+                                    <td>{ticket.priority}</td>
+                                    { 
+                                        (ticket.statusId == 9) ?
+                                            <td>Cerrado</td>
+                                        :
+                                            (ticket.statusId == 7) ?
+                                                <td>En revisión</td>
+                                                :
+                                                (ticket.statusId == 6) ? 
+                                                <td>
+                                                    <Button onClick={() => {
+                                                        setModalType(3);
+                                                        handleShow();
+                                                        setCurrentTicket(ticket);
+                                                    }} variant='warning' style={{borderRadius:20}}>Retomar</Button>
+                                                    <Button onClick={() => {
+                                                        setModalType(1);
+                                                        handleShow();
+                                                        setCurrentTicket(ticket);
+                                                    }} variant='secondary' style={{borderRadius:20}}>Cerrar</Button>
+                                                </td>
+                                                :
+                                                <td>
+                                                    <Button onClick={() => {
+                                                        setModalType(2);
+                                                        handleShow();
+                                                        setCurrentTicket(ticket);
+                                                    }} variant='warning' style={{borderRadius:20}}>Pausar</Button>
+                                                    <Button onClick={() => {
+                                                        setModalType(1);
+                                                        handleShow();
+                                                        setCurrentTicket(ticket);
+                                                    }} variant='secondary' style={{borderRadius:20}}>Cerrar</Button>
+                                                </td>
+                                    }
+                                </tr>
+                            )
+                        })}     
                     </tbody>
                 </Table>
-
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                        <Modal.Title className='ms-auto'>Ticket: 23423</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div>
-                                <Row className='rowTecnical'>
-                                    <Col lg={6}>
+                
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title className='ms-auto'>Ticket: {currentTicket.ticketId}</Modal.Title>
+                    </Modal.Header>
+                    {
+                        (modalType == 1) ?
+                        <Row className='rowTecnical'>
+                            <Modal.Body>
+                                <Form>
+                                    <Col lg={3}>
                                         Fotografia preliminar
                                     </Col>
-                                    <Col lg={6}>
-                                        <Button variant='primary'>Cargar imagen</Button>
+                                    <Col lg={9}>
+                                    <Form.Group controlId="formFileMultiple" className="mb-3">
+                                        <Form.Control type="file" multiple/>
+                                    </Form.Group>
                                     </Col>
-                                    <Col lg={6}>
-                                        Fotografia Terminación
+                                    <Col lg={3}>
+                                        Fotografia terminación
                                     </Col>
-                                    <Col lg={6}>
-                                        <Button variant='primary'>Cargar imagen</Button>
+                                    <Col lg={9}>
+                                    <Form.Group controlId="formFileMultiple" className="mb-3">
+                                        <Form.Control type="file" multiple/>
+                                    </Form.Group>
                                     </Col>
-                                </Row>                                
+
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label>Comentario</Form.Label>
+                                        <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)} />
+                                    </Form.Group>
                                 
-                            </div>                            
-                        </Modal.Body>
-                        <Modal.Footer>
-                        <Button variant="primary" onClick={handleClose}>
-                            Cancelar
-                        </Button>
-                        <Button variant="primary" onClick={handleClose} style={{margin:'1rem'}}>
-                            Cerrar ticket
-                        </Button>
-                        </Modal.Footer>
-                    </Modal>
+                                    <Button variant="primary" onClick={handleClose}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="primary" onClick={ (event) => {
+                                        handleClose();
+                                        updateTicket(7, comment);
+                                        }}
+                                        style={{margin:'1rem'}}>
+                                        Solicitar cierre
+                                    </Button>
+                                </Form>
+                            </Modal.Body>
+                        </Row>
+                            :
+                            (modalType == 2) ?
+                            <>
+                                <Modal.Body>
+                                    ¿Estas seguro de que deseas pausar el ticket?
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label>Motivo</Form.Label>
+                                        <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)}/>
+                                    </Form.Group>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="primary" onClick={() => {
+                                        handleClose();
+                                        updateTicket(6, comment);
+                                    }}>
+                                        Pausar ticket
+                                    </Button>
+                                </Modal.Footer>                               
+                            </>
+                            :
+                            <>
+                                <Modal.Body>
+                                    ¿Deseas retomar el ticket?
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label>Motivo</Form.Label>
+                                        <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)}/>
+                                    </Form.Group>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="primary" onClick={() => {
+                                        handleClose();
+                                        updateTicket(5, comment);
+                                    }}>
+                                        Retomar ticket
+                                    </Button>
+                                </Modal.Footer>                               
+                            </>
+                    }
+                </Modal>
                 </Col>
             </Row>
         </div>        

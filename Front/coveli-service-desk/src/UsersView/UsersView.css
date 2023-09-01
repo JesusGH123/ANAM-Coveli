@@ -1,0 +1,10 @@
+.btn-dark {
+    background-color: #51177D;
+    border-radius: 25px; 
+    border: 0px;
+    margin: 0px 5px;
+}
+
+.userNameInput {
+    max-width: 100%;
+}

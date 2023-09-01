@@ -1,3 +1,4 @@
+let crypto = require('node:crypto')
 let mysql = require('mysql');
 let config = require('../helpers/config');
 
@@ -30,12 +31,14 @@ module.exports.get_user = (req, res) => {
 
 //Add a new user
 module.exports.add_user = async (req, res, rows) => {
+    let hashedPassword = crypto.createHash('sha256').update(req.body.p_password).digest('hex').toString()
+
     connection.query(
         "call add_user(?, ?, ?, ?, @p_result, @p_message); select @p_message, @p_result;",
         [
             req.body.p_fullname,
             req.body.p_email,
-            req.body.p_password,
+            hashedPassword,
             req.body.p_roleid
         ],
         (error, results, fields) => {
@@ -92,6 +95,18 @@ module.exports.get_accesible_views = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error)
+            res.send(results[0]);
+        }
+    )
+}
+
+//Get user roles
+module.exports.get_roles = async (req, res) => {    
+    connection.query(
+        "call get_roles();",
+        (error, results, fields) => {
+            if(error)
+                res.send(error);
             res.send(results[0]);
         }
     )
