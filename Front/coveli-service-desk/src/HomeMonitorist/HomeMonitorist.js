@@ -79,7 +79,8 @@ export default function HomeMonitorist(){
 
 
     return(
-    <>
+    <div>
+    <div>
     <Navbar expand="md" className="bg-body-tertiary">                
         <Container id='containerNav'>
             <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
@@ -104,9 +105,10 @@ export default function HomeMonitorist(){
             </Navbar.Collapse>            
         </Container>                        
     </Navbar>
+    </div>
     <Row>        
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets asignados
@@ -122,7 +124,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets con petición de cierre
@@ -138,10 +140,10 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets sin reasignar
+                        Tickets con reincidencia
                         <h2 style={{ fontSize:'4rem'}}>{dashboard["reassigned"]}</h2>
                     </Col>
                     <Col xs={1}>
@@ -156,7 +158,7 @@ export default function HomeMonitorist(){
     </Row>            
     <Row>        
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets abiertos
@@ -172,7 +174,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets pausados
@@ -188,7 +190,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets cerrados
@@ -264,7 +266,7 @@ export default function HomeMonitorist(){
             </Box>
         </TableContainer>
     </Row>            
-    </>
+    </div>
 )
 }
 
@@ -411,7 +413,7 @@ export default function HomeMonitorist(){
                                     { ticketHist["ticketsHistory"].map((the) => {   
                                         return(<>
                                         <tr key={the.comment} component="th" scope='row'>                                                       
-                                            <td >{the.comment}</td>
+                                            <td >{the.status}</td>
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>

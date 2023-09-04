@@ -45,12 +45,7 @@ export default function HomeClient(){
     
     const [locations, setLocations] = React.useState([]);
     const [equipments, setEquipments] = React.useState([]);
-    const [serials, setSerials] = React.useState([]);
-    const [ticketResult, setticketResult] = React.useState([{
-        "p_ticketHistoyID":0,
-        "p_result":0,
-        "p_message":""
-    }]);
+    const [serials, setSerials] = React.useState([]);    
     
 
     useEffect(() =>{        
@@ -125,56 +120,56 @@ export default function HomeClient(){
             p_userid: userId, 
          })
          .then((res) => {
-            setticketResult(res.data);                        
-        });        
+            if(res.data["@p_result"] == 1){
+                if ('files' in fileInput) {
+                    if (fileInput.files.length == 0) {
+                        message = "¡Ingresar al menos una evidencia!";
+                    }
+                    else{
+                        for (var i = 0; i < fileInput.files.length; i++) {                    
+                            var file = fileInput.files[i];                                                     
+                            const reader = new FileReader();                    
+                            reader.onloadend = () => {                        
+                                const base64String = reader.result;                                            
+                                console.log(base64String);
+                                axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
+                                    p_ticketHistoryId:res.data["@p_ticketHistoyID"],
+                                    p_evidencia:base64String                                   
+                                    });
+                            };
+                            reader.readAsDataURL(file);                    
+                        }
+                    }
         
-        if(ticketResult["@p_result"] == 1){
-            if ('files' in fileInput) {
-                if (fileInput.files.length == 0) {
-                    message = "¡Ingresar al menos una evidencia!";
                 }
-                else{
-                    for (var i = 0; i < fileInput.files.length; i++) {                    
-                        var file = fileInput.files[i];                                                     
-                        const reader = new FileReader();                    
-                        reader.onloadend = () => {                        
-                            const base64String = reader.result;                                            
-                            console.log(base64String)                                    ;
-                            axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                p_ticketHistoryId:ticketResult["@p_ticketHistoyID"],
-                                p_evidencia:base64String                                   
-                                });
-                        };
-                        reader.readAsDataURL(file);                    
+                else {
+                    if (fileInput.value == "") {
+                        message += "Please browse for one or more files.";
+                        message += "<br />Use the Control or Shift key for multiple selection.";
+                    }
+                    else {
+                        message += "Your browser doesn't support the files property!";
+                        message += "<br />The path of the selected file: " + fileInput.value;
                     }
                 }
     
+                Swal.fire({
+                    icon: 'success',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+        
+                closeNewUser();
             }
-            else {
-                if (fileInput.value == "") {
-                    message += "Please browse for one or more files.";
-                    message += "<br />Use the Control or Shift key for multiple selection.";
-                }
-                else {
-                    message += "Your browser doesn't support the files property!";
-                    message += "<br />The path of the selected file: " + fileInput.value;
-                }
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                title: ""+ ticketResult["@p_message"] + ""
-              })
+            else{
     
-            closeNewUser();
-        }
-        else{
-
-            await Swal.fire({
-                icon: 'error',
-                title: ""+ ticketResult["@p_message"] + ""
-              })
-        }
+                Swal.fire({
+                    icon: 'error',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+            }
+        });        
+        
+        
     }
 
     
@@ -327,7 +322,7 @@ export default function HomeClient(){
                     <div id="info" style={{marginTop:"30px", color:'red'}}></div>
                     <InputGroup className='mb-2'>
                         <Button className='btn-new-client' onClick={addTicket}>
-                            Crear ticket
+                            Rechazar ticket
                         </Button>
                     </InputGroup>
                 </Modal.Body>                        
@@ -489,7 +484,7 @@ function RowTicket(props){
                                     { ticketHist["ticketsHistory"].map((the) => {   
                                         return(<>
                                         <tr  key={the.comment} component="th" scope='row'>                                                       
-                                            <td >{the.comment}</td>
+                                            <td >{the.status}</td>
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>

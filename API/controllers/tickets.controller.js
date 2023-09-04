@@ -31,7 +31,7 @@ module.exports.get_supervisor_home = async(req, res) => {
                       res.send(error);
                     connection.query(
                       'CALL get_tickets_by_status(?, ?); CALL get_tickets_by_status(?, ?);',
-                      ['7', 0, '6,8,9', 0],
+                      ['7', 0, '4,5,6,8,9,11', 0],
                       (error, tickets, fields) => {
                         if(error)
                           res.send(error);
@@ -40,9 +40,9 @@ module.exports.get_supervisor_home = async(req, res) => {
                           'todays_tickets': todays_tickets[0][0]["count"],
                           'out_of_time_tickets': out_of_time_tickets[0][0]['count'],
                           'avg_time_for_tickets': {
-                            'high_prior': tickets_stats[0][0],
-                            "medium_prior": tickets_stats[0][1],
-                            "low_prior": tickets_stats[0][2]
+                            'high_prior': tickets_stats[0][0] == null ? "0h 0m" :tickets_stats[0][0],
+                            "medium_prior": tickets_stats[0][1] == null ? "0h 0m" :tickets_stats[0][1],
+                            "low_prior": tickets_stats[0][2] == null ? "0h 0m" :tickets_stats[0][2]
                           },
                           'graphic_data': {
                             'monthly': graph_data[0],
