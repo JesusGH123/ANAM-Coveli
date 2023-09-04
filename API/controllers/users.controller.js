@@ -34,7 +34,7 @@ module.exports.get_user = (req, res) => {
         try {
             res.send(results[0][0]);
         } catch(error) {
-            console.log("Check error: " + error);
+            console.log(error);
         }
     });
 }

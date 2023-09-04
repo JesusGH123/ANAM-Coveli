@@ -77,27 +77,27 @@ export default function HomeSupervisor() {
         window.location.href = "/";
     }
 
-    const closeTicket = (props) => {
+    const updateTicket = (action, ticket) => {
+        let actionString = (action == 9) ? ["cerrar", "cerrado", "cierra"] : ["rechazar", "rechazado", "rechaza"];
+
         Swal.fire({
-            title: '¿Seguro que deseas cerrar el ticket?',
+            title: `¿Deseas ${actionString[0]} el ticket ${ticket.ticketId}?`,
             showDenyButton: true,
             confirmButtonText: 'Aceptar',
             denyButtonText: `Cancelar`,
           }).then(async (result) => {
             if (result.isConfirmed) {
-                Swal.fire('El ticket ha sido cerrado', '', 'success');
+                Swal.fire('El ticket ha sido ' + actionString[1], '', 'success');
 
                 await axios.put(
                 `${API_BASE_URL}/home/ticket`,
                 {
                     userId: cookies.get("USER_TOKEN"),
-                    ticketId: props.ticketId,
-                    statusId: 9,
-                    comment: "Se cierra el ticket",
-                    technicalId: props.technicalId
+                    ticketId: ticket.ticketId,
+                    statusId: action,
+                    comment: `Se ${actionString[2]} el ticket`,
+                    technicalId: ticket.technicalId
                 });
-            } else if (result.isDenied) {
-              Swal.fire('El ticket no se cerró', '', 'info');
             }
           })
     }
@@ -414,7 +414,8 @@ export default function HomeSupervisor() {
                                     <td>{ticket.situation}</td>
                                     <td>{ticket.technical}</td>
                                     <td>
-                                        <Button onClick={() => closeTicket(ticket)} className="btnClose">Cerrar</Button>
+                                        <Button onClick={() => updateTicket(9, ticket)} className="btnClose">Cerrar</Button>
+                                        <Button variant="danger" onClick={() => updateTicket(8, ticket)}>Rechazar</Button>
                                     </td>
                                 </tr>
                             )
