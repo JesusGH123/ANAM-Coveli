@@ -17,10 +17,14 @@ module.exports.get_client_home = async(req, res)=>{
                     if(error)
                         res.send(error);                                                                            
                  
+                    try {
                         res.json({
                             'all_tickets': all_tickets[0][0]["count"],                        
                             'tickets': tickets[0]
-                            });
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }                    
                 
             )
@@ -35,7 +39,12 @@ module.exports.get_ticketHistory_home = async(req, res) => {
         (error, ticketsHistory, fields) => {
             if(error)
                 res.send(error);
-            res.json({'ticketsHistory' : ticketsHistory[0]});
+            
+            try {
+                res.json({'ticketsHistory' : ticketsHistory[0]});
+            } catch (error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -46,7 +55,12 @@ module.exports.get_equipmentsLocations_home = async(req, res) => {
         (error, locations, fields) => {
             if(error)
                 res.send(error);
-            res.json({'locations' : locations[0]});
+
+            try {
+                res.json({'locations' : locations[0]});
+            } catch(error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -57,7 +71,12 @@ module.exports.get_equipments_by_Location_home = async(req, res) => {
         (error, equipments, fields) => {
             if(error)
                 res.send(error);
-            res.json({'equipments' : equipments[0]});
+
+            try {
+                res.json({'equipments' : equipments[0]});
+            } catch(error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -68,7 +87,12 @@ module.exports.get_serials_by_Location_home = async(req, res) => {
         (error, serials, fields) => {            
             if(error)
                 res.send(error);
-            res.json({'serials' : serials[0]});
+
+            try {
+                res.json({'serials' : serials[0]});
+            } catch(error) {
+                console.log(error);
+            }
         }
     )
 }
@@ -109,7 +133,9 @@ module.exports.add_evidences = async (req, res, rows) => {
         (error, results, fields) => {
         if(error) {
             res.send(error);
-        }        
+
+            res.status(1);
+        }     
     });
 }
 

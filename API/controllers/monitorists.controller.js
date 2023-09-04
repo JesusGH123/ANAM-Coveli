@@ -14,10 +14,15 @@ module.exports.get_monitorist_home = async(req, res)=>{
                 (error, reassigned_tickets, fields) => {                    
                     if(error)
                         res.send(error);
-                    res.json({
-                        'recent_tickets': recent_tickets[0],
-                        'reassigned_tickets': reassigned_tickets[0]
-                    });
+
+                    try {
+                        res.json({
+                            'recent_tickets': recent_tickets[0],
+                            'reassigned_tickets': reassigned_tickets[0]
+                        });
+                    } catch(error) {
+                        console.log(error);
+                    }
                 }                
             )            
         }
@@ -30,9 +35,14 @@ module.exports.get_priorities_home = async(req, res) => {
         (error, priorities, fields) => {
             if(error)
                 res.send(error);
-            res.json({                     
-                'priorities': priorities[0]
-            });
+
+            try {
+                res.json({                     
+                    'priorities': priorities[0]
+                });
+            } catch(error) {
+                console.log(error);
+            }
         }                                
     )    
 }
@@ -43,9 +53,14 @@ module.exports.get_techinicals_home = async(req, res) => {
         (error, technicals, fields) => {
             if(error)
                 res.send(error);
-            res.json({                
-                'technicals': technicals[0]
-            });
+
+            try {
+                res.json({                
+                    'technicals': technicals[0]
+                });
+            } catch(error) {
+                console.log(error);
+            }
         }                                
     )                            
 }
@@ -83,14 +98,19 @@ module.exports.get_dasboard_home = async(req, res)=> {
                                                 (error, closed, fields) => {
                                                     if(error)
                                                         res.send(error);   
-                                                    res.json({
-                                                        'assigned': assigned[0][0]["count"],
-                                                        'revision': revision[0][0]["count"],
-                                                        'reassigned': reassigned[0][0]["count"],
-                                                        'open': open[0][0]["count"],
-                                                        'paused': paused[0][0]["count"],
-                                                        'closed': closed[0][0]["count"],
-                                                        });
+                                                    
+                                                    try {
+                                                        res.json({
+                                                            'assigned': assigned[0][0]["count"],
+                                                            'revision': revision[0][0]["count"],
+                                                            'reassigned': reassigned[0][0]["count"],
+                                                            'open': open[0][0]["count"],
+                                                            'paused': paused[0][0]["count"],
+                                                            'closed': closed[0][0]["count"],
+                                                            });
+                                                    } catch(error) {
+                                                        console.log(error);
+                                                    }
                                                 }
                                             )
                                         }
@@ -122,7 +142,12 @@ module.exports.update_ticket = async (req, res) => {
         (error, results, fields) => {
         if(error) {
             res.send(error);
-        }        
-        res.send(results[1][0]);
+        }
+
+        try {
+            res.send(results[1][0]);
+        } catch(error) {
+            console.log(error);
+        }
     });
 }
