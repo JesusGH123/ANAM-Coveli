@@ -205,11 +205,6 @@ export default function HomeTecnical(){
                                                         handleShow();
                                                         setCurrentTicket(ticket);
                                                     }} variant='warning' style={{borderRadius:20}}>Retomar</Button>
-                                                    <Button onClick={() => {
-                                                        setModalType(1);
-                                                        handleShow();
-                                                        setCurrentTicket(ticket);
-                                                    }} variant='secondary' style={{borderRadius:20}}>Cerrar</Button>
                                                 </td>
                                                 :
                                                 <td>
