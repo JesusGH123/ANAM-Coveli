@@ -242,7 +242,8 @@ export default function HomeClient(){
                             <tr>                                          
                                 <th># Ticket</th>
                                 <th>Category</th>
-                                <th>Fecha</th>
+                                <th>Fecha creación</th>
+                                <th>Fecha modificación</th>
                                 <th>Prioridad</th>
                                 <th style={{textAlign:'center'}}>Validación</th>
                             </tr>
@@ -334,6 +335,14 @@ export default function HomeClient(){
 }
 
 function RowTicket(props){
+
+    var currentdate = new Date(); 
+    var datetime = (currentdate.getMonth()+1) + "/"
+                    + currentdate.getDate()  + "/" 
+                    + currentdate.getFullYear() + " "  
+                    + currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds();    
     
     const [mdlDecline, setShowDecline] = useState(false);    
     const showDecline = () => setShowDecline(true);     
@@ -342,7 +351,7 @@ function RowTicket(props){
     "@p_ticketHistoyID": 57,
     "@p_result": 1,
     "@p_message": "¡Ticket asignado correctamente!"
-});
+    });
 
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -460,8 +469,9 @@ function RowTicket(props){
                 </td>                
                 <td>{row.category}</td>
                 <td>{row.openDate}</td>
+                <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{row.statusid == 9 ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
+                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
             </tr>                                    
             <tr>
                 <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
@@ -474,6 +484,7 @@ function RowTicket(props){
                                 <thead>
                                     <tr>
                                         <th>Estatus</th>
+                                        <th>Fecha creación</th>
                                         <th>Fecha</th>
                                         <th>Comentarios</th>
                                         <th>Técnico</th>

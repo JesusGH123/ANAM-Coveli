@@ -5,7 +5,7 @@ let connection = mysql.createConnection(config);
 
 module.exports.get_client_home = async(req, res)=>{
     connection.query(
-        "CALL get_all_tickets_count_by_status('',?);",        
+        "CALL get_all_tickets_count_by_status('4,5,6,7,8,9,10',?);",        
         req.params.id,
         (error, all_tickets, fields) => {                        
             if(error)

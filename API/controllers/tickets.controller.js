@@ -67,32 +67,32 @@ module.exports.get_supervisor_home = async(req, res) => {
 
 module.exports.get_technical_home = async (req, res) => {
   connection.query(
-    'CALL tickets_technical_count_by_status(?, ?)',
-    [req.params.userId, 5],
+    'CALL get_all_tickets_count_by_status(?, ?)',
+    ["5", req.params.userId],
     (error, non_attended_tickets, fields) => {
       if(error)
         res.send(error);
       connection.query(
-        'CALL tickets_technical_count_by_status(?, ?)',
-        [req.params.userId, 6],
+        'CALL get_all_tickets_count_by_status(?, ?)',        
+        ["6", req.params.userId],
         (error, paused_tickets, fields) => {
           if(error)
             res.send(error);
           connection.query(
-            'CALL tickets_technical_count_by_status(?, ?)',
-            [req.params.userId, 9],
+            'CALL get_all_tickets_count_by_status(?, ?)',
+            ["9", req.params.userId],            
             (error, closed_tickets, fields) => {
               if(error)
                 res.send(error)
               connection.query(
-                'CALL tickets_technical_count_by_status(?, ?)',
-                [req.params.userId, 7],
+                'CALL get_all_tickets_count_by_status(?, ?)',
+                ["7", req.params.userId],                
                 (error, on_revision_tickets, fields) => {
                   if(error)
                     res.send(error);
                   connection.query(
-                    'CALL get_tickets_by_user(?)',
-                    req.params.userId,
+                    'CALL get_tickets_by_status(?,?)',
+                    ["5,6,7,9", req.params.userId],
                     (error, my_tickets, fields) => {
                       if(error)
                         res.send(error);
