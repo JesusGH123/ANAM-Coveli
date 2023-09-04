@@ -22,6 +22,8 @@ import { Paper, alertTitleClasses } from '@mui/material';
 import excludeVariablesFromRoot from '@mui/material/styles/excludeVariablesFromRoot';
 
 
+const CancelToken = axios.CancelToken;
+const cancelTokenSource = CancelToken.source();   
 const cookies = new Cookies();
 
 function handleError(e) {
@@ -29,12 +31,7 @@ function handleError(e) {
         console.log(e.message);
 }
 
-
-
-export default function HomeMonitorist(){
-
-    const CancelToken = axios.CancelToken;
-    const cancelTokenSource = CancelToken.source();    
+export default function HomeMonitorist(){ 
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");// const [show, setShow] = useState(false);        
 
@@ -71,7 +68,6 @@ export default function HomeMonitorist(){
         axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setDashboard(res.data);  
-
             }).catch((e) =>{
                 handleError(e);
             });  
@@ -271,7 +267,7 @@ export default function HomeMonitorist(){
 }
 
 
-    function RowTicket(props){        
+    function RowTicket(props) {        
     const { row } = props;
     const [open, setOpen] = React.useState(false);
     
@@ -280,21 +276,24 @@ export default function HomeMonitorist(){
     const [technicals, settechnicals] =  React.useState({"technicals": []});        
  
     const getTicketHistory = (ticketId) => {
-        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`)        
+        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
             setTicketHist(res.data);            
-        });
+        })
+        .catch((err) => handleError(err));
     }
     
 
-    axios.get(`${API_BASE_URL}/homeM/getPrioritiesHome`)        
-        .then((res) => {                               
+    axios.get(`${API_BASE_URL}/homeM/getPrioritiesHome`, {cancelToken: cancelTokenSource.token})        
+        .then((res) => {
             setpriorities(res.data);            
-        });
-    axios.get(`${API_BASE_URL}/homeM/getTechinicalsHome`)        
+        })
+        .catch((err) => handleError(err));
+    axios.get(`${API_BASE_URL}/homeM/getTechinicalsHome`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
             settechnicals(res.data);            
-        });
+        })
+        .catch((err) => handleError(err));
 
     const asignTiciket = async (item) =>  {      
         
