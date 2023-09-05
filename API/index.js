@@ -11,6 +11,7 @@ let home = require('./routes/home');
 let users = require('./routes/user');
 let clients = require('./routes/homeC');
 let monitorist = require('./routes/homeM');
+let technical = require('./routes/homeT');
 
 app.use(cors());
 app.use(bodyParser.json({limit:'1gb'}));
@@ -31,3 +32,4 @@ app.use('/home', home);
 app.use('/users', users);
 app.use('/homeC', clients);
 app.use('/homeM', monitorist);
+app.use('/homeT', technical);

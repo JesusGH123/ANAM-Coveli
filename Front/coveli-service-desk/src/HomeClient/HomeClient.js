@@ -323,7 +323,7 @@ export default function HomeClient(){
                     <div id="info" style={{marginTop:"30px", color:'red'}}></div>
                     <InputGroup className='mb-2'>
                         <Button className='btn-new-client' onClick={addTicket}>
-                            Rechazar ticket
+                            Crear ticket
                         </Button>
                     </InputGroup>
                 </Modal.Body>                        
@@ -348,9 +348,9 @@ function RowTicket(props){
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
     const [ticketResultDecline, setticketResultDecline] = React.useState({
-    "@p_ticketHistoyID": 57,
-    "@p_result": 1,
-    "@p_message": "¡Ticket asignado correctamente!"
+    "@p_ticketHistoyID": 0,
+    "@p_result": 0,
+    "@p_message": ""
     });
 
     const { row } = props;
@@ -373,6 +373,7 @@ function RowTicket(props){
             p_technicalId: 0
          })
          .then((res) => {
+            console.log(res.data);
             setticketResultDecline(res.data);            
         });
 
@@ -474,7 +475,7 @@ function RowTicket(props){
                 <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -484,8 +485,7 @@ function RowTicket(props){
                                 <thead>
                                     <tr>
                                         <th>Estatus</th>
-                                        <th>Fecha creación</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha modificación</th>                                        
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
                                         <th>Usuario</th>

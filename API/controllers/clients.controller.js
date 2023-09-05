@@ -142,7 +142,7 @@ module.exports.add_evidences = async (req, res, rows) => {
 
 module.exports.update_ticket = async (req, res) => {    
     connection.query(
-        "call update_ticket2(?, ?, ?, ?, ?, 0, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;",
+        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;",
         [
             req.body.p_userId,
             req.body.p_ticketId,
