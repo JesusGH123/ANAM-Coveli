@@ -10,6 +10,10 @@ router.get('/user/:id', userController.get_user);
 router.post('/userValidate', userController.validate_user);
 router.post('/user/getViews', userController.get_accesible_views);
 
+router.post('/forgotPassword', userController.forgot_password);
+router.get('/validateToken/:token', userController.check_token);
+router.put('/updatePassword', userController.reset_password);
+
 router.get('/roles', userController.get_roles);
 
 module.exports = router;

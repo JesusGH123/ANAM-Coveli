@@ -133,8 +133,6 @@ module.exports.add_evidences = async (req, res, rows) => {
         (error, results, fields) => {
         if(error) {
             res.send(error);
-
-            res.status(1);
         }     
     });
 }
