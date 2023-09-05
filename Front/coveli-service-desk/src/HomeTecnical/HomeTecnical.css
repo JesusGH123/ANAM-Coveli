@@ -36,12 +36,23 @@
     max-width: 100%;    
 }
 
-.modal {
+/* .modal {
     --bs-modal-width: 800px;
-}
+} */
 
 .btn-warning {
     background-color: #FFE500;
     border: 0px;
     color: #222D51;
+}
+
+
+
+.btn-tecnical {
+    background-color: #51177D;
+    stroke: 0px;
+    border-radius: 50px;
+    align-items: center;
+    margin-left: 2rem;
+    margin-top: 1rem;
 }

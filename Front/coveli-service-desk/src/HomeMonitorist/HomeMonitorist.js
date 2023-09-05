@@ -22,6 +22,8 @@ import { Paper, alertTitleClasses } from '@mui/material';
 import excludeVariablesFromRoot from '@mui/material/styles/excludeVariablesFromRoot';
 
 
+const CancelToken = axios.CancelToken;
+const cancelTokenSource = CancelToken.source();   
 const cookies = new Cookies();
 
 function handleError(e) {
@@ -29,12 +31,7 @@ function handleError(e) {
         console.log(e.message);
 }
 
-
-
-export default function HomeMonitorist(){
-
-    const CancelToken = axios.CancelToken;
-    const cancelTokenSource = CancelToken.source();    
+export default function HomeMonitorist(){ 
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");// const [show, setShow] = useState(false);        
 
@@ -71,7 +68,6 @@ export default function HomeMonitorist(){
         axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setDashboard(res.data);  
-
             }).catch((e) =>{
                 handleError(e);
             });  
@@ -79,7 +75,8 @@ export default function HomeMonitorist(){
 
 
     return(
-    <>
+    <div>
+    <div>
     <Navbar expand="md" className="bg-body-tertiary">                
         <Container id='containerNav'>
             <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
@@ -104,9 +101,10 @@ export default function HomeMonitorist(){
             </Navbar.Collapse>            
         </Container>                        
     </Navbar>
+    </div>
     <Row>        
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets asignados
@@ -122,7 +120,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets con petición de cierre
@@ -138,10 +136,10 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets sin reasignar
+                        Tickets con reincidencia
                         <h2 style={{ fontSize:'4rem'}}>{dashboard["reassigned"]}</h2>
                     </Col>
                     <Col xs={1}>
@@ -156,7 +154,7 @@ export default function HomeMonitorist(){
     </Row>            
     <Row>        
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets abiertos
@@ -172,7 +170,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets pausados
@@ -188,7 +186,7 @@ export default function HomeMonitorist(){
             </div>
         </Col>
         <Col lg={4}>
-            <div className="dashboardButtonCliente">
+            <div className="dashboardButtonMonitorist">
                 <Row>
                     <Col xs={8} style={{fontSize:'1.2rem'}} >
                         Tickets cerrados
@@ -264,12 +262,12 @@ export default function HomeMonitorist(){
             </Box>
         </TableContainer>
     </Row>            
-    </>
+    </div>
 )
 }
 
 
-    function RowTicket(props){        
+    function RowTicket(props) {        
     const { row } = props;
     const [open, setOpen] = React.useState(false);
     
@@ -278,21 +276,24 @@ export default function HomeMonitorist(){
     const [technicals, settechnicals] =  React.useState({"technicals": []});        
  
     const getTicketHistory = (ticketId) => {
-        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`)        
+        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
             setTicketHist(res.data);            
-        });
+        })
+        .catch((err) => handleError(err));
     }
     
 
-    axios.get(`${API_BASE_URL}/homeM/getPrioritiesHome`)        
-        .then((res) => {                               
+    axios.get(`${API_BASE_URL}/homeM/getPrioritiesHome`, {cancelToken: cancelTokenSource.token})        
+        .then((res) => {
             setpriorities(res.data);            
-        });
-    axios.get(`${API_BASE_URL}/homeM/getTechinicalsHome`)        
+        })
+        .catch((err) => handleError(err));
+    axios.get(`${API_BASE_URL}/homeM/getTechinicalsHome`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
             settechnicals(res.data);            
-        });
+        })
+        .catch((err) => handleError(err));
 
     const asignTiciket = async (item) =>  {      
         
@@ -411,7 +412,7 @@ export default function HomeMonitorist(){
                                     { ticketHist["ticketsHistory"].map((the) => {   
                                         return(<>
                                         <tr key={the.comment} component="th" scope='row'>                                                       
-                                            <td >{the.comment}</td>
+                                            <td >{the.status}</td>
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>

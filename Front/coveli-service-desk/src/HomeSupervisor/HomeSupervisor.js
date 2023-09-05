@@ -62,12 +62,14 @@ export default function HomeSupervisor() {
         axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
-            }).catch((err) => handleError(err));
+            })
+            .catch((err) => handleError(err));
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
                 setUsername(res.data["FULLNAME"]);
-            }).catch((err) => handleError(err));
+            })
+            .catch((err) => handleError(err));
     });
 
     const logout = () => {
@@ -75,27 +77,27 @@ export default function HomeSupervisor() {
         window.location.href = "/";
     }
 
-    const closeTicket = (props) => {
+    const updateTicket = (action, ticket) => {
+        let actionString = (action == 9) ? ["cerrar", "cerrado", "cierra"] : ["rechazar", "rechazado", "rechaza"];
+
         Swal.fire({
-            title: '¿Seguro que deseas cerrar el ticket?',
+            title: `¿Deseas ${actionString[0]} el ticket ${ticket.ticketId}?`,
             showDenyButton: true,
             confirmButtonText: 'Aceptar',
             denyButtonText: `Cancelar`,
           }).then(async (result) => {
             if (result.isConfirmed) {
-                Swal.fire('El ticket ha sido cerrado', '', 'success');
+                Swal.fire('El ticket ha sido ' + actionString[1], '', 'success');
 
                 await axios.put(
                 `${API_BASE_URL}/home/ticket`,
                 {
                     userId: cookies.get("USER_TOKEN"),
-                    ticketId: props.ticketId,
-                    statusId: 9,
-                    comment: "Se cierra el ticket",
-                    technicalId: props.technicalId
+                    ticketId: ticket.ticketId,
+                    statusId: action,
+                    comment: `Se ${actionString[2]} el ticket`,
+                    technicalId: ticket.technicalId
                 });
-            } else if (result.isDenied) {
-              Swal.fire('El ticket no se cerró', '', 'info');
             }
           })
     }
@@ -107,7 +109,7 @@ export default function HomeSupervisor() {
     let monthDataOpened = Array(12).fill(0);
     let monthDataPaused = Array(12).fill(0);
     let monthDataClosed = Array(12).fill(0);
-
+    
     for(const elem in info["graphic_data"]["monthly"]) {
         if(info["graphic_data"]["monthly"][elem]["statusId"] == 9) {
             monthDataClosed.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
@@ -119,6 +121,7 @@ export default function HomeSupervisor() {
             monthDataOpened.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
         }
     }
+
     for(const elem in info["graphic_data"]["weekly"]) {
         if(info["graphic_data"]["weekly"][elem]["statusId"] == 9) {
             weekDataClosed.splice(info["graphic_data"]["weekly"][elem]["period"]-1, 0, info["graphic_data"]["weekly"][elem]["count"])
@@ -228,7 +231,7 @@ export default function HomeSupervisor() {
                             </Col>
                             <Col>
                                 <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
+                                    <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
                                 </NavDropdown>
                                 <label style={{color:'#51177D'}}>
                                     {useremail}
@@ -411,7 +414,8 @@ export default function HomeSupervisor() {
                                     <td>{ticket.situation}</td>
                                     <td>{ticket.technical}</td>
                                     <td>
-                                        <Button onClick={() => closeTicket(ticket)} className="btnClose">Cerrar</Button>
+                                        <Button onClick={() => updateTicket(9, ticket)} className="btnClose">Cerrar</Button>
+                                        <Button variant="danger" onClick={() => updateTicket(8, ticket)}>Rechazar</Button>
                                     </td>
                                 </tr>
                             )

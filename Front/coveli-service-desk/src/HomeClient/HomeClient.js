@@ -23,42 +23,29 @@ import { Paper } from '@mui/material';
 
 
 const cookies = new Cookies();
+const CancelToken = axios.CancelToken
+const cancelTokenSource = CancelToken.source()
 
 function handleError(e) {
     if(axios.isCancel(e))
         console.log(e.message);
 }
 
-
 export default function HomeClient(){    
 
-    const CancelToken = axios.CancelToken
-    const cancelTokenSource = CancelToken.source()
-
     const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");// const [show, setShow] = useState(false);    
+    const [useremail, setUseremail] = React.useState("");
     const [mdlNewUser, setShowNewUser] = useState(false);    
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
 
-    
-    
-
-    
-    
-    const [svlocations, setsvlocations] = useState(3);
-   
-
     const [info, setInfo] = React.useState({
-        "recent_tickets": [],
-        "reassigned_tickets": []        
+        "tickets": []
     });       
     
-
     const [locations, setLocations] = React.useState([]);
     const [equipments, setEquipments] = React.useState([]);
-    const [serials, setSerials] = React.useState([]);
-    const [ticketResult, setticketResult] = React.useState([]);
+    const [serials, setSerials] = React.useState([]);    
     
 
     useEffect(() =>{        
@@ -84,19 +71,22 @@ export default function HomeClient(){
         window.location.href = "/";
     }    
     
-    function getEquipmentByLocation(locationId){
-        setsvlocations(locationId);
+    function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
                 .then((res) => {                
                     setEquipments(res.data["equipments"]);     
+                })
+                .catch((err) => {
+                    handleError(err);
                 });
     }
 
     function getSerialsByEquipment(LocationEquipment){        
-        axios.get(`${API_BASE_URL}/homeC/get_serials_by_Location_by_Location_home/${LocationEquipment.split("|")[0]}/${LocationEquipment.split("|")[1]}`)
+        axios.get(`${API_BASE_URL}/homeC/get_serials_by_Location_by_Location_home/${LocationEquipment.split("|")[0]}/${LocationEquipment.split("|")[1]}`, {cancelToken: cancelTokenSource.token})
                 .then((res) => {                
                     setSerials(res.data["serials"]);     
-                });
+                })
+                .catch((err) => handleError(err));
     }
     function clearEquimentsSerials(){
         setEquipments([]);
@@ -105,18 +95,14 @@ export default function HomeClient(){
     }   
 
     function showNewTicket(){
-        axios.get(`${API_BASE_URL}/homeC/get_equipmentsLocations_home/`)
+        axios.get(`${API_BASE_URL}/homeC/get_equipmentsLocations_home/`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setLocations(res.data["locations"]);     
-            });
+            }).catch((err) => handleError(err));
         showNewUser();
     }
 
-    
-
-    async function addTicket() {              
-        
-                      
+    async function addTicket() {               
         let userId = cookies.get("USER_TOKEN");
         var message = "";
         var fileInput = document.getElementById("fileEvindece");
@@ -134,56 +120,56 @@ export default function HomeClient(){
             p_userid: userId, 
          })
          .then((res) => {
-            setticketResult(res.data);            
-        });
+            if(res.data["@p_result"] == 1){
+                if ('files' in fileInput) {
+                    if (fileInput.files.length == 0) {
+                        message = "¡Ingresar al menos una evidencia!";
+                    }
+                    else{
+                        for (var i = 0; i < fileInput.files.length; i++) {                    
+                            var file = fileInput.files[i];                                                     
+                            const reader = new FileReader();                    
+                            reader.onloadend = () => {                        
+                                const base64String = reader.result;                                            
+                                console.log(base64String);
+                                axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
+                                    p_ticketHistoryId:res.data["@p_ticketHistoyID"],
+                                    p_evidencia:base64String                                   
+                                    });
+                            };
+                            reader.readAsDataURL(file);                    
+                        }
+                    }
         
-        if(ticketResult["@p_result"] != 0){
-            if ('files' in fileInput) {
-                if (fileInput.files.length == 0) {
-                    message = "¡Ingresar al menos una evidencia!";
                 }
-                else{
-                    for (var i = 0; i < fileInput.files.length; i++) {                    
-                        var file = fileInput.files[i];                                                     
-                        const reader = new FileReader();                    
-                        reader.onloadend = () => {                        
-                            const base64String = reader.result;                                            
-                            console.log(base64String)                                    ;
-                            axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                p_ticketHistoryId:ticketResult["@p_ticketHistoyID"],
-                                p_evidencia:base64String                                   
-                                });
-                        };
-                        reader.readAsDataURL(file);                    
+                else {
+                    if (fileInput.value == "") {
+                        message += "Please browse for one or more files.";
+                        message += "<br />Use the Control or Shift key for multiple selection.";
+                    }
+                    else {
+                        message += "Your browser doesn't support the files property!";
+                        message += "<br />The path of the selected file: " + fileInput.value;
                     }
                 }
     
+                Swal.fire({
+                    icon: 'success',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+        
+                closeNewUser();
             }
             else{
-                if (fileInput.value == "") {
-                    message += "Please browse for one or more files.";
-                    message += "<br />Use the Control or Shift key for multiple selection.";
-                }
-                else {
-                    message += "Your browser doesn't support the files property!";
-                    message += "<br />The path of the selected file: " + fileInput.value;
-                }
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                title: ""+ ticketResult["@p_message"] + ""
-              })
     
-            closeNewUser();
-        }
-        else{
-
-            await Swal.fire({
-                icon: 'error',
-                title: ""+ ticketResult["@p_message"] + ""
-              })
-        }
+                Swal.fire({
+                    icon: 'error',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+            }
+        });        
+        
+        
     }
 
     
@@ -207,7 +193,7 @@ export default function HomeClient(){
                                 </Col>
                                 <Col>
                                     <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
+                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout(); }}>Cerrar Sesión</NavDropdown.Item>                            
                                     </NavDropdown>                        
                                     <label style={{color:'#51177D'}}>
                                         {useremail}
@@ -223,16 +209,16 @@ export default function HomeClient(){
             </div>               
             
             <Row>
-                <Col lg={9}>                
+                <Col lg={8}>                
                     <Button className='btn-new-client'  onClick={ showNewTicket} >
                         Nuevo ticket
                     </Button>
                 </Col>
-                <Col lg={3}>
+                <Col lg={4}>
                     <div className="dashboardButtonCliente">
                         <Row>
                             <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets Levantados
+                                Tickets levantados
                                 <h2 style={{ fontSize:'4rem'}}>{info["all_tickets"]}</h2>
                             </Col>
                             <Col xs={1}>
@@ -256,7 +242,8 @@ export default function HomeClient(){
                             <tr>                                          
                                 <th># Ticket</th>
                                 <th>Category</th>
-                                <th>Fecha</th>
+                                <th>Fecha creación</th>
+                                <th>Fecha modificación</th>
                                 <th>Prioridad</th>
                                 <th style={{textAlign:'center'}}>Validación</th>
                             </tr>
@@ -347,21 +334,24 @@ export default function HomeClient(){
     )
 }
 
-
-
-
-
-
 function RowTicket(props){
+
+    var currentdate = new Date(); 
+    var datetime = (currentdate.getMonth()+1) + "/"
+                    + currentdate.getDate()  + "/" 
+                    + currentdate.getFullYear() + " "  
+                    + currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds();    
     
     const [mdlDecline, setShowDecline] = useState(false);    
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
     const [ticketResultDecline, setticketResultDecline] = React.useState({
-    "@p_ticketHistoyID": 57,
-    "@p_result": 1,
-    "@p_message": "¡Ticket asignado correctamente!"
-});
+    "@p_ticketHistoyID": 0,
+    "@p_result": 0,
+    "@p_message": ""
+    });
 
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -383,6 +373,7 @@ function RowTicket(props){
             p_technicalId: 0
          })
          .then((res) => {
+            console.log(res.data);
             setticketResultDecline(res.data);            
         });
 
@@ -435,17 +426,13 @@ function RowTicket(props){
         }
     }
  
-    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`)        
+    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`, { cancelToken: cancelTokenSource.token })        
         .then((res) => {                               
             setTicketHist(res.data);
-            
-        });
-        
-        
-    
+        }).catch((err) => handleError(err));
         
     return(        
-        <React.Fragment>      
+        <React.Fragment>
             <>
             <Modal show={mdlDecline} onHide={closeDecline} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>
@@ -483,11 +470,12 @@ function RowTicket(props){
                 </td>                
                 <td>{row.category}</td>
                 <td>{row.openDate}</td>
+                <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{row.statusid == 9 ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
+                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -497,7 +485,7 @@ function RowTicket(props){
                                 <thead>
                                     <tr>
                                         <th>Estatus</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha modificación</th>                                        
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
                                         <th>Usuario</th>
@@ -507,7 +495,7 @@ function RowTicket(props){
                                     { ticketHist["ticketsHistory"].map((the) => {   
                                         return(<>
                                         <tr  key={the.comment} component="th" scope='row'>                                                       
-                                            <td >{the.comment}</td>
+                                            <td >{the.status}</td>
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>

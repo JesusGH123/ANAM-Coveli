@@ -61,3 +61,7 @@
 .dashboardTitle {
     font-size: 3rem;
 }
+
+.btnReject {
+    background-color: red;
+}

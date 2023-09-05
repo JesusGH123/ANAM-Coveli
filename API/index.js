@@ -11,13 +11,14 @@ let home = require('./routes/home');
 let users = require('./routes/user');
 let clients = require('./routes/homeC');
 let monitorist = require('./routes/homeM');
+let technical = require('./routes/homeT');
 
 app.use(cors());
 app.use(bodyParser.json({limit:'1gb'}));
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, 	X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-	Method');
-	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, 	DELETE');
+	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 	res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
 	next();
 });
@@ -31,3 +32,4 @@ app.use('/home', home);
 app.use('/users', users);
 app.use('/homeC', clients);
 app.use('/homeM', monitorist);
+app.use('/homeT', technical);

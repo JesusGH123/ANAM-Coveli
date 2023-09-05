@@ -19,7 +19,7 @@ export default function Login() {
 
     let validationConfig = {
       method: "post",
-      url: `${API_BASE_URL}/users/user/validate`,
+      url: `${API_BASE_URL}/users/userValidate`,
       data: {
         email: email,
         password: password,
