@@ -25,7 +25,7 @@ body, html {
     font-weight: bold;
 }
 
-h1, .form-label, a {
+h1, h3, .form-label, a {
     color: #66CCC5;
 }
 
