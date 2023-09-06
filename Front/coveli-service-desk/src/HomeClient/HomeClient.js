@@ -434,17 +434,14 @@ function RowTicket(props){
               })
         }
     }
- 
-    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`, { cancelToken: cancelTokenSource.token })        
+
+    const getTicketHistory = (ticketId) => {
+        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
-            setTicketHist(res.data);
-        }).catch((err) => handleError(err));
-
-
-        
-
-    
-    
+            setTicketHist(res.data);            
+        })
+        .catch((err) => handleError(err));
+    }    
     
     return(        
         <React.Fragment>
@@ -478,7 +475,7 @@ function RowTicket(props){
                     <IconButton
                             aria-label="expand row"
                             size="small"
-                            onClick={() => setOpen(!open)}                        >
+                            onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
                     </IconButton>                             
                     {row.ticketId}

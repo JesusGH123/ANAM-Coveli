@@ -12,17 +12,32 @@ module.exports.get_monitorist_home = async(req, res)=>{
             connection.query(
                 "CALL get_tickets_by_status('8',0);",                
                 (error, reassigned_tickets, fields) => {                    
-                    if(error)
+                    if(error)                    
                         res.send(error);
-
-                    try {
-                        res.json({
-                            'recent_tickets': recent_tickets[0],
-                            'reassigned_tickets': reassigned_tickets[0]
-                        });
-                    } catch(error) {
-                        console.log(error);
-                    }
+                    connection.query(
+                        "CALL get_priorities();",                
+                        (error, priorities, fields) => {                    
+                            if(error)
+                                res.send(error);
+                            connection.query(
+                                "CALL get_users_by_rol(3);",                
+                                (error, technicals, fields) => {                    
+                                    if(error)
+                                        res.send(error);                
+                                    try {
+                                        res.json({
+                                            'recent_tickets': recent_tickets[0],
+                                            'reassigned_tickets': reassigned_tickets[0],
+                                            'priorities': priorities[0],
+                                            'technicals': technicals[0]
+                                        });
+                                    } catch(error) {
+                                        console.log(error);
+                                    }
+                                }                
+                            )
+                        }                
+                    )
                 }                
             )            
         }
@@ -130,12 +145,13 @@ module.exports.get_dasboard_home = async(req, res)=> {
 }
 
 module.exports.update_ticket = async (req, res) => {    
+    console.log(req.body);
     connection.query(
-        'call update_ticket2(?, ?, ?, "", ?, ?, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;',
+        'call update_ticket(?, ?, ?, "", ?, ?, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;',
         [
             req.body.p_userId,
             req.body.p_ticketId,
-            req.body.p_statusId,
+            req.body.p_statusId,            
             req.body.p_technicalId,
             req.body.p_priorityId
         ],

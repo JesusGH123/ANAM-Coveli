@@ -43,13 +43,14 @@ module.exports.get_user = (req, res) => {
 module.exports.add_user = async (req, res, rows) => {
     let hashedPassword = crypto.createHash('sha256').update(req.body.p_password).digest('hex').toString()
 
+    console.log(req.body);
     connection.query(
         "call add_user(?, ?, ?, ?, @p_result, @p_message); select @p_message, @p_result;",
         [
             req.body.p_fullname,
             req.body.p_email,
             hashedPassword,
-            req.body.p_roleid
+            req.body.p_roleid            
         ],
         (error, results, fields) => {
         if(error) {
@@ -58,7 +59,8 @@ module.exports.add_user = async (req, res, rows) => {
 
         try {
             res.send(results[1][0]);
-        } catch (error) {
+        } catch (error) {      
+            console.log(results);      
             console.log(error);
         }
     });

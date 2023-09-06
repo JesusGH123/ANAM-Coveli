@@ -83,7 +83,7 @@ export default function UserRegister() {
             axios.get(`${API_BASE_URL}/users/roles`, { cancelToken: cancelTokenSource.token })
             .then((res) => setRoles(res.data))
             .catch((err) => handleError(err));
-    });
+    },[]);
 
     return (
         <div>    
