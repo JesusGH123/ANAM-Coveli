@@ -60,16 +60,16 @@ export default function HomeSupervisor() {
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setInfo(res.data);
-            })
-            .catch((err) => handleError(err));
+        .then((res) => {
+            setInfo(res.data);
+        })
+        .catch((err) => handleError(err));
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setUseremail(res.data["EMAIL"]);
                 setUsername(res.data["FULLNAME"]);
             })
-            .catch((err) => handleError(err));
+        .catch((err) => handleError(err));
     });
 
     const logout = () => {

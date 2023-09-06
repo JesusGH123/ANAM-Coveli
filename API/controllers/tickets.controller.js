@@ -210,7 +210,6 @@ module.exports.update_ticket = (req, res) => {
     (error, results, fields) => {
       if(error)
         res.send(error);
-      res.status(1);
     }
   );
 }
