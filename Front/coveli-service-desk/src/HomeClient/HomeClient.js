@@ -2,11 +2,11 @@ import { useEffect , useState, Fragment } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/js/src/collapse.js';
-import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup} from "react-bootstrap";
+import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup, ModalBody, ModalFooter} from "react-bootstrap";
 import Swal from 'sweetalert2';
 
 import './HomeClient.css'
-
+import Report from './ReportClient.js'
 import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
@@ -18,7 +18,11 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
-import { Paper } from '@mui/material';
+import { Paper, TableHead } from '@mui/material';
+
+import { PDFDownloadLink} from '@react-pdf/renderer';
+
+
 
 
 
@@ -345,8 +349,13 @@ function RowTicket(props){
                     + currentdate.getSeconds();    
     
     const [mdlDecline, setShowDecline] = useState(false);    
+    
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
+
+    const [mdlpdf, setShowpdf] = useState(false);    
+    const showpdf = () => setShowpdf(true);     
+    const closepdf = () => setShowpdf(false);   
     const [ticketResultDecline, setticketResultDecline] = React.useState({
     "@p_ticketHistoyID": 0,
     "@p_result": 0,
@@ -430,7 +439,13 @@ function RowTicket(props){
         .then((res) => {                               
             setTicketHist(res.data);
         }).catch((err) => handleError(err));
+
+
         
+
+    
+    
+    
     return(        
         <React.Fragment>
             <>
@@ -456,7 +471,7 @@ function RowTicket(props){
                         </Button>
                     </InputGroup>
                 </Modal.Body>                        
-            </Modal>         
+            </Modal>            
             </>             
             <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <td component="th" scope='row'>                                   
@@ -472,7 +487,7 @@ function RowTicket(props){
                 <td>{row.openDate}</td>
                 <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
+                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>: row.statusid == 9 ? <PDFDownloadLink  document={<Report/>} fileName={'ReporteTikect('+ row.ticketId +').pdf'}><Button variant='success'style={{borderRadius:'3rem'}}>Generar Reporte</Button></PDFDownloadLink> : row.status}</td>
             </tr>                                    
             <tr>
                 <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
