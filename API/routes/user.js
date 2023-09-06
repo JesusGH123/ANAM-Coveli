@@ -3,6 +3,8 @@ let router = express.Router();
 
 let userController = require('../controllers/users.controller.js');
 
+router.post('/checkPermissions', userController.check_privilege);
+
 router.get('/', userController.get_users);
 router.post('/addUser', userController.add_user);
 router.put('/user', userController.update_status_user);

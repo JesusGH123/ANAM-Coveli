@@ -231,3 +231,17 @@ module.exports.reset_password = async (req, res) => {
         }
     )
 }
+
+//Check privileges
+module.exports.check_privilege = async (req, res) => {
+    connection.query(
+        "CALL access_by_user(?, ?)",
+        [req.body.userId, req.body.nextPath],
+        (error, results, fields) => {
+            if(error)
+                console.log(error);
+
+            res.json(results[0][0]["result"]);
+        }
+    )
+}
