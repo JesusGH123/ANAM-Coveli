@@ -34,7 +34,8 @@ module.exports.get_client_home = async(req, res)=>{
 }
 
 module.exports.get_ticketHistory_home = async(req, res) => {
-    connection.query("CALL get_ticketHistory(?);",
+    
+        connection.query("CALL get_ticketHistory(?);",
         req.params.id,
         (error, ticketsHistory, fields) => {
             if(error)
@@ -46,7 +47,10 @@ module.exports.get_ticketHistory_home = async(req, res) => {
                 console.log(error);
             }
         }
-    )
+        )
+
+    
+    
 }
 
 
@@ -133,8 +137,6 @@ module.exports.add_evidences = async (req, res, rows) => {
         (error, results, fields) => {
         if(error) {
             res.send(error);
-
-            res.status(1);
         }     
     });
 }

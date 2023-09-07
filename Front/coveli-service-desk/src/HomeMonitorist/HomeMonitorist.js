@@ -37,7 +37,9 @@ export default function HomeMonitorist(){
 
     const [tickets, setTickets] = React.useState({        
         "recent_tickets": [],
-        "reassigned_tickets": []
+        "reassigned_tickets": [],
+        "priorities":[],
+        "technicals":[]
     });   
 
     const [dashboard, setDashboard] = React.useState({        
@@ -51,17 +53,20 @@ export default function HomeMonitorist(){
         window.location.href = "/";
     }    
     
+
+
+
     useEffect(() => {                
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {                                
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);                
-            }).catch((e) =>{
-                handleError(e);
-            });      
+        .then((res) => {                                
+            setUseremail(res.data["EMAIL"]);
+            setUsername(res.data["FULLNAME"]);                
+        }).catch((e) =>{
+            handleError(e);
+        });      
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                                                
-                setTickets(res.data);                  
+                setTickets(res.data);                    
             }).catch((e) =>{
                 handleError(e);                
             });  
@@ -69,11 +74,12 @@ export default function HomeMonitorist(){
             .then((res) => {                
                 setDashboard(res.data);  
             }).catch((e) =>{
-                handleError(e);
-            });  
+                handleError(e);                
+            });   
+        
     });
 
-
+    
     return(
     <div>
     <div>
@@ -224,7 +230,7 @@ export default function HomeMonitorist(){
                     <tbody>                        
                         { 
                         tickets["recent_tickets"].map((row) => (
-                            <RowTicket key={row.ticketId} row={row} />
+                            <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
                         ))
                         }                    
                     </tbody>
@@ -254,7 +260,7 @@ export default function HomeMonitorist(){
                     <tbody>                        
                         {
                         tickets["reassigned_tickets"].map((row) => (
-                            <RowTicket key={row.ticketId} row={row} />
+                            <RowTicket key={row.ticketId} row={row} priorities ={tickets["priorities"]} technicals ={tickets["technicals"]} />
                         ))
                     }                    
                     </tbody>
@@ -267,14 +273,16 @@ export default function HomeMonitorist(){
 }
 
 
-    function RowTicket(props) {        
-    const { row } = props;
+    function RowTicket(props) {                
+    const { row } = props;        
+    const { priorities } = props;
+    const { technicals } = props;
+
     const [open, setOpen] = React.useState(false);
     
     const [ticketHist, setTicketHist] =  React.useState({"ticketsHistory": []});
-    const [priorities, setpriorities] =  React.useState({"priorities": []});   
-    const [technicals, settechnicals] =  React.useState({"technicals": []});        
- 
+    
+    
     const getTicketHistory = (ticketId) => {
         axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
@@ -282,18 +290,6 @@ export default function HomeMonitorist(){
         })
         .catch((err) => handleError(err));
     }
-    
-
-    axios.get(`${API_BASE_URL}/homeM/getPrioritiesHome`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {
-            setpriorities(res.data);            
-        })
-        .catch((err) => handleError(err));
-    axios.get(`${API_BASE_URL}/homeM/getTechinicalsHome`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {                               
-            settechnicals(res.data);            
-        })
-        .catch((err) => handleError(err));
 
     const asignTiciket = async (item) =>  {      
         
@@ -305,7 +301,7 @@ export default function HomeMonitorist(){
             showCancelButton:true,
             cancelButtonText:"No"            
           }).then((result) => {            
-            if (result.isConfirmed) {
+            if (result.isConfirmed) {                
                 axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
                     p_userId:cookies.get("USER_TOKEN"),
                     p_ticketId:document.getElementById("hfticketId" + item).value,
@@ -374,7 +370,7 @@ export default function HomeMonitorist(){
                 <td>
                     <Form.Select id={"ddlPriority" + row.ticketId}>
                         <option value={0}>-- Seleccione --</option>
-                        { priorities["priorities"].map((p) => {
+                        { priorities.map((p) => {
                             return(<option value={p.priorityId} selected={row.priorityId != p.priorityId ? false : true}>{p.priority}</option>
                             )                            
                         })}                                                                                            
@@ -383,7 +379,7 @@ export default function HomeMonitorist(){
                 <td>
                     <Form.Select id={"ddlTechnical" + row.ticketId}>
                     <option value={0}>-- Seleccione --</option>
-                        { technicals["technicals"].map((t) => {
+                        { technicals.map((t) => {
                             return(<option value={t.userId} selected={row.technicalId != t.userId ? false : true} >{t.fullName}</option>
                             )                            
                         })}                                                                                            

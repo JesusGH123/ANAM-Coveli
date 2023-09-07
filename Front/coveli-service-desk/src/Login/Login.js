@@ -8,6 +8,18 @@ import { API_BASE_URL } from "../constants.js";
 
 import './Login.css';
 
+async function sendPasswordLink(email) {
+  if(email == "")
+    alert("Ingresa un correo");
+  else {
+    const res = await axios.post(
+      `${API_BASE_URL}/forgotPassword`,
+      {
+        email
+      })
+  } 
+}
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +77,10 @@ export default function Login() {
           <h1>Iniciar sesi&oacute;n</h1>
           <hr></hr>
 
-          <Form onSubmit={(e) => handleSubmit(e)}>
+          <Form onSubmit={(e) => {
+            if(email != "" && password != "") handleSubmit(e)
+            else alert("Es necesario ingresar correo y contraseña")
+          }}>
             <Form.Label for="email">Usuario</Form.Label>
             <Form.Control
               id="email"
@@ -86,8 +101,8 @@ export default function Login() {
             
             {login != "" ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
             
-            <a href="">Olvid&eacute; mi contrase&ntilde;a</a>
-            <Button className="btnLogin" type="submit" onClick={(e) => handleSubmit(e)}>Iniciar sesi&oacute;n</Button>
+            <a href="" onClick={() => sendPasswordLink(email)}>Olvid&eacute; mi contrase&ntilde;a</a>
+            <Button className="btnLogin" type="submit">Iniciar sesi&oacute;n</Button>
           </Form>
         </Col>
       </Row>

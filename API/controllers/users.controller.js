@@ -1,6 +1,8 @@
 let crypto = require('node:crypto')
 let mysql = require('mysql');
 let config = require('../helpers/config');
+const { FRONTEND_URL } = require('../constants');
+const nodemailer = require('nodemailer');
 
 let connection = mysql.createConnection(config);
 
@@ -43,13 +45,14 @@ module.exports.get_user = (req, res) => {
 module.exports.add_user = async (req, res, rows) => {
     let hashedPassword = crypto.createHash('sha256').update(req.body.p_password).digest('hex').toString()
 
+    console.log(req.body);
     connection.query(
         "call add_user(?, ?, ?, ?, @p_result, @p_message); select @p_message, @p_result;",
         [
             req.body.p_fullname,
             req.body.p_email,
             hashedPassword,
-            req.body.p_roleid
+            req.body.p_roleid            
         ],
         (error, results, fields) => {
         if(error) {
@@ -58,7 +61,8 @@ module.exports.add_user = async (req, res, rows) => {
 
         try {
             res.send(results[1][0]);
-        } catch (error) {
+        } catch (error) {      
+            console.log(results);      
             console.log(error);
         }
     });
@@ -143,6 +147,91 @@ module.exports.get_roles = async (req, res) => {
             } catch(error) {
                 console.log(error);
             }
+        }
+    )
+}
+
+//Forgot password
+module.exports.forgot_password = async(req, res) => {
+    connection.query(
+        "CALL get_user_by_email(?);",
+        req.body.email,
+        (error, results, fields) => {
+            if(error)
+                res.send(error);
+
+            if(results[0].length == 0)
+                res.send('Not registered user');
+            else {
+                const token = crypto.randomBytes(20).toString('hex');
+
+                connection.query(
+                    'CALL create_forgot_password_token(?, ?)',
+                    [req.body.email, token],
+                    (error, results, fields) => {
+                        if(error)
+                            res.send(error);
+                        else {
+                            const transporter = nodemailer.createTransport({
+                                service: 'Outlook365',
+                                host:'smtp.office365.com',
+                                port:587,
+                                auth: {
+                                    user: 'nltpglobal@ltpglobal.onmicrosoft.com',
+                                    pass: 'Gl0b4l2023!#',
+                                }
+                            })
+
+                            const mailOptions = {
+                                from: 'nltpglobal@ltpglobal.onmicrosoft.com',
+                                to: `${req.body.email}`,
+                                subject: 'Reestablecimiento de contraseña',
+                                text:  'Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.\n\n'
+                                + 'De click en el siguiente enlace para completar el proceso:\n\n'
+                                + `${FRONTEND_URL}/reset/${token}\n\n`
+                                + 'Si usted no ha solicitado el cambio de contraseña, haga caso omiso a este correo.\n'
+                            }
+
+                            console.log("Sending email");
+
+                            transporter.sendMail(mailOptions, (err, response) => {
+                                if(err)
+                                    console.error("There was an errror: " + err);
+                                else
+                                    console.log("Recovery email sent");
+                            })
+                        }
+                    }
+                )
+            }
+        }
+    )
+}
+
+//Check if a token is valid
+module.exports.check_token = async(req, res) => {
+    connection.query(
+        "CALL validate_forgot_token(?)",
+        req.params.token,
+        (error, results, fields) => {
+            if(error)
+                res.send(error);
+            else {
+                res.json(results[0][0]['keyExists']);
+            }
+        }
+    )
+}
+
+//Reset password
+module.exports.reset_password = async (req, res) => {
+    let hashedPassword = crypto.createHash('sha256').update(req.body.password).digest('hex').toString();
+    connection.query(
+        "CALL update_user_password(?, ?);",
+        [req.body.token, hashedPassword],
+        (error, results, fields) => {
+            if(error)
+                res.send(error);
         }
     )
 }
