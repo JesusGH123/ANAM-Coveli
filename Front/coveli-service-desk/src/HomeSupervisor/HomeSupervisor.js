@@ -193,7 +193,7 @@ export default function HomeSupervisor() {
             title: {
                 display: true,
                 text: 'Chart.js Line Chart'
-            }
+                }
             }
         },
     };
@@ -210,7 +210,7 @@ export default function HomeSupervisor() {
                 display: true,
                 text: 'Chart.js Line Chart'
             }
-            }
+          }
         },
     };
 
@@ -441,7 +441,7 @@ export default function HomeSupervisor() {
                     </thead>
                     <tbody>  
                         { info["tickets"]["second_section"].map((ticket) => {
-                            return(
+                            return (
                                 <tr>
                                     <td>{ticket.ticketId}</td>
                                     <td>{ticket.category}</td>

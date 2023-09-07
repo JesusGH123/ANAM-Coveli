@@ -65,3 +65,7 @@
 .btnReject {
     background-color: red;
 }
+
+.btn {
+    border-radius: 25px;
+}
