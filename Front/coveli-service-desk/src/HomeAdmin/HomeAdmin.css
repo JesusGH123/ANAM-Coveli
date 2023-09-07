@@ -15,7 +15,6 @@
     height: 7.5rem;                
 }
 
-
 .imgNav {
     width: 10rem;
     height: 5rem;
@@ -30,9 +29,7 @@
 .rowAdmin  { 
     height: fit-content;            
     align-items: center;             
-    
 }
-
 
 #containerNav{
     max-width: 100%;    

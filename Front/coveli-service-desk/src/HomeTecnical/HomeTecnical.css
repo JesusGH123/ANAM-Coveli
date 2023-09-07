@@ -14,7 +14,6 @@
     height: 7.5rem;                
 }
 
-
 .imgNav {
     width: 10rem;
     height: 5rem;
@@ -36,17 +35,11 @@
     max-width: 100%;    
 }
 
-/* .modal {
-    --bs-modal-width: 800px;
-} */
-
 .btn-warning {
     background-color: #FFE500;
     border: 0px;
     color: #222D51;
 }
-
-
 
 .btn-tecnical {
     background-color: #51177D;

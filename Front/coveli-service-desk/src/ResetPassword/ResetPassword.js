@@ -45,7 +45,7 @@ export default function ResetPassword() {
           <Image id="loginImg" src="https://facturama.mx/blog/wp-content/uploads/2022/03/anam-agencia-aduanera-sat-1024x631.png" alt="logo"></Image>
         </Col>
 
-        <Col lg={3}>
+        <Col className="spacedContainer" lg={3}>
           <h3>Reestablecer contraseña</h3>
           <hr></hr>
 
