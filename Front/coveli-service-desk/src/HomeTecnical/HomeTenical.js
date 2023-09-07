@@ -184,50 +184,9 @@ export default function HomeTecnical(){
                                 </tr>
                             </thead>
                             <tbody>
-                            { info["my_tickets"].map((row) => (
-                                <RowTicket key={row.ticketId} row={row} />
-                            ))}                    
-                                {/* { info["my_tickets"].map((ticket) => {
-                                    return (
-                                        <tr>
-                                            <td>{ticket.ticketId}</td>
-                                            <td>{ticket.situation}</td>
-                                            <td>{ticket.client}</td>
-                                            <td>{ticket.openDate}</td>
-                                            <td>{ticket.modificationDate}</td>
-                                            <td>{ticket.priority}</td>
-                                            { 
-                                                (ticket.statusid == 9 ) ?
-                                                    <td>{ticket.status}</td>
-                                                :
-                                                    (ticket.statusid == 7) ?
-                                                        <td>{ticket.status}</td>
-                                                        :
-                                                        (ticket.statusid == 6) ? 
-                                                        <td>
-                                                            <Button onClick={() => {
-                                                                setModalType(3);
-                                                                handleShow();
-                                                                setCurrentTicket(ticket);
-                                                            }} variant='warning' style={{borderRadius:20}}>Retomar</Button>
-                                                        </td>
-                                                        :
-                                                        <td>
-                                                            <Button onClick={() => {
-                                                                setModalType(2);
-                                                                handleShow();
-                                                                setCurrentTicket(ticket);
-                                                            }} variant='warning' style={{borderRadius:20}}>Pausar</Button>
-                                                            <Button onClick={() => {
-                                                                setModalType(1);
-                                                                handleShow();
-                                                                setCurrentTicket(ticket);
-                                                            }} variant='secondary' style={{borderRadius:20}}>Cerrar</Button>
-                                                        </td>
-                                            }
-                                        </tr>
-                                    )
-                                })}      */}
+                                { info["my_tickets"].map((row) => (
+                                    <RowTicket key={row.ticketId} row={row} />
+                                ))} 
                             </tbody>
                         </Table>
                     </Box>
@@ -251,12 +210,6 @@ function RowTicket(props){
     const onChange = (event) => {
         setComment(event.target.value);
     }
-    
-    // const [ticketResultDecline, setticketResultDecline] = React.useState({
-    // "@p_ticketHistoyID": 0,
-    // "@p_result": 0,
-    // "@p_message": ""
-    // });
 
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -351,11 +304,15 @@ function RowTicket(props){
 
         setComment("");
     }
- 
-    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`, { cancelToken: cancelTokenSource.token })        
+
+    const getTicketHistory = (ticketId) => {
+        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
-            setTicketHist(res.data);
-        }).catch((err) => handleError(err));
+            setTicketHist(res.data);            
+        })
+        .catch((err) => handleError(err));
+    }     
+    
         
     return(        
         <React.Fragment>
@@ -449,7 +406,7 @@ function RowTicket(props){
                     <IconButton
                             aria-label="expand row"
                             size="small"
-                            onClick={() => setOpen(!open)}                        >
+                            onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
                     </IconButton>                             
                     {row.ticketId}
@@ -490,7 +447,7 @@ function RowTicket(props){
                 }
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">

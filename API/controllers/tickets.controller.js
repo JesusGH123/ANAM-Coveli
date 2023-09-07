@@ -195,11 +195,12 @@ module.exports.add_ticket = async (req, res) => {}
 
 //Change status of a ticket
 module.exports.update_ticket = (req, res) => {
+  console.log("Cerrar/Rechazar")  
   connection.query(
     `set @p_result = 0;
     set @p_message = "";
-    CALL update_ticket(?, ?, ?, ?, ?, @p_result, @p_message);
-    SELECT @p_result, @p_message;`,
+    CALL update_ticket(?, ?, ?, ?, ?,0, @p_ticketHistoyID, @p_result, @p_message);
+    SELECT @p_ticketHistoyID, @p_result, @p_message;`,
     [
       req.body.userId,
       req.body.ticketId,

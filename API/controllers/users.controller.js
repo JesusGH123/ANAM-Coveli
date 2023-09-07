@@ -173,15 +173,17 @@ module.exports.forgot_password = async(req, res) => {
                             res.send(error);
                         else {
                             const transporter = nodemailer.createTransport({
-                                service: 'gmail',
+                                service: 'Outlook365',
+                                host:'smtp.office365.com',
+                                port:587,
                                 auth: {
-                                    user: 'soporte@ltpglobal.mx',
-                                    pass: 'Global2023!#',
+                                    user: 'nltpglobal@ltpglobal.onmicrosoft.com',
+                                    pass: 'Gl0b4l2023!#',
                                 }
                             })
 
                             const mailOptions = {
-                                from: 'soporte@ltpglobal.mx',
+                                from: 'nltpglobal@ltpglobal.onmicrosoft.com',
                                 to: `${req.body.email}`,
                                 subject: 'Reestablecimiento de contraseña',
                                 text:  'Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.\n\n'
