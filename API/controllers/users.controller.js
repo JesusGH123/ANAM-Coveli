@@ -157,9 +157,8 @@ module.exports.forgot_password = async(req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error);
-
             if(results[0].length == 0)
-                res.send('Not registered user');
+                res.json(-1);
             else {
                 const token = crypto.randomBytes(20).toString('hex');
 
@@ -172,14 +171,16 @@ module.exports.forgot_password = async(req, res) => {
                         else {
                             const transporter = nodemailer.createTransport({
                                 service: 'gmail',
+                                port: 587,
+                                secureConnection: false,
                                 auth: {
-                                    user: 'soporte@ltpglobal.mx',
-                                    pass: 'Global2023!#',
+                                    user: 'soporteanam@gmail.com',
+                                    pass: 'qbhp txbp ejsi vxzr',
                                 }
                             })
 
                             const mailOptions = {
-                                from: 'soporte@ltpglobal.mx',
+                                from: 'soporteanam@gmail.com',
                                 to: `${req.body.email}`,
                                 subject: 'Reestablecimiento de contraseña',
                                 text:  'Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.\n\n'
@@ -188,13 +189,11 @@ module.exports.forgot_password = async(req, res) => {
                                 + 'Si usted no ha solicitado el cambio de contraseña, haga caso omiso a este correo.\n'
                             }
 
-                            console.log("Sending email");
-
                             transporter.sendMail(mailOptions, (err, response) => {
                                 if(err)
                                     console.error("There was an errror: " + err);
                                 else
-                                    console.log("Recovery email sent");
+                                    res.json(1);
                             })
                         }
                     }
