@@ -2,11 +2,11 @@ import { useEffect , useState, Fragment } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/js/src/collapse.js';
-import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup} from "react-bootstrap";
+import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup, ModalBody, ModalFooter} from "react-bootstrap";
 import Swal from 'sweetalert2';
 
 import './HomeClient.css'
-
+import Report from './ReportClient.js'
 import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
@@ -18,7 +18,11 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
-import { Paper } from '@mui/material';
+import { Paper, TableHead } from '@mui/material';
+
+import { PDFDownloadLink} from '@react-pdf/renderer';
+
+
 
 
 
@@ -261,7 +265,7 @@ export default function HomeClient(){
             </Row>
 
             <Modal show={mdlNewUser} onHide={closeNewUser} style={{color:"#66CCC5"}}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton className='modal-width'>
                     <Modal.Title>Nuevo ticket</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>                    
@@ -325,7 +329,7 @@ export default function HomeClient(){
                     <div id="info" style={{marginTop:"30px", color:'red'}}></div>
                     <InputGroup className='mb-2'>
                         <Button className='btn-new-client' onClick={addTicket}>
-                            Rechazar ticket
+                            Crear ticket
                         </Button>
                     </InputGroup>
                 </Modal.Body>                        
@@ -347,13 +351,14 @@ function RowTicket(props){
                     + currentdate.getSeconds();    
     
     const [mdlDecline, setShowDecline] = useState(false);    
+    
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
-    const [ticketResultDecline, setticketResultDecline] = React.useState({
-    "@p_ticketHistoyID": 57,
-    "@p_result": 1,
-    "@p_message": "¡Ticket asignado correctamente!"
-    });
+
+    const [mdlpdf, setShowpdf] = useState(false);    
+    const showpdf = () => setShowpdf(true);     
+    const closepdf = () => setShowpdf(false);   
+    
 
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -375,71 +380,72 @@ function RowTicket(props){
             p_technicalId: 0
          })
          .then((res) => {
-            setticketResultDecline(res.data);            
-        });
-
-        if(ticketResultDecline["@p_result"] != 0){
-            if ('files' in fileInputDecline) {
-                if (fileInputDecline.files.length == 0) {
-                    message = "¡Ingresar al menos una evidencia!";
+            console.log(res.data);
+            if(res.data["@p_result"] != 0){
+                if ('files' in fileInputDecline) {
+                    if (fileInputDecline.files.length == 0) {
+                        message = "¡Ingresar al menos una evidencia!";
+                    }
+                    else{
+                        for (var i = 0; i < fileInputDecline.files.length; i++) {                    
+                            var file = fileInputDecline.files[i];                                                     
+                            const reader = new FileReader();                    
+                            reader.onloadend = () => {                        
+                                const base64String = reader.result;    
+                                console.log(res.data["@p_ticketHistoyID"]);                                                                                                
+                                axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
+                                    p_ticketHistoryId:res.data["@p_ticketHistoyID"],
+                                    p_evidencia:base64String                                   
+                                    });
+                            };
+                            reader.readAsDataURL(file);                    
+                        }
+                    }
+        
                 }
                 else{
-                    for (var i = 0; i < fileInputDecline.files.length; i++) {                    
-                        var file = fileInputDecline.files[i];                                                     
-                        const reader = new FileReader();                    
-                        reader.onloadend = () => {                        
-                            const base64String = reader.result;    
-                            console.log(ticketResultDecline["@p_ticketHistoyID"]);                                                                                                
-                            axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                p_ticketHistoryId:ticketResultDecline["@p_ticketHistoyID"],
-                                p_evidencia:base64String                                   
-                                });
-                        };
-                        reader.readAsDataURL(file);                    
+                    if (fileInputDecline.value == "") {
+                        message += "Please browse for one or more files.";
+                        message += "<br />Use the Control or Shift key for multiple selection.";
+                    }
+                    else {
+                        message += "Your browser doesn't support the files property!";
+                        message += "<br />The path of the selected file: " + fileInputDecline.value;
                     }
                 }
     
+                Swal.fire({
+                    icon: 'success',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+        
+                closeDecline();
             }
             else{
-                if (fileInputDecline.value == "") {
-                    message += "Please browse for one or more files.";
-                    message += "<br />Use the Control or Shift key for multiple selection.";
-                }
-                else {
-                    message += "Your browser doesn't support the files property!";
-                    message += "<br />The path of the selected file: " + fileInputDecline.value;
-                }
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                title: ""+ ticketResultDecline["@p_message"] + ""
-              })
     
-            closeDecline();
-        }
-        else{
-
-            await Swal.fire({
-                icon: 'error',
-                title: ""+ ticketResultDecline["@p_message"] + ""
-              })
-        }
+                Swal.fire({
+                    icon: 'error',
+                    title: ""+ res.data["@p_message"] + ""
+                  })
+            }
+        });        
     }
- 
-    axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${row.ticketId}`, { cancelToken: cancelTokenSource.token })        
+
+    const getTicketHistory = (ticketId) => {
+        axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                               
-            setTicketHist(res.data);
-        }).catch((err) => handleError(err));
-        
+            setTicketHist(res.data);            
+        })
+        .catch((err) => handleError(err));
+    }    
+    
     return(        
-        <React.Fragment>
-            <>
+        <React.Fragment>            
             <Modal show={mdlDecline} onHide={closeDecline} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Rechazar el Ticket ({row.ticketId})</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>             
+                <Modal.Body >             
                     <input type="hidden" id="ticketID" name="ticketId" value={row.ticketId} />                           
                     <InputGroup className='mb-2'>
                         <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
@@ -457,14 +463,13 @@ function RowTicket(props){
                         </Button>
                     </InputGroup>
                 </Modal.Body>                        
-            </Modal>         
-            </>             
+            </Modal>                        
             <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <td component="th" scope='row'>                                   
                     <IconButton
                             aria-label="expand row"
                             size="small"
-                            onClick={() => setOpen(!open)}                        >
+                            onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
                     </IconButton>                             
                     {row.ticketId}
@@ -473,10 +478,10 @@ function RowTicket(props){
                 <td>{row.openDate}</td>
                 <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={showDecline}>No resuelto</Button>:row.status}</td>
+                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.statusid == 9 ? <PDFDownloadLink  document={<Report/>} fileName={'ReporteTikect('+ row.ticketId +').pdf'}><Button variant='success'style={{borderRadius:'3rem'}}>Generar Reporte</Button></PDFDownloadLink> : row.status}</td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -486,8 +491,7 @@ function RowTicket(props){
                                 <thead>
                                     <tr>
                                         <th>Estatus</th>
-                                        <th>Fecha creación</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha modificación</th>                                        
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
                                         <th>Usuario</th>

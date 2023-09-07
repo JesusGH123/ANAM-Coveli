@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/API/controllers/users.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/controllers/users.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/API/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/API/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/API/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/ResetPassword/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/ResetPassword/ResetPassword.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2V1p0K356SEFDhyBfuf1ffzgPWy" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fix/protected-routes-by-role&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/JosedeJesusGarciaHer&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.editor&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mariadb&quot;
+    ]
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+</project>
