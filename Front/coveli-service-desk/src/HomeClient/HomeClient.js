@@ -43,6 +43,8 @@ export default function HomeClient(){
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
 
+    const [homeClient, setHomeClient] = React.useState(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`)
+
     const [info, setInfo] = React.useState({
         "tickets": []
     });       
@@ -60,13 +62,13 @@ export default function HomeClient(){
             }).catch((e) =>{
                 handleError(e);
             });                  
-        axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
+        axios.get(homeClient, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setInfo(res.data);                
             }).catch((e) =>{
                 handleError(e);
             });                          
-    });
+    }, []);
 
     
     const logout = () => {

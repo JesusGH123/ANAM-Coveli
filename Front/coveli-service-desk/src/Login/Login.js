@@ -8,15 +8,21 @@ import { API_BASE_URL } from "../constants.js";
 
 import './Login.css';
 
-async function sendPasswordLink(email) {
+function sendPasswordLink(email) {
   if(email == "")
     alert("Ingresa un correo");
   else {
-    const res = await axios.post(
-      `${API_BASE_URL}/forgotPassword`,
-      {
-        email
-      })
+    axios.post(
+      `${API_BASE_URL}/users/forgotPassword`,
+    {
+      email
+    }).then((res) => {
+      console.log(res["data"])
+      if(res["data"] == -1)
+        alert("Usuario no existente");
+      else
+        alert("Revisa tu correo para actualizar la contraseña");
+    })
   } 
 }
 
@@ -58,7 +64,7 @@ export default function Login() {
               window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
             })
         } else {
-          setLogin(false);
+          setLogin(0);
         }
       })
       .catch((error) => {
@@ -99,9 +105,9 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            {login != "" ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>)}
+            { login != "" ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>) }
             
-            <a href="" onClick={() => sendPasswordLink(email)}>Olvid&eacute; mi contrase&ntilde;a</a>
+            <a id="forgot-password-a" onClick={() => sendPasswordLink(email) }>Olvid&eacute; mi contrase&ntilde;a</a>
             <Button className="btnLogin" type="submit">Iniciar sesi&oacute;n</Button>
           </Form>
         </Col>

@@ -60,3 +60,9 @@ hr {
 .alertMessage {
     color: red;
 }
+
+#forgot-password-a {
+    color: #66CCC5;
+    text-decoration: underline;
+    cursor: pointer;
+}

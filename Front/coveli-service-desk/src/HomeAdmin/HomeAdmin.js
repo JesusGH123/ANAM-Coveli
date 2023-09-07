@@ -20,6 +20,8 @@ export default function HomeAdmin(){
     const CancelToken = axios.CancelToken
     const cancelTokenSource = CancelToken.source()
 
+    const [isAccesible, setIsAccesible] = React.useState(false);
+
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
         "paused_tickets": 0,
@@ -31,6 +33,16 @@ export default function HomeAdmin(){
     const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/homeA'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true)
+            else
+                window.location.href = "/";
+        })
+
         axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
@@ -100,7 +112,9 @@ export default function HomeAdmin(){
 
     return(
         <div>    
-            <div>
+            { (isAccesible) ? 
+                <>
+                    <div>
             <Navbar expand="md" className="bg-body-tertiary">
                 <Container id='containerNav'>
                     <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
@@ -326,6 +340,11 @@ export default function HomeAdmin(){
                         </Row>
                     }
                 </Modal>
+                </>
+                :
+                null
+            }
+            
         </div>        
     )
 }

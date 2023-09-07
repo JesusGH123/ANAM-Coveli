@@ -16,11 +16,11 @@ export default function ResetPassword() {
   useEffect(() => {
     axios.get(`${API_BASE_URL}/users/validateToken/${params.key}`)
       .then((res) => {
+        console.log(res["data"])
         if(res["data"]) {
-          setTokenValid(true);
-        } else {
           setTokenValid(false);
-          window.location.href = "/";
+        } else {
+          setTokenValid(true);
         }
       })
       .catch((err) => console.log(err));
@@ -70,7 +70,6 @@ export default function ResetPassword() {
             
             {passwordMatch ? (<></>) : (<p className="alertMessage">Las contrase&ntilde;as no coinciden</p>)}
             
-            <a href="/reset">Olvid&eacute; mi contrase&ntilde;a</a>
             <Button className="btnLogin" type="submit" onClick={(e) => {
               if(password1 == password2 && (password1 != "" && password2 != ""))
                   handleSubmit(e)
@@ -80,7 +79,9 @@ export default function ResetPassword() {
           </Form>
         </Col>
         </Row> : 
-        <></>
+        <>
+          <h1>Token caducado</h1>
+        </>
     }
     </Container>
   );
