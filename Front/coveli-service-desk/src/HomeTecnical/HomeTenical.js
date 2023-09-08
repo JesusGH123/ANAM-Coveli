@@ -18,6 +18,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper } from '@mui/material';
+import NavigationBar from '../Navbar/Navbar';
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
@@ -29,9 +30,6 @@ function handleError(e) {
 }
 
 export default function HomeTecnical(){  
-
-    const [ticketResultTechnical, setticketResultTechnical] = React.useState([]);
-
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
         "paused_tickets": 0,
@@ -39,61 +37,18 @@ export default function HomeTecnical(){
         "on_revision_tickets": 0,
         "my_tickets": []
     });
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
             }).catch((err) => handleError(err));
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            }).catch((err) => handleError(err));
     });
-
-    
-
-    
-
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
 
     return(
         <div>    
             <div>
-            <Navbar expand="md" className="bg-body-tertiary">
-                <Container id='containerNav'>
-                    <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Home</Nav.Link>
-                        </Nav>                         
-                        <div>
-                            <Row>
-                                <Col>
-                                <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                                </Col>
-                                <Col>
-                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout()}}>Cerrar Sesión</NavDropdown.Item>                            
-                                    </NavDropdown>                        
-                                    <label style={{color:'#51177D'}}>
-                                        {useremail}
-                                    </label>                        
-                                </Col>
-                            </Row>                        
-                        </div>
-                        
-                    </Navbar.Collapse>
-                    
-                </Container>                        
-            </Navbar>                                
+                <NavigationBar/>                              
             </div>               
             
             <Row className="rowTecnical">

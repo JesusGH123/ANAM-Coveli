@@ -21,10 +21,7 @@ import TableContainer from  '@mui/material/TableContainer';
 import { Paper, TableHead } from '@mui/material';
 
 import { PDFDownloadLink} from '@react-pdf/renderer';
-
-
-
-
+import NavigationBar from '../Navbar/Navbar';
 
 const cookies = new Cookies();
 const CancelToken = axios.CancelToken
@@ -37,13 +34,9 @@ function handleError(e) {
 
 export default function HomeClient(){    
 
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
     const [mdlNewUser, setShowNewUser] = useState(false);    
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
-
-    const [homeClient, setHomeClient] = React.useState(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`)
 
     const [info, setInfo] = React.useState({
         "tickets": []
@@ -53,29 +46,14 @@ export default function HomeClient(){
     const [equipments, setEquipments] = React.useState([]);
     const [serials, setSerials] = React.useState([]);    
     
-
     useEffect(() =>{        
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);                
-            }).catch((e) =>{
-                handleError(e);
-            });                  
-        axios.get(homeClient, {cancelToken: cancelTokenSource.token})
+        axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
                 setInfo(res.data);                
             }).catch((e) =>{
                 handleError(e);
             });                          
     }, []);
-
-    
-    const logout = () => {
-        const cookies = new Cookies();
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }    
     
     function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
@@ -192,41 +170,11 @@ export default function HomeClient(){
         info.innerHTML = message;
     }
 
-    
-    
     return(
         <div>    
             <div>
-            <Navbar expand="md" className="bg-body-tertiary">
-                
-                <Container id='containerNav'>
-                    <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/homeC" style={{fontWeight:'bold'}} onClick={()=>{cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
-                        </Nav>                         
-                        <div>
-                            <Row>
-                                <Col>
-                                <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                                </Col>
-                                <Col>
-                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout(); }}>Cerrar Sesión</NavDropdown.Item>                            
-                                    </NavDropdown>                        
-                                    <label style={{color:'#51177D'}}>
-                                        {useremail}
-                                    </label>                        
-                                </Col>
-                            </Row>                        
-                        </div>
-                        
-                    </Navbar.Collapse>
-                    
-                </Container>                        
-            </Navbar>                                
-            </div>               
+                <NavigationBar/>
+            </div>            
             
             <Row>
                 <Col lg={8}>                

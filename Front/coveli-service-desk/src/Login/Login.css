@@ -66,3 +66,7 @@ hr {
     text-decoration: underline;
     cursor: pointer;
 }
+
+.spacedContainer {
+    margin: 0px 10px;
+}
