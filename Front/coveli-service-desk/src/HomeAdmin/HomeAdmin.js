@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../constants.js';
 
 import './HomeAdmin.css'
-import NavigationBar from '../Navbar/Navbar.js';
+import NavigationBar from '../Navbar/Navbar';
 
 const cookies = new Cookies();
 
@@ -41,7 +41,9 @@ export default function HomeAdmin(){
             else
                 window.location.href = "/";
         })
-
+    }, [])
+    
+    useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);

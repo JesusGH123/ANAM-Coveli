@@ -16,7 +16,6 @@ export default function NavigationBar(props) {
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");
     const [role, setRole] = React.useState(0);
-    const [path, setPath] = React.useState([{"path": ""}]);
 
     const cookies = new Cookies();
 
@@ -26,13 +25,13 @@ export default function NavigationBar(props) {
     }
 
     useEffect(() => {
-            axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-                setRole(res.data["ROLEID"]);
-            })
-            .catch((err) => handleError(err));
+        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
+        .then((res) => {
+            setUseremail(res.data["EMAIL"]);
+            setUsername(res.data["FULLNAME"]);
+            setRole(res.data["ROLEID"]);
+        })
+        .catch((err) => handleError(err));
     }, []);
 
     return (

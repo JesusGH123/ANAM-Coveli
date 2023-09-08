@@ -31,7 +31,8 @@ function handleError(e) {
         console.log(e.message);
 }
 
-export default function HomeMonitorist(){        
+export default function HomeMonitorist(){  
+    const [isAccesible, setIsAccesible] = React.useState(false);      
     const [tickets, setTickets] = React.useState({        
         "recent_tickets": [],
         "reassigned_tickets": [],
@@ -42,6 +43,18 @@ export default function HomeMonitorist(){
     const [dashboard, setDashboard] = React.useState({        
         "assigned": 0,"revision": 0,"reassigned": 0, "open": 0,"paused": 0,"closed": 0
     });
+
+    useEffect(() => {
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/homeM'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true)
+            else
+                window.location.href = "/";
+        })
+    }, [])
 
     useEffect(() => {                     
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
@@ -58,178 +71,183 @@ export default function HomeMonitorist(){
             });
     });
 
-    
     return(
     <div>
-    <div>
-        <NavigationBar/>
+        {
+            (isAccesible) ? 
+            <>
+                <div>
+                <NavigationBar/>
+                </div>
+                <Row>        
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets asignados
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["assigned"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/ticket.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets con petición de cierre
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["revision"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/detener.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets con reincidencia
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["reassigned"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/pregunta.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                </Row>            
+                <Row>        
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets abiertos
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["open"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/informacion.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets pausados
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["paused"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                    <Col lg={4}>
+                        <div className="dashboardButtonMonitorist">
+                            <Row>
+                                <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    Tickets cerrados
+                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["closed"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
+                                </Col>
+                            </Row>                                        
+                        </div>
+                    </Col>
+                </Row>
+                <Row className='graphicsArea'>
+                    <TableContainer component={Paper}>
+                        <Box sx={{ margin: 1 }}>
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        Tickets recientes
+                                    </Typography>
+                            <Table  striped hover responsive aria-label='customized table'>
+                                <thead>
+                                    <tr>                                          
+                                    <th># Ticket</th>
+                                        <th>Categoria</th>
+                                        <th>Cliente</th>
+                                        <th>Fecha</th>
+                                        <th>Situación</th>
+                                        <th>Prioridad</th>
+                                        <th>Técnico</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>                        
+                                    { 
+                                    tickets["recent_tickets"].map((row) => (
+                                        <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
+                                    ))
+                                    }                    
+                                </tbody>
+                            </Table>
+                        </Box>
+                    </TableContainer>
+                </Row>            
+                <Row className='graphicsArea'>
+                    <TableContainer component={Paper}>
+                        <Box sx={{ margin: 1 }}>
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        Tickets con reincidencia
+                                    </Typography>
+                            <Table  striped hover responsive aria-label='customized table'>
+                                <thead>
+                                    <tr>                                          
+                                        <th># Ticket</th>
+                                        <th>Categoria</th>
+                                        <th>Cliente</th>
+                                        <th>Fecha</th>
+                                        <th>Situación</th>
+                                        <th>Prioridad</th>
+                                        <th>Técnico</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>                        
+                                    {
+                                    tickets["reassigned_tickets"].map((row) => (
+                                        <RowTicket key={row.ticketId} row={row} priorities ={tickets["priorities"]} technicals ={tickets["technicals"]} />
+                                    ))
+                                }                    
+                                </tbody>
+                            </Table>
+                        </Box>
+                    </TableContainer>
+                </Row>   
+            </>
+            :
+            null
+        }      
     </div>
-    <Row>        
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets asignados
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["assigned"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/ticket.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets con petición de cierre
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["revision"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/detener.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets con reincidencia
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["reassigned"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/pregunta.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-    </Row>            
-    <Row>        
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets abiertos
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["open"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/informacion.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets pausados
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["paused"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-        <Col lg={4}>
-            <div className="dashboardButtonMonitorist">
-                <Row>
-                    <Col xs={8} style={{fontSize:'1.2rem'}} >
-                        Tickets cerrados
-                        <h2 style={{ fontSize:'4rem'}}>{dashboard["closed"]}</h2>
-                    </Col>
-                    <Col xs={1}>
-                        <div className="divSeparator"></div>
-                    </Col>
-                    <Col xs={3} style={{marginTop:"1rem"}} >                                
-                        <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
-                    </Col>
-                </Row>                                        
-            </div>
-        </Col>
-    </Row>
-    <Row className='graphicsArea'>
-        <TableContainer component={Paper}>
-            <Box sx={{ margin: 1 }}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Tickets recientes
-                        </Typography>
-                <Table  striped hover responsive aria-label='customized table'>
-                    <thead>
-                        <tr>                                          
-                        <th># Ticket</th>
-                            <th>Categoria</th>
-                            <th>Cliente</th>
-                            <th>Fecha</th>
-                            <th>Situación</th>
-                            <th>Prioridad</th>
-                            <th>Técnico</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>                        
-                        { 
-                        tickets["recent_tickets"].map((row) => (
-                            <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
-                        ))
-                        }                    
-                    </tbody>
-                </Table>
-            </Box>
-        </TableContainer>
-    </Row>            
-    <Row className='graphicsArea'>
-        <TableContainer component={Paper}>
-            <Box sx={{ margin: 1 }}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Tickets con reincidencia
-                        </Typography>
-                <Table  striped hover responsive aria-label='customized table'>
-                    <thead>
-                        <tr>                                          
-                            <th># Ticket</th>
-                            <th>Categoria</th>
-                            <th>Cliente</th>
-                            <th>Fecha</th>
-                            <th>Situación</th>
-                            <th>Prioridad</th>
-                            <th>Técnico</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>                        
-                        {
-                        tickets["reassigned_tickets"].map((row) => (
-                            <RowTicket key={row.ticketId} row={row} priorities ={tickets["priorities"]} technicals ={tickets["technicals"]} />
-                        ))
-                    }                    
-                    </tbody>
-                </Table>
-            </Box>
-        </TableContainer>
-    </Row>            
-    </div>
-)
-}
+)}
 
 
-    function RowTicket(props) {                
+function RowTicket(props) {
     const { row } = props;        
     const { priorities } = props;
     const { technicals } = props;
@@ -248,8 +266,6 @@ export default function HomeMonitorist(){
     }
 
     const asignTiciket = async (item) =>  {      
-        
-
         await Swal.fire({
             title: '¿Desea guardar los cambios?',                        
             confirmButtonText: 'Si',
