@@ -17,6 +17,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import axios from "axios";
+import NavigationBar from "../Navbar/Navbar";
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -55,8 +56,6 @@ export default function HomeSupervisor() {
                 "second_section": []
             }
     });
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
@@ -64,18 +63,7 @@ export default function HomeSupervisor() {
             setInfo(res.data);
         })
         .catch((err) => handleError(err));
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            })
-        .catch((err) => handleError(err));
     });
-
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
 
     const updateTicket = (action, ticket) => {
         let actionString = (action == 9) ? ["cerrar", "cerrado", "cierra"] : ["rechazar", "rechazado", "rechaza"];
@@ -216,32 +204,7 @@ export default function HomeSupervisor() {
 
     return (
         <Container className="containerLogin">
-            <Navbar className="bg-body-tertiary" expand="lg" >
-                <Container id="navContainer">
-                    <Navbar.Brand><img id="logoImg" alt="Ltp global software" src="/images/logo.png"/></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
-                    </Nav>
-                    <div>
-                        <Row>
-                            <Col>
-                            <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                            </Col>
-                            <Col>
-                                <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
-                                </NavDropdown>
-                                <label style={{color:'#51177D'}}>
-                                    {useremail}
-                                </label>                        
-                            </Col>
-                        </Row>                        
-                    </div>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
+            <NavigationBar/>
 
             <Row className="rowHomeSupervisor">
                 <Col>

@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../constants.js';
 
 import './HomeAdmin.css'
+import NavigationBar from '../Navbar/Navbar.js';
 
 const cookies = new Cookies();
 
@@ -29,8 +30,6 @@ export default function HomeAdmin(){
         "on_revision_tickets": 0,
         "all_tickets": []
     });
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
 
     useEffect(() => {
         axios.post(`${API_BASE_URL}/users/checkPermissions`, {
@@ -48,12 +47,6 @@ export default function HomeAdmin(){
                 setInfo(res.data);
             })
             .catch((err) => handleError(err));
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            })
-            .catch((err) => handleError(err));
     });
 
     const [currentTicket, setCurrentTicket] = useState({});
@@ -61,10 +54,6 @@ export default function HomeAdmin(){
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
     const onChange = (event) => {
         setComment(event.target.value);
     }
@@ -114,37 +103,9 @@ export default function HomeAdmin(){
         <div>    
             { (isAccesible) ? 
                 <>
-                    <div>
-            <Navbar expand="md" className="bg-body-tertiary">
-                <Container id='containerNav'>
-                    <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/homeA" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}style={{fontWeight:'bold'}}>Home</Nav.Link>
-                            <Nav.Link href="/users" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}style={{fontWeight:'bold'}}>Usuarios</Nav.Link>
-                        </Nav>                         
-                        <div>
-                            <Row>
-                                <Col>
-                                <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                                </Col>
-                                <Col>
-                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
-                                    </NavDropdown>                        
-                                    <label style={{color:'#51177D'}}>
-                                        {useremail}
-                                    </label>                        
-                                </Col>
-                            </Row>                        
-                        </div>
-                        
-                    </Navbar.Collapse>
-                    
-                </Container>                        
-            </Navbar>                                
-            </div>               
+                <div>
+                <NavigationBar/>
+                </div>               
             
             <Row className="rowAdmin">
                 <Col>

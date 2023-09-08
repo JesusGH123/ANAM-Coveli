@@ -21,13 +21,14 @@
 }
 
 .dashboardButton {
-    width: 27rem;
+    width: 90%;
     height: 9.5rem;
     background-color: #1979FF;
     border-radius: 1.5rem;
     color: white;
     margin: 1rem auto;
     padding: 10px;
+    margin: 10px;
 }
 
 .divSeparator {
@@ -36,7 +37,7 @@
 }
 
 #navContainer {
-    max-width: 100%;
+    width: 100%;
     margin-top: 0;
 }
 

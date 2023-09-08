@@ -20,7 +20,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper, alertTitleClasses } from '@mui/material';
 import excludeVariablesFromRoot from '@mui/material/styles/excludeVariablesFromRoot';
-
+import NavigationBar from '../Navbar/Navbar';
 
 const CancelToken = axios.CancelToken;
 const cancelTokenSource = CancelToken.source();   
@@ -31,10 +31,7 @@ function handleError(e) {
         console.log(e.message);
 }
 
-export default function HomeMonitorist(){ 
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");// const [show, setShow] = useState(false);        
-
+export default function HomeMonitorist(){        
     const [tickets, setTickets] = React.useState({        
         "recent_tickets": [],
         "reassigned_tickets": [],
@@ -44,26 +41,9 @@ export default function HomeMonitorist(){
 
     const [dashboard, setDashboard] = React.useState({        
         "assigned": 0,"revision": 0,"reassigned": 0, "open": 0,"paused": 0,"closed": 0
-    });   
+    });
 
-
-    const logout = () => {
-        const cookies = new Cookies();
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }    
-    
-
-
-
-    useEffect(() => {                
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-        .then((res) => {                                
-            setUseremail(res.data["EMAIL"]);
-            setUsername(res.data["FULLNAME"]);                
-        }).catch((e) =>{
-            handleError(e);
-        });      
+    useEffect(() => {                     
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                                                
                 setTickets(res.data);                    
@@ -75,38 +55,14 @@ export default function HomeMonitorist(){
                 setDashboard(res.data);  
             }).catch((e) =>{
                 handleError(e);                
-            });   
-        
+            });
     });
 
     
     return(
     <div>
     <div>
-    <Navbar expand="md" className="bg-body-tertiary">                
-        <Container id='containerNav'>
-            <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="me-auto">
-                    <Nav.Link href="/homeM" style={{fontWeight:'bold'}} onClick={()=>{cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
-                </Nav>                        
-                <Row>
-                    <Col>
-                    <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                    </Col>
-                    <Col>
-                        <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                            <NavDropdown.Item onClick={() => {cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
-                        </NavDropdown>                        
-                        <label style={{color:'#51177D'}}>
-                            {useremail}
-                        </label>                        
-                    </Col>
-                </Row>                        
-            </Navbar.Collapse>            
-        </Container>                        
-    </Navbar>
+        <NavigationBar/>
     </div>
     <Row>        
         <Col lg={4}>
