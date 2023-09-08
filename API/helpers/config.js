@@ -3,6 +3,7 @@ let config = {
     user: 'anam',
     password: 'root',
     database: 'db_coveli',
-    multipleStatements: true
+    multipleStatements: true,
+    charset: 'utf8mb4'
 }
 module.exports = config;

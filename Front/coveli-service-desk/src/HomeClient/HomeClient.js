@@ -89,71 +89,85 @@ export default function HomeClient(){
     async function addTicket() {               
         let userId = cookies.get("USER_TOKEN");
         var message = "";
-        var fileInput = document.getElementById("fileEvindece");
-        var info = document.getElementById ("info");
-        info.innerHTML = message;
-
-        
-        axios.post(`${API_BASE_URL}/homeC/add_ticket`,{
-            p_categoryId:document.getElementById("ddlCategory").value,
-            p_equipmentLocationId:document.getElementById("ddlLocation").value,
-            p_equipmentModelId:document.getElementById("ddlEquipment").value.split("|")[1],
-            p_equipmentSerialId:document.getElementById("ddlSerial").value,            
-            p_situation: document.getElementById("txtSituation").value,
-            p_comment: document.getElementById("txtComment").value,
-            p_userid: userId, 
-         })
-         .then((res) => {
-            if(res.data["@p_result"] == 1){
-                if ('files' in fileInput) {
-                    if (fileInput.files.length == 0) {
-                        message = "¡Ingresar al menos una evidencia!";
-                    }
-                    else{
+        var fileInput = document.getElementById("fileEvindece");        
+        if ('files' in fileInput) {
+            if(document.getElementById("ddlCategory").value == 0){
+                message = "¡Seleccione una Categoría!";
+            }
+            else if(document.getElementById("txtSituation").value == ""){
+                message = "¡Ingrese la situación!";
+            }
+            else if(document.getElementById("ddlLocation").value == 0){
+                message = "¡Seleccione una Ubicación!";
+            }
+            else if(document.getElementById("ddlEquipment").value == 0){
+                message = "¡Seleccione un Equipo!";
+            }
+            else if(document.getElementById("ddlSerial").value == 0){
+                message = "¡Seleccione un número de Serie!";
+            }            
+            else if(document.getElementById("txtComment").value == ""){
+                message = "¡Ingrese los comentarios!";
+            }
+            else if (fileInput.files.length == 0) {
+                message = "¡Ingresar al menos una imagen de evidencia!";
+            
+            }
+            else if(fileInput.files.length > 2){
+                message = "¡Ingresar máximo dos imágenes de evidencia!";
+            }                        
+            else{
+                axios.post(`${API_BASE_URL}/homeC/add_ticket`,{
+                    p_categoryId:document.getElementById("ddlCategory").value,
+                    p_equipmentLocationId:document.getElementById("ddlLocation").value,
+                    p_equipmentModelId:document.getElementById("ddlEquipment").value.split("|")[1],
+                    p_equipmentSerialId:document.getElementById("ddlSerial").value,            
+                    p_situation: document.getElementById("txtSituation").value,
+                    p_comment: document.getElementById("txtComment").value,
+                    p_userid: userId, 
+                })
+                .then((res) => {
+                    if(res.data["@p_result"] == 1){
                         for (var i = 0; i < fileInput.files.length; i++) {                    
                             var file = fileInput.files[i];                                                     
                             const reader = new FileReader();                    
                             reader.onloadend = () => {                        
-                                const base64String = reader.result;                                            
-                                console.log(base64String);
+                                const base64String = reader.result;                                                                            
                                 axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                    p_ticketHistoryId:res.data["@p_ticketHistoyID"],
+                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],                                   
                                     p_evidencia:base64String                                   
                                     });
                             };
                             reader.readAsDataURL(file);                    
                         }
+                        closeNewUser(); 
+                        Swal.fire({
+                            icon: 'success',
+                            title: ""+ res.data["@p_message"] + ""
+                        })
                     }
-        
-                }
-                else {
-                    if (fileInput.value == "") {
-                        message += "Please browse for one or more files.";
-                        message += "<br />Use the Control or Shift key for multiple selection.";
-                    }
-                    else {
-                        message += "Your browser doesn't support the files property!";
-                        message += "<br />The path of the selected file: " + fileInput.value;
-                    }
-                }
+                    else{
     
-                Swal.fire({
-                    icon: 'success',
-                    title: ""+ res.data["@p_message"] + ""
-                  })
-        
-                closeNewUser();
+                        Swal.fire({
+                            icon: 'error',
+                            title: ""+ res.data["@p_message"] + ""
+                        })
+                    }
+                });
             }
-            else{
-    
-                Swal.fire({
-                    icon: 'error',
-                    title: ""+ res.data["@p_message"] + ""
-                  })
+        }
+        else {
+            if (fileInput.value == "") {
+                message += "Please browse for one or more files.";
+                message += "<br />Use the Control or Shift key for multiple selection.";
             }
-        });        
-        
-        
+            else {
+                message += "Your browser doesn't support the files property!";
+                message += "<br />The path of the selected file: " + fileInput.value;
+            }
+        }
+        var info = document.getElementById ("infoNew");
+        info.innerHTML = message;
     }
 
     return(
@@ -273,14 +287,16 @@ export default function HomeClient(){
                         <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
                         </InputGroup.Text>
                         <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
-                    </InputGroup>
-                    <div id="info" style={{marginTop:"30px", color:'red'}}></div>
-                    <InputGroup className='mb-2'>
+                    </InputGroup>                    
+                    <div id="infoNew" style={{marginTop:"30px", color:'red'}}></div>                    
+                </Modal.Body>
+                <Modal.Footer>
+                    <InputGroup className='mb-2'>                        
                         <Button className='btn-new-client' onClick={addTicket}>
                             Crear ticket
                         </Button>
                     </InputGroup>
-                </Modal.Body>                        
+                </Modal.Footer>                        
             </Modal> 
 
             
@@ -298,14 +314,11 @@ function RowTicket(props){
                     + currentdate.getMinutes() + ":" 
                     + currentdate.getSeconds();    
     
-    const [mdlDecline, setShowDecline] = useState(false);    
-    
+    const [mdlDecline, setShowDecline] = useState(false);        
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
 
-    const [mdlpdf, setShowpdf] = useState(false);    
-    const showpdf = () => setShowpdf(true);     
-    const closepdf = () => setShowpdf(false);   
+    
     
 
     const { row } = props;
@@ -314,69 +327,74 @@ function RowTicket(props){
         "ticketsHistory": []
     });
 
+    
+
      
     const declineTciket =  async () =>  {
 
         var message = "";
-        var fileInputDecline = document.getElementById("fileEvindeceDecline");
-        console.log(document.getElementById("ticketID").value);
-        axios.put(`${API_BASE_URL}/homeC/update_ticket`,{
-            p_userId:cookies.get("USER_TOKEN"),
-            p_ticketId:document.getElementById("ticketID").value,
-            p_statusId:8,
-            p_comment:document.getElementById("txtCommentDecline").value,            
-            p_technicalId: 0
-         })
-         .then((res) => {
-            console.log(res.data);
-            if(res.data["@p_result"] != 0){
-                if ('files' in fileInputDecline) {
-                    if (fileInputDecline.files.length == 0) {
-                        message = "¡Ingresar al menos una evidencia!";
-                    }
-                    else{
-                        for (var i = 0; i < fileInputDecline.files.length; i++) {                    
-                            var file = fileInputDecline.files[i];                                                     
+        var fileInput = document.getElementById("fileEvindece");
+
+        if ('files' in fileInput) {
+            if(document.getElementById("txtCommentDecline").value == ""){
+                message = "¡Ingresar comentarios!";
+            }
+            else if (fileInput.files.length == 0) {
+                message = "¡Ingresar al menos una imagen de evidencia!";
+            
+            }
+            else if(fileInput.files.length > 2){
+                message = "¡Ingresar máximo dos imágenes de evidencia!";
+            }            
+            else{
+                axios.put(`${API_BASE_URL}/homeC/update_ticket`,{
+                    p_userId:cookies.get("USER_TOKEN"),
+                    p_ticketId:document.getElementById("ticketID").value,
+                    p_statusId:8,
+                    p_comment:document.getElementById("txtCommentDecline").value,            
+                    p_technicalId: 0
+                })
+                .then((res) => {
+                    if(res.data["@p_result"] != 0){
+                        for (var i = 0; i < fileInput.files.length; i++) {
+                            var file = fileInput.files[i];                                                     
                             const reader = new FileReader();                    
                             reader.onloadend = () => {                        
-                                const base64String = reader.result;    
-                                console.log(res.data["@p_ticketHistoyID"]);                                                                                                
+                                const base64String = reader.result;                                    
                                 axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                    p_ticketHistoryId:res.data["@p_ticketHistoyID"],
+                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],
                                     p_evidencia:base64String                                   
                                     });
                             };
-                            reader.readAsDataURL(file);                    
+                            reader.readAsDataURL(file);
                         }
-                    }
-        
-                }
-                else{
-                    if (fileInputDecline.value == "") {
-                        message += "Please browse for one or more files.";
-                        message += "<br />Use the Control or Shift key for multiple selection.";
+                        Swal.fire({
+                            icon: 'success',
+                            title: ""+ res.data["@p_message"] + ""
+                        })                
+                        closeDecline();
                     }
                     else {
-                        message += "Your browser doesn't support the files property!";
-                        message += "<br />The path of the selected file: " + fileInputDecline.value;
+                        Swal.fire({
+                            icon: 'error',
+                            title: ""+ res.data["@p_message"] + ""
+                        })
                     }
-                }
-    
-                Swal.fire({
-                    icon: 'success',
-                    title: ""+ res.data["@p_message"] + ""
-                  })
-        
-                closeDecline();
+                });
             }
-            else{
-    
-                Swal.fire({
-                    icon: 'error',
-                    title: ""+ res.data["@p_message"] + ""
-                  })
+        }
+        else {
+            if (fileInput.value == "") {
+                message += "Please browse for one or more files.";
+                message += "<br />Use the Control or Shift key for multiple selection.";
             }
-        });        
+            else {
+                message += "Your browser doesn't support the files property!";
+                message += "<br />The path of the selected file: " + fileInput.value;
+            }
+        }
+        var info = document.getElementById ("infoDecline");
+        info.innerHTML = message;  
     }
 
     const getTicketHistory = (ticketId) => {
@@ -386,6 +404,8 @@ function RowTicket(props){
         })
         .catch((err) => handleError(err));
     }    
+
+    
     
     return(        
         <React.Fragment>            
@@ -402,16 +422,20 @@ function RowTicket(props){
                     <InputGroup className='mb-2'>
                         <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
                         </InputGroup.Text>
-                        <Form.Control id="fileEvindeceDecline" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
+                        <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
                     </InputGroup>
-                    <div id="info" style={{marginTop:"30px", color:'red'}}></div>
+                    <div id="infoDecline" style={{marginTop:"30px", color:'red'}}></div>                    
+                </Modal.Body>
+                <Modal.Footer>
                     <InputGroup className='mb-2'>
                         <Button className='btn-new-client' onClick={declineTciket} >
                             Crear ticket
                         </Button>
                     </InputGroup>
-                </Modal.Body>                        
+                </Modal.Footer>
             </Modal>                        
+
+            
             <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <td component="th" scope='row'>                                   
                     <IconButton
@@ -429,7 +453,7 @@ function RowTicket(props){
                 <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.statusid == 9 ? <PDFDownloadLink  document={<Report/>} fileName={'ReporteTikect('+ row.ticketId +').pdf'}><Button variant='success'style={{borderRadius:'3rem'}}>Generar Reporte</Button></PDFDownloadLink> : row.status}</td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -442,7 +466,7 @@ function RowTicket(props){
                                         <th>Fecha modificación</th>                                        
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
-                                        <th>Usuario</th>
+                                        <th>Usuario</th>                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -453,7 +477,7 @@ function RowTicket(props){
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>
-                                            <td>{the.userFullName}</td>                                                                
+                                            <td>{the.userFullName}</td>                                                                                                            
                                         </tr>
                                         </>)                                                                         
                                     }) }

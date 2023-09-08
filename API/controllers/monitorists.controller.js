@@ -144,8 +144,7 @@ module.exports.get_dasboard_home = async(req, res)=> {
     )
 }
 
-module.exports.update_ticket = async (req, res) => {    
-    console.log(req.body);
+module.exports.update_ticket = async (req, res) => {        
     connection.query(
         'call update_ticket(?, ?, ?, "", ?, ?, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;',
         [
