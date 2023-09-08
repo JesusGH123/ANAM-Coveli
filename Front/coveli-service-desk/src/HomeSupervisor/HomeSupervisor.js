@@ -518,8 +518,6 @@ function RowTicket(props){
                                 axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
                                     p_ticketHistoryId:res.data["@p_ticketHistoryID"],
                                     p_evidencia:base64String                                   
-                                    }).then((res) =>{
-                                        console.log(base64String);
                                     });
                             };
                             reader.readAsDataURL(file);                                
@@ -556,8 +554,7 @@ function RowTicket(props){
 
     const getTicketHistory = (ticketId) => {
         axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {                               
-            console.log(res.data);
+        .then((res) => {                                           
             setTicketHist(res.data);              
         })
         .catch((err) => handleError(err));
@@ -709,8 +706,7 @@ function RowTicketHistory(props){
 
     const getTicketHistory = (ticketId) => {
         axios.get(`${API_BASE_URL}/homeC/getTicketHistoryHome/${ticketId}`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {                               
-            console.log(res.data);
+        .then((res) => {                                           
             setTicketHist(res.data);              
         })
         .catch((err) => handleError(err));

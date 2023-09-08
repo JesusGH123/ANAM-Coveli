@@ -210,8 +210,7 @@ module.exports.update_ticket = (req, res) => {
         res.send(error);        
       }        
 
-      try {
-        console.log(results[1][0])
+      try {        
         res.send(results[1][0]);
     } catch (error) {
         console.log(error);
@@ -223,12 +222,11 @@ module.exports.update_ticket = (req, res) => {
 
 
 module.exports.get_ticket_evidences = async(req, res)=>{
-console.log("ID: "+ req.params.id) ;
 connection.query(    
     'call db_coveli.get_evindeces(?);',        
     req.params.id,
     (error, evidences, fields) => {                        
-      console.log(req.params.id);
+      
       if(error)
         res.send(error);                                                                             
       try {

@@ -239,8 +239,7 @@ function RowTicket(props){
                 p_technicalId: currentTicket.technicalId
              })
              .then((res) => {            
-                setticketResultTechnical(res.data);            
-                console.log(ticketResultTechnical["@p_ticketHistoyID"]);
+                setticketResultTechnical(res.data);                            
             });
     
             if(ticketResultTechnical["@p_result"] != 0){
@@ -260,8 +259,6 @@ function RowTicket(props){
                                     axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
                                         p_ticketHistoryId:ticketResultTechnical["@p_ticketHistoyID"],
                                         p_evidencia:base64String                                   
-                                        }).then((res) =>{
-                                            console.log(base64String);
                                         });
                                         
                                 };

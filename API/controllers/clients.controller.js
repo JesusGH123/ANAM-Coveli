@@ -75,7 +75,6 @@ module.exports.get_equipments_by_Location_home = async(req, res) => {
         (error, equipments, fields) => {
             if(error)
                 res.send(error);
-
             try {
                 res.json({'equipments' : equipments[0]});
             } catch(error) {

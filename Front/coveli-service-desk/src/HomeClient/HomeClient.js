@@ -11,8 +11,6 @@ import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
 
-import Carousel from 'react-bootstrap/Carousel';
-
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -370,9 +368,7 @@ function RowTicket(props){
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
 
-    const [mdlEvidences, setShowEvidences] = useState(false);    
-    const showEvidences = () => setShowEvidences(true);     
-    const closeEvidences = () => setShowEvidences(false);   
+    
     
 
     const { row } = props;
@@ -381,9 +377,7 @@ function RowTicket(props){
         "ticketsHistory": []
     });
 
-    const [ticketHistEvi, setTicketHistEvi] =  React.useState({
-        "evidences": []
-    });
+    
 
      
     const declineTciket =  async () =>  {
@@ -461,13 +455,7 @@ function RowTicket(props){
         .catch((err) => handleError(err));
     }    
 
-    const getTicketHistoryEvidences = (ticketHistoryId) => {
-        axios.get(`${API_BASE_URL}/home/getTicketEvidences/${ticketHistoryId}`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {                      
-            setTicketHistEvi(res.data);            
-        })
-        .catch((err) => handleError(err));
-    }    
+    
     
     return(        
         <React.Fragment>            
@@ -497,23 +485,7 @@ function RowTicket(props){
                 </Modal.Footer>
             </Modal>                        
 
-            <Modal show={mdlEvidences} onHide={closeEvidences} style={{color:"#66CCC5"}}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Evidencias del Ticket({row.ticketId})</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Carousel>
-                    { ticketHistEvi["evidences"].map((ev) => {   
-                        return(
-                            <Carousel.Item>
-                                <img className='d-block w-100' src={ev.evidencia} ></img>                            
-                            </Carousel.Item>                        
-                        )                                                                         
-                    }) }
-                        
-                    </Carousel>                    
-                </Modal.Body>                
-            </Modal>                        
+            
             <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <td component="th" scope='row'>                                   
                     <IconButton
@@ -531,7 +503,7 @@ function RowTicket(props){
                 <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.statusid == 9 ? <PDFDownloadLink  document={<Report/>} fileName={'ReporteTikect('+ row.ticketId +').pdf'}><Button variant='success'style={{borderRadius:'3rem'}}>Generar Reporte</Button></PDFDownloadLink> : row.status}</td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -544,8 +516,7 @@ function RowTicket(props){
                                         <th>Fecha modificación</th>                                        
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
-                                        <th>Usuario</th>
-                                        <th>Evidencias</th>
+                                        <th>Usuario</th>                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -556,8 +527,7 @@ function RowTicket(props){
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>
-                                            <td>{the.userFullName}</td>                                                                
-                                            <td >{the.evidences > 0 ?<Button style={{margin:0}} onClick={()=>{showEvidences(); getTicketHistoryEvidences(the.ticketsHistoryId);}}>Ver</Button>:""}</td>
+                                            <td>{the.userFullName}</td>                                                                                                            
                                         </tr>
                                         </>)                                                                         
                                     }) }
