@@ -62,7 +62,7 @@ export default function UserRegister() {
     useEffect(() => {
             axios.post(`${API_BASE_URL}/users/checkPermissions`, {
                 userId: cookies.get("USER_TOKEN"),
-                nextPath: '/homeT'
+                nextPath: '/users'
             }).then((res) => {
                 if(res.data)
                     setIsAccesible(true)
@@ -71,7 +71,6 @@ export default function UserRegister() {
             })
             axios.get(`${API_BASE_URL}/users`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
-                console.log(res.data);
                 setUsers(res.data);
             }).catch((err) => 
                 handleError(err)
