@@ -42,7 +42,7 @@ module.exports.get_ticketHistory_home = async(req, res) => {
                 res.send(error);
             
             try {
-                res.json({'ticketsHistory' : ticketsHistory[0]});
+                res.json({'ticketsHistory' : ticketsHistory[0]});                
             } catch (error) {
                 console.log(error);
             }
@@ -103,7 +103,7 @@ module.exports.get_serials_by_Location_home = async(req, res) => {
 
 module.exports.add_ticket = async (req, res, rows) => {
     connection.query(
-        "call add_ticket(?, ?, ?, ?, ?, ?, ?,@p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_message, @p_result;",
+        "call add_ticket(?, ?, ?, ?, ?, ?, ?,@p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_message, @p_result;",
         [
             req.body.p_categoryId,
             req.body.p_equipmentLocationId,
@@ -144,7 +144,7 @@ module.exports.add_evidences = async (req, res, rows) => {
 
 module.exports.update_ticket = async (req, res) => {    
     connection.query(
-        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;",
+        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",        
         [
             req.body.p_userId,
             req.body.p_ticketId,

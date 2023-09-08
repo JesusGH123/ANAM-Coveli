@@ -217,92 +217,114 @@ function RowTicket(props){
         "ticketsHistory": []
     });
 
+    const [ticketHistEvi, setTicketHistEvi] =  React.useState({
+        "evidences": []
+    });
+
+    const [mdlEvidences, setShowEvidences] = useState(false);    
+    const showEvidences = () => setShowEvidences(true);     
+    const closeEvidences = () => setShowEvidences(false);   
+
     const updateTicket = (newStatus, comment) =>  {
 
-        var message = "";                       
+        var message = "";    
         
-        axios.put(`${API_BASE_URL}/homeT/update_ticket`,{
-            p_userId:cookies.get("USER_TOKEN"),
-            p_ticketId:currentTicket.ticketId,
-            p_statusId:newStatus,
-            p_comment:comment,            
-            p_technicalId: currentTicket.technicalId
-         })
-         .then((res) => {            
-            setticketResultTechnical(res.data);            
-            console.log(ticketResultTechnical["@p_ticketHistoyID"]);
-        });
-
-        if(ticketResultTechnical["@p_result"] != 0){
-            if(modalType == 1) {
-                
-                var fileInputTechnical = document.getElementById("fileEvindece");
-                if ('files' in fileInputTechnical) {
-                    if (fileInputTechnical.files.length == 0) {
-                        message = "¡Ingresar al menos una evidencia!";
+        
+        if(comment != ""){
+            axios.put(`${API_BASE_URL}/homeT/update_ticket`,{
+                p_userId:cookies.get("USER_TOKEN"),
+                p_ticketId:currentTicket.ticketId,
+                p_statusId:newStatus,
+                p_comment:comment,            
+                p_technicalId: currentTicket.technicalId
+             })
+             .then((res) => {            
+                setticketResultTechnical(res.data);            
+                console.log(ticketResultTechnical["@p_ticketHistoyID"]);
+            });
+    
+            if(ticketResultTechnical["@p_result"] != 0){
+                if(modalType == 1) {
+                    var fileInputTechnical = document.getElementById("fileEvindece");
+                    if ('files' in fileInputTechnical) {
+                        if (fileInputTechnical.files.length == 0) {
+                            message = "¡Ingresar al menos una evidencia!";
+                        }
+                        else{
+                            
+                            for (var i = 0; i < fileInputTechnical.files.length; i++) {                    
+                                var file = fileInputTechnical.files[i];                                                     
+                                const reader = new FileReader();                    
+                                reader.onloadend = () => {                        
+                                    const base64String = reader.result;                                                                                                                                   
+                                    axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
+                                        p_ticketHistoryId:ticketResultTechnical["@p_ticketHistoyID"],
+                                        p_evidencia:base64String                                   
+                                        }).then((res) =>{
+                                            console.log(base64String);
+                                        });
+                                        
+                                };
+                                reader.readAsDataURL(file);                    
+                                
+                            }
+                        }
+            
                     }
                     else{
-                        
-                        for (var i = 0; i < fileInputTechnical.files.length; i++) {                    
-                            var file = fileInputTechnical.files[i];                                                     
-                            const reader = new FileReader();                    
-                            reader.onloadend = () => {                        
-                                const base64String = reader.result;                                                                                                                                   
-                                axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
-                                    p_ticketHistoryId:ticketResultTechnical["@p_ticketHistoyID"],
-                                    p_evidencia:base64String                                   
-                                    }).then((res) =>{
-                                        console.log(base64String);
-                                    });
-                                    
-                            };
-                            reader.readAsDataURL(file);                    
-                            
+                        if (fileInputTechnical.value == "") {
+                            message += "Please browse for one or more files.";
+                            message += "<br />Use the Control or Shift key for multiple selection.";
+                        }
+                        else {
+                            message += "Your browser doesn't support the files property!";
+                            message += "<br />The path of the selected file: " + fileInputTechnical.value;
                         }
                     }
-        
-                }
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Ticket enviado a revisión!'
+                    })
+
+                    handleClose();
+                    setComment("");                    
+                } 
                 else{
-                    if (fileInputTechnical.value == "") {
-                        message += "Please browse for one or more files.";
-                        message += "<br />Use the Control or Shift key for multiple selection.";
+                    if(modalType == 2){
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Se ha pausado el ticket!'
+                          })
                     }
-                    else {
-                        message += "Your browser doesn't support the files property!";
-                        message += "<br />The path of the selected file: " + fileInputTechnical.value;
+                    else{
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡se ha retomado el ticket!'
+                          })
                     }
+                    handleClose();
+                    setComment("");                    
                 }
+                            
+            }
+            else{
+    
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Ticket enviado a revisión!'
-                })
-            } else{
-                if(modalType == 2){
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Se ha pausado el ticket!'
-                      })
-                }
-                else{
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡se ha retomado el ticket!'
-                      })
-                }
-                
+                    title: ""+ ticketResultTechnical["@p_message"] + ""
+                  })
             }
-                        
         }
         else{
+            if(modalType==1)
+                message = "¡Ingrese algún comentario!";
+            else
+                message = "¡Ingrese algún motivo!";
+        }
+        var info = document.getElementById ("info");
+        info.innerHTML = message;  
 
-            Swal.fire({
-                icon: 'success',
-                title: ""+ ticketResultTechnical["@p_message"] + ""
-              })
-        }        
-     
-
-        setComment("");
+        
     }
 
     const getTicketHistory = (ticketId) => {
@@ -312,6 +334,14 @@ function RowTicket(props){
         })
         .catch((err) => handleError(err));
     }     
+
+    const getTicketHistoryEvidences = (ticketHistoryId) => {
+        axios.get(`${API_BASE_URL}/home/getTicketEvidences/${ticketHistoryId}`, {cancelToken: cancelTokenSource.token})        
+        .then((res) => {                      
+            setTicketHistEvi(res.data);            
+        })
+        .catch((err) => handleError(err));
+    }    
     
         
     return(        
@@ -324,8 +354,7 @@ function RowTicket(props){
                     {
                         (modalType == 1) ?
                         <Row className='rowTecnical'>
-                            <Modal.Body>
-                                <Form>
+                            <Modal.Body>                                
                                 <InputGroup className='mb-2'>
                                     <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
                                     <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required value={comment} onChange={(e) => onChange(e)}/>
@@ -335,20 +364,19 @@ function RowTicket(props){
                                     </InputGroup.Text>
                                     <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
                                 </InputGroup>
-                                
+                                <div id="info" style={{marginTop:"30px", color:'red'}}></div>                                                                                   
+                            </Modal.Body>
+                            <Modal.Footer>
                                 <Button variant="primary" onClick={handleClose}>
                                         Cancelar
                                 </Button>
-                                <Button variant="primary" onClick={ (event) => {
-                                    handleClose();
+                                <Button variant="primary" onClick={ (event) => {                                    
                                     updateTicket(7, comment);
                                     }}
                                     style={{margin:'1rem'}}>
                                     Solicitar cierre
                                 </Button>
-                                    
-                                </Form>
-                            </Modal.Body>
+                            </Modal.Footer>
                         </Row>
                             :
                             (modalType == 2) ?
@@ -361,14 +389,14 @@ function RowTicket(props){
                                 <InputGroup className='mb-2'>
                                     <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Motivo</InputGroup.Text>
                                     <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)}/>                                    
-                                </InputGroup>                                   
+                                </InputGroup>
+                                <div id="info" style={{marginTop:"30px", color:'red'}}></div>                                                                                      
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
                                         Cancelar
                                     </Button>
-                                    <Button variant="primary" onClick={() => {
-                                        handleClose();
+                                    <Button variant="primary" onClick={() => {                                        
                                         updateTicket(6, comment);
                                     }}>
                                         Pausar ticket
@@ -384,14 +412,14 @@ function RowTicket(props){
                                     <InputGroup className='mb-2'>
                                         <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Motivo</InputGroup.Text>
                                         <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => onChange(e)}/>
-                                    </InputGroup>                                   
+                                    </InputGroup>    
+                                    <div id="info" style={{marginTop:"30px", color:'red'}}></div>                                                   
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
                                         Cancelar
                                     </Button>
-                                    <Button variant="primary" onClick={() => {
-                                        handleClose();
+                                    <Button variant="primary" onClick={() => {                                        
                                         updateTicket(5, comment);
                                     }}>
                                         Retomar ticket
@@ -461,6 +489,7 @@ function RowTicket(props){
                                         <th>Comentarios</th>
                                         <th>Técnico</th>
                                         <th>Usuario</th>
+                                        <th>Evidencias</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -471,7 +500,8 @@ function RowTicket(props){
                                             <td>{the.currentDate}</td>
                                             <td>{the.comment}</td>
                                             <td>{the.technicalFullName}</td>
-                                            <td>{the.userFullName}</td>                                                                
+                                            <td>{the.userFullName}</td>       
+                                            <td >{the.evidences > 0 ?<Button style={{margin:0}} onClick={()=>{showEvidences(); getTicketHistoryEvidences(the.ticketsHistoryId);}}>Ver</Button>:""}</td>                                                                                                                         
                                         </tr>
                                         </>)                                                                         
                                     }) }

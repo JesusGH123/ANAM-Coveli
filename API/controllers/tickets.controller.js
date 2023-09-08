@@ -195,12 +195,9 @@ module.exports.add_ticket = async (req, res) => {}
 
 //Change status of a ticket
 module.exports.update_ticket = (req, res) => {
-  console.log("Cerrar/Rechazar")  
+  
   connection.query(
-    `set @p_result = 0;
-    set @p_message = "";
-    CALL update_ticket(?, ?, ?, ?, ?,0, @p_ticketHistoyID, @p_result, @p_message);
-    SELECT @p_ticketHistoyID, @p_result, @p_message;`,
+    "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
     [
       req.body.userId,
       req.body.ticketId,
@@ -209,8 +206,38 @@ module.exports.update_ticket = (req, res) => {
       req.body.technicalId,
     ],
     (error, results, fields) => {
-      if(error)
-        res.send(error);
+      if(error){
+        res.send(error);        
+      }        
+
+      try {
+        console.log(results[1][0])
+        res.send(results[1][0]);
+    } catch (error) {
+        console.log(error);
+    }
     }
   );
+}
+
+
+
+module.exports.get_ticket_evidences = async(req, res)=>{
+console.log("ID: "+ req.params.id) ;
+connection.query(    
+    'call db_coveli.get_evindeces(?);',        
+    req.params.id,
+    (error, evidences, fields) => {                        
+      console.log(req.params.id);
+      if(error)
+        res.send(error);                                                                             
+      try {
+          res.json({              
+              'evidences': evidences[0]
+          });
+      } catch (error) {        
+          console.log(error);
+      } 
+    }
+  )
 }
