@@ -192,22 +192,23 @@ export default function HomeClient(){
                     </div>            
                     
                     <Row>
-                        <Col lg={8}>                
+                        <Col lg={7}>                
                             <Button className='btn-new-client'  onClick={ showNewTicket} >
                                 Nuevo ticket
                             </Button>
                         </Col>
+                        <Col xl={1}></Col>
                         <Col lg={4}>
                             <div className="dashboardButtonCliente">
                                 <Row>
-                                    <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                    <Col xs={7} style={{fontSize:'1.2rem'}} >
                                         Tickets levantados
                                         <h2 style={{ fontSize:'4rem'}}>{info["all_tickets"]}</h2>
                                     </Col>
                                     <Col xs={1}>
                                         <div className="divSeparator"></div>
                                     </Col>
-                                    <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                    <Col xs={2} style={{marginTop:"1rem"}} >                                
                                         <img className="imgInformation" src="/images/ticket.png"></img>
                                     </Col>
                                 </Row>                                        

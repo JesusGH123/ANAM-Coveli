@@ -59,26 +59,24 @@ export default function HomeTecnical(){
     });
 
     return(
-        <div>
+        <>
             {
                 (isAccesible) ?
                     <>
-                        <div>
-                            <NavigationBar/>                              
-                        </div>               
+                        <NavigationBar/>                                          
                         
                         <Row className="rowTecnical">
                             <Col>
                                 <div className="dashboardButton">
                                     <Row>
-                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                        <Col xs={7} style={{fontSize:'1.2rem'}} >
                                             Tickets sin atender
                                             <h2 style={{ fontSize:'4rem'}}>{info["tickets_without_attendance"]}</h2>
                                         </Col>
                                         <Col xs={1} >
                                             <div className="divSeparator"></div>
                                         </Col>
-                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                        <Col xs={2} style={{marginTop:"1rem"}} >                                
                                             <img className="imgInformation" src="/images/informacion.png"></img>
                                         </Col>
                                     </Row>                
@@ -87,14 +85,14 @@ export default function HomeTecnical(){
                             <Col>
                                 <div className="dashboardButton">
                                     <Row>
-                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                        <Col xs={7} style={{fontSize:'1.2rem'}} >
                                             Tickets pausados
                                             <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets"]}</h2>
                                         </Col>
                                         <Col xs={1}>
                                             <div className="divSeparator"></div>
                                         </Col>
-                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                        <Col xs={2} style={{marginTop:"1rem"}} >                                
                                             <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
                                         </Col>
                                     </Row>                                        
@@ -105,14 +103,14 @@ export default function HomeTecnical(){
                             <Col>
                                 <div className="dashboardButton">
                                     <Row>
-                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                        <Col xs={7} style={{fontSize:'1.2rem'}} >
                                             Tickets cerrados
                                             <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets"]}</h2>
                                         </Col>
                                         <Col xs={1}>
                                             <div className="divSeparator"></div>
                                         </Col>                            
-                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                        <Col xs={2} style={{marginTop:"1rem"}} >                                
                                             <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
                                         </Col>
                                     </Row>         
@@ -121,14 +119,14 @@ export default function HomeTecnical(){
                             <Col>
                                 <div className="dashboardButton">
                                     <Row>
-                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                        <Col xs={7} style={{fontSize:'1.2rem'}} >
                                             Tickets con petición de cierre
                                             <h2 style={{ fontSize:'4rem'}}>{info["on_revision_tickets"]}</h2>
                                         </Col>
                                         <Col xs={1}>
                                             <div className="divSeparator"></div>
                                         </Col>
-                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                        <Col xs={2} style={{marginTop:"1rem"}} >                                
                                             <img className="imgInformation" src="/images/detener.png"></img>
                                         </Col>
                                     </Row>                        
@@ -167,7 +165,7 @@ export default function HomeTecnical(){
                     :
                     null
             }                
-        </div>        
+        </>        
     )
 }
 

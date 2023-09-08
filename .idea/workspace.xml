@@ -5,9 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeAdmin/HomeAdmin.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeAdmin/HomeAdmin.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeAdmin/HomeAdmin.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeAdmin/HomeAdmin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeClient/HomeClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeMonitorist/HomeMonitorist.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeMonitorist/HomeMonitorist.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeTecnical/HomeTecnical.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeTecnical/HomeTecnical.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeTecnical/HomeTenical.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeTecnical/HomeTenical.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/UsersView/UsersView.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/UsersView/UsersView.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +37,7 @@
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "fix/responsive-view",
+    "git-widget-placeholder": "fix/mobile-view",
     "last_opened_file_path": "C:/Users/JosedeJesusGarciaHer",
     "settings.editor.selected.configurable": "configurable.group.editor"
   },

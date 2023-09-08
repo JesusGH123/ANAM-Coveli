@@ -239,14 +239,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Tickets totales
                                     <h2 className="dashboardTitle">{info["all_tickets"]}</h2>
                                 </Col>
                                 <Col xs={1} >
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/ticket.png"/>
                                 </Col>
                             </Row>
@@ -255,14 +255,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Tiempo promedio mensual de atención por ticket &#40;prioridad alta&#41;
                                     <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["high_prior"]["time"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/clock.png"/>
                                 </Col>
                             </Row>
@@ -273,14 +273,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Incidencias levantadas hoy
                                     <h2 className="dashboardTitle">{info["todays_tickets"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/warning.png"/>
                                 </Col>
                             </Row>
@@ -289,14 +289,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Tiempo promedio mensual de atención por ticket &#40;prioridad media&#41;
                                     <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["medium_prior"]["time"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/clock.png"/>
                                 </Col>
                             </Row>
@@ -307,14 +307,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Tickets mensuales resueltos fuera de tiempo
                                     <h2 className="dashboardTitle">{info["out_of_time_tickets"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/calendar.png"/>
                                 </Col>
                             </Row>
@@ -323,14 +323,14 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Tiempo promedio mensual de atención por ticket &#40;prioridad baja&#41;
                                     <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["low_prior"]["time"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/clock.png"/>
                                 </Col>
                             </Row>
@@ -341,13 +341,13 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Generar historial de tickets
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/archivo.png"/>
                                 </Col>
                             </Row>
@@ -356,13 +356,13 @@ export default function HomeSupervisor() {
                     <Col>
                         <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
-                                <Col xs={8}>
+                                <Col xs={7}>
                                     Generar reporte
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
-                                <Col xs={3}>
+                                <Col xs={2}>
                                     <img className="dashboardIcon" src="/images/archivo.png"/>
                                 </Col>
                             </Row>
