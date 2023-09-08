@@ -8,6 +8,7 @@ import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
 
 import "./UsersView.css"
+import NavigationBar from "../Navbar/Navbar";
 
 const cookies = new Cookies();
 
@@ -24,9 +25,6 @@ function generateRandomPassword() {
 }
 
 function launchSwal(messages, userId, actionId) {
-    console.log("Making this action: " + actionId);
-    console.log("To this user: " + userId);
-
     Swal.fire({
         title: `Desea ${messages[0]} el usuario`,
         showDenyButton: true,
@@ -53,13 +51,7 @@ export default function UserRegister() {
     let cancelTokenSource = CancelToken.source();
     const [isAccesible, setIsAccesible] = React.useState(false); 
 
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
     const [users, setUsers] = React.useState([]);
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -84,11 +76,6 @@ export default function UserRegister() {
             }).catch((err) => 
                 handleError(err)
             )
-            axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token, mode: 'cors' })
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            }).catch((err) => handleError(err))
             axios.get(`${API_BASE_URL}/users/roles`, { cancelToken: cancelTokenSource.token })
             .then((res) => setRoles(res.data))
             .catch((err) => handleError(err));
@@ -99,35 +86,7 @@ export default function UserRegister() {
             {
                 (isAccesible) ?
                 <div>
-                    <Navbar expand="md" className="bg-body-tertiary">
-                        <Container id='containerNav'>
-                            <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-                            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                            <Navbar.Collapse id="basic-navbar-nav">
-                                <Nav className="me-auto">
-                                    <Nav.Link href={`/homeA/`} onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Home</Nav.Link>
-                                    <Nav.Link href="/users" onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Usuarios</Nav.Link>
-                                </Nav>                         
-                                <div>
-                                    <Row>
-                                        <Col>
-                                        <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                                        </Col>
-                                        <Col>
-                                            <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                                <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar Sesión</NavDropdown.Item>                            
-                                            </NavDropdown>                        
-                                            <label style={{color:'#51177D'}}>
-                                                {useremail}
-                                            </label>                        
-                                        </Col>
-                                    </Row>                        
-                                </div>
-                                
-                            </Navbar.Collapse>
-                            
-                        </Container>                        
-                    </Navbar>       
+                    <NavigationBar/>
 
                     <Row>
                         <Col sm="10"><h2>Cuentas</h2></Col>
