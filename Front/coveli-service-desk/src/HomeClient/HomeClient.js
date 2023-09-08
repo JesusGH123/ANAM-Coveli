@@ -38,14 +38,26 @@ export default function HomeClient(){
     const showNewUser = () => setShowNewUser(true);     
     const closeNewUser = () => setShowNewUser(false);
 
+    const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
         "tickets": []
-    });       
+    }); 
     
     const [locations, setLocations] = React.useState([]);
     const [equipments, setEquipments] = React.useState([]);
     const [serials, setSerials] = React.useState([]);    
     
+    useEffect(() => {
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/homeC'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true);
+            else
+                window.location.href = "/";
+        })
+    }, [])
     useEffect(() =>{        
         axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                
@@ -171,141 +183,145 @@ export default function HomeClient(){
     }
 
     return(
-        <div>    
-            <div>
+        <div>
+            {
+                (isAccesible) ?
+                <>
+                <div>
                 <NavigationBar/>
-            </div>            
-            
-            <Row>
-                <Col lg={8}>                
-                    <Button className='btn-new-client'  onClick={ showNewTicket} >
-                        Nuevo ticket
-                    </Button>
-                </Col>
-                <Col lg={4}>
-                    <div className="dashboardButtonCliente">
-                        <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets levantados
-                                <h2 style={{ fontSize:'4rem'}}>{info["all_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
-                                <img className="imgInformation" src="/images/ticket.png"></img>
-                            </Col>
-                        </Row>                                        
-                    </div>
-                </Col>
-            </Row>            
-            <Row className='graphicsArea'>
-                <TableContainer component={Paper}>
-                <Box sx={{ margin: 1 }}>
-                            <Typography variant="h4" gutterBottom component="div">
-                                Tickets
-                            </Typography>
-                    <Table  striped hover responsive aria-label='customized table'>
-                        <thead>
-                            <tr>                                          
-                                <th># Ticket</th>
-                                <th>Category</th>
-                                <th>Fecha creación</th>
-                                <th>Fecha modificación</th>
-                                <th>Prioridad</th>
-                                <th style={{textAlign:'center'}}>Validación</th>
-                            </tr>
-                        </thead>
-                        <tbody>                        
-                            { info["tickets"].map((row) => (
-                                <RowTicket key={row.ticketId} row={row} />
-                            ))}                    
-                        </tbody>
-                    </Table>
-                </Box>
-                </TableContainer>
-            </Row>
+                    </div>            
+                    
+                    <Row>
+                        <Col lg={8}>                
+                            <Button className='btn-new-client'  onClick={ showNewTicket} >
+                                Nuevo ticket
+                            </Button>
+                        </Col>
+                        <Col lg={4}>
+                            <div className="dashboardButtonCliente">
+                                <Row>
+                                    <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                        Tickets levantados
+                                        <h2 style={{ fontSize:'4rem'}}>{info["all_tickets"]}</h2>
+                                    </Col>
+                                    <Col xs={1}>
+                                        <div className="divSeparator"></div>
+                                    </Col>
+                                    <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                        <img className="imgInformation" src="/images/ticket.png"></img>
+                                    </Col>
+                                </Row>                                        
+                            </div>
+                        </Col>
+                    </Row>            
+                    <Row className='graphicsArea'>
+                        <TableContainer component={Paper}>
+                        <Box sx={{ margin: 1 }}>
+                                    <Typography variant="h4" gutterBottom component="div">
+                                        Tickets
+                                    </Typography>
+                            <Table  striped hover responsive aria-label='customized table'>
+                                <thead>
+                                    <tr>                                          
+                                        <th># Ticket</th>
+                                        <th>Category</th>
+                                        <th>Fecha creación</th>
+                                        <th>Fecha modificación</th>
+                                        <th>Prioridad</th>
+                                        <th style={{textAlign:'center'}}>Validación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>                        
+                                    { info["tickets"].map((row) => (
+                                        <RowTicket key={row.ticketId} row={row} />
+                                    ))}                    
+                                </tbody>
+                            </Table>
+                        </Box>
+                        </TableContainer>
+                    </Row>
 
-            <Modal show={mdlNewUser} onHide={closeNewUser} style={{color:"#66CCC5"}}>
-                <Modal.Header closeButton className='modal-width'>
-                    <Modal.Title>Nuevo ticket</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>                    
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Categoria
-                        </InputGroup.Text>
-                        <Form.Select id="ddlCategory" required>
-                            <option value={0}>-- Seleccione --</option>
-                            <option value={1}>Incidencia</option>
-                            <option value={2}>Siniestro</option>
-                        </Form.Select>
-                    </InputGroup>
-                    <InputGroup className='mb-2'>
-                    <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}} hasValidation>Situación
-                        </InputGroup.Text>
-                        <Form.Control type='text' id='txtSituation' required/>
-                        
-                    </InputGroup>
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text  style={{color:"#66CCC5", fontWeight:'bold'}}>Ubicación
-                        </InputGroup.Text>
-                        <Form.Select id="ddlLocation" onChange={ (e) => e.target.value > 0 ? getEquipmentByLocation(e.target.value) : clearEquimentsSerials()} required>
-                            <option value={0}>-- Seleccione --</option>
-                        { locations.map((l) => {
-                            return(<option value={l.equipmentlocationId} >{l.equipmentlocation}</option>
-                            )                            
-                        })}                                                                    
-                        </Form.Select>
-                    </InputGroup>                                         
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Modelo
-                        </InputGroup.Text>
-                        <Form.Select id="ddlEquipment" onChange={ (e) => e.target.value != 0 ? getSerialsByEquipment(e.target.value) : setSerials([]) } required>
-                        <option value={0}>-- Seleccione --</option>
-                        { equipments.map((eq) => {
-                            return(<option value={eq.equipmentLocationId +"|"+ eq.equipmentModelId} >{eq.equipmentModel}</option>
-                            )                            
-                        })}                                                                    
-                        </Form.Select>
-                    </InputGroup>
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>No. de Serie
-                        </InputGroup.Text>
-                        <Form.Select id="ddlSerial" required>
-                        <option value={0}>-- Seleccione --</option>
-                        { serials.map((s) => {
-                            return(<option value={s.equipmentSerialId} >{s.equipmentSerial}</option>
-                            )                            
-                        })}                                                                                            
-                        </Form.Select>
-                    </InputGroup>                         
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
-                        <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required/>
-                    </InputGroup>
-                    <InputGroup className='mb-2'>
-                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
-                        </InputGroup.Text>
-                        <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
-                    </InputGroup>                    
-                    <div id="infoNew" style={{marginTop:"30px", color:'red'}}></div>                    
-                </Modal.Body>
-                <Modal.Footer>
-                    <InputGroup className='mb-2'>                        
-                        <Button className='btn-new-client' onClick={addTicket}>
-                            Crear ticket
-                        </Button>
-                    </InputGroup>
-                </Modal.Footer>                        
-            </Modal> 
-
-            
+                    <Modal show={mdlNewUser} onHide={closeNewUser} style={{color:"#66CCC5"}}>
+                        <Modal.Header closeButton className='modal-width'>
+                            <Modal.Title>Nuevo ticket</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>                    
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Categoria
+                                </InputGroup.Text>
+                                <Form.Select id="ddlCategory" required>
+                                    <option value={0}>-- Seleccione --</option>
+                                    <option value={1}>Incidencia</option>
+                                    <option value={2}>Siniestro</option>
+                                </Form.Select>
+                            </InputGroup>
+                            <InputGroup className='mb-2'>
+                            <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}} hasValidation>Situación
+                                </InputGroup.Text>
+                                <Form.Control type='text' id='txtSituation' required/>
+                                
+                            </InputGroup>
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text  style={{color:"#66CCC5", fontWeight:'bold'}}>Ubicación
+                                </InputGroup.Text>
+                                <Form.Select id="ddlLocation" onChange={ (e) => e.target.value > 0 ? getEquipmentByLocation(e.target.value) : clearEquimentsSerials()} required>
+                                    <option value={0}>-- Seleccione --</option>
+                                { locations.map((l) => {
+                                    return(<option value={l.equipmentlocationId} >{l.equipmentlocation}</option>
+                                    )                            
+                                })}                                                                    
+                                </Form.Select>
+                            </InputGroup>                                         
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Modelo
+                                </InputGroup.Text>
+                                <Form.Select id="ddlEquipment" onChange={ (e) => e.target.value != 0 ? getSerialsByEquipment(e.target.value) : setSerials([]) } required>
+                                <option value={0}>-- Seleccione --</option>
+                                { equipments.map((eq) => {
+                                    return(<option value={eq.equipmentLocationId +"|"+ eq.equipmentModelId} >{eq.equipmentModel}</option>
+                                    )                            
+                                })}                                                                    
+                                </Form.Select>
+                            </InputGroup>
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>No. de Serie
+                                </InputGroup.Text>
+                                <Form.Select id="ddlSerial" required>
+                                <option value={0}>-- Seleccione --</option>
+                                { serials.map((s) => {
+                                    return(<option value={s.equipmentSerialId} >{s.equipmentSerial}</option>
+                                    )                            
+                                })}                                                                                            
+                                </Form.Select>
+                            </InputGroup>                         
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
+                                <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required/>
+                            </InputGroup>
+                            <InputGroup className='mb-2'>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
+                                </InputGroup.Text>
+                                <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
+                            </InputGroup>                    
+                            <div id="infoNew" style={{marginTop:"30px", color:'red'}}></div>                    
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <InputGroup className='mb-2'>                        
+                                <Button className='btn-new-client' onClick={addTicket}>
+                                    Crear ticket
+                                </Button>
+                            </InputGroup>
+                        </Modal.Footer>                        
+                    </Modal>
+                </>
+                :
+                null
+            }
         </div>        
     )
 }
 
 function RowTicket(props){
-
     var currentdate = new Date(); 
     var datetime = (currentdate.getMonth()+1) + "/"
                     + currentdate.getDate()  + "/" 
@@ -318,20 +334,13 @@ function RowTicket(props){
     const showDecline = () => setShowDecline(true);     
     const closeDecline = () => setShowDecline(false);   
 
-    
-    
-
     const { row } = props;
     const [open, setOpen] = React.useState(false);
     const [ticketHist, setTicketHist] =  React.useState({
         "ticketsHistory": []
     });
-
-    
-
      
     const declineTciket =  async () =>  {
-
         var message = "";
         var fileInput = document.getElementById("fileEvindece");
 
@@ -403,12 +412,10 @@ function RowTicket(props){
             setTicketHist(res.data);            
         })
         .catch((err) => handleError(err));
-    }    
-
-    
+    }        
     
     return(        
-        <React.Fragment>            
+        <React.Fragment>
             <Modal show={mdlDecline} onHide={closeDecline} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>
                     <Modal.Title>Rechazar el Ticket ({row.ticketId})</Modal.Title>
@@ -435,8 +442,7 @@ function RowTicket(props){
                 </Modal.Footer>
             </Modal>                        
 
-            
-            <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
+            <tr sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <td component="th" scope='row'>                                   
                     <IconButton
                             aria-label="expand row"
@@ -483,10 +489,10 @@ function RowTicket(props){
                                     }) }
                                 </tbody>
                             </Table>                                                    
-                        </Box>                                                
+                        </Box>
                     </Collapse>
                 </td>
-            </tr>                                                                                                                     
+            </tr>                                                                                                                    
         </React.Fragment>
     );
 }

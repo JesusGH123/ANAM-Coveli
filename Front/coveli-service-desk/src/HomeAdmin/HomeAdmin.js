@@ -41,7 +41,9 @@ export default function HomeAdmin(){
             else
                 window.location.href = "/";
         })
-
+    }, [])
+    
+    useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
