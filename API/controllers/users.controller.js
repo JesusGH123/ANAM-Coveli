@@ -44,8 +44,6 @@ module.exports.get_user = (req, res) => {
 //Add a new user
 module.exports.add_user = async (req, res, rows) => {
     let hashedPassword = crypto.createHash('sha256').update(req.body.p_password).digest('hex').toString()
-
-    console.log(req.body);
     connection.query(
         "call add_user(?, ?, ?, ?, @p_result, @p_message); select @p_message, @p_result;",
         [
@@ -61,8 +59,7 @@ module.exports.add_user = async (req, res, rows) => {
 
         try {
             res.send(results[1][0]);
-        } catch (error) {      
-            console.log(results);      
+        } catch (error) {                  
             console.log(error);
         }
     });
