@@ -172,9 +172,6 @@ export default function HomeTecnical() {
 }
 
 function RowTicket(props){    
-    const [mdlReporte, setShowReporte] = React.useState(false);
-    const handleCloseReporte = () => setShowReporte(0);
-    const handleShowReporte = () => setShowReporte(true);
     const [show, setShow] = React.useState(false);
     const [modalType, setModalType] = React.useState(0);
     const [currentTicket, setCurrentTicket] = React.useState({});
