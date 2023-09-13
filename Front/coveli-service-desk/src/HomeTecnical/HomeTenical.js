@@ -134,9 +134,9 @@ export default function HomeTecnical() {
                                     </Row>                        
                                 </div>
                             </Col>
-                        </Row>
-            
-                        <Row className="graphicsArea">                                    
+                        </Row>   
+                        <Row className="graphicsArea">                    
+                            
                             <TableContainer component={Paper}>
                                 <Box sx={{ margin: 1 }}>
                                     <Typography variant="h4" gutterBottom component="div">
@@ -162,11 +162,11 @@ export default function HomeTecnical() {
                                     </Table>
                                 </Box>
                             </TableContainer>
-                        </Row>
-                </>
-            :
-            null
-        }
+                        </Row>       
+                    </>
+                    :
+                    null
+            }
         </>
     )
 }
