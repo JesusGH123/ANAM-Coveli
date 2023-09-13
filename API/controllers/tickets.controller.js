@@ -239,3 +239,22 @@ connection.query(
     }
   )
 }
+
+
+module.exports.get_maintenance_report = async(req, res)=>{
+  connection.query(    
+      'call db_coveli.get_maintenance_report(?);',        
+      req.params.id,
+      (error, reporte, fields) => {
+        if(error)
+          res.send(error);                                                                             
+        try {
+            res.json({              
+                'reporte_mantenimiento': reporte[0]
+            });
+        } catch (error) {        
+            console.log(error);
+        } 
+      }
+    )
+  }
