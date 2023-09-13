@@ -113,14 +113,14 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Todos los tickets
                                 <h2 style={{ fontSize:'4rem'}}>{info["all_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1} >
                                 <div className="divSeparator"></div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/ticket.png"></img>
                             </Col>
                         </Row>
@@ -129,14 +129,14 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Tickets sin asignar
                                 <h2 style={{ fontSize:'4rem'}}>{info["not_assigned_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/detener.png"></img>
                             </Col>
                         </Row>                                        
@@ -145,13 +145,13 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Generador de reporte                                
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/archivo.png"></img>
                             </Col>
                         </Row>                                        
@@ -162,14 +162,14 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Tickets asignados
                                 <h2 style={{ fontSize:'4rem'}}>{info["assigned_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
                             </Col>                            
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/informacion.png"></img>
                             </Col>
                         </Row>         
@@ -178,14 +178,14 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Tickets pausados
                                 <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
                             </Col>
                         </Row>                        
@@ -194,14 +194,14 @@ export default function HomeAdmin(){
                 <Col>
                     <div className="dashboardButton">
                         <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
+                            <Col xs={7} style={{fontSize:'1.2rem'}} >
                                 Tickets cerrados
                                 <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets_count"]}</h2>
                             </Col>
                             <Col xs={1}>
                                 <div className="divSeparator"></div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
+                            <Col xs={2} style={{marginTop:"1rem"}} >                                
                                 <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
                             </Col>
                         </Row>                        
