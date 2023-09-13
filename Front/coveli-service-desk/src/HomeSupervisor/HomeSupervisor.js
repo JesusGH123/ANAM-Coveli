@@ -490,17 +490,26 @@ function RowTicket(props){
                 })
                 .then((res) => {                         
                     if(res.data["@p_result"] == 1){
-                        for (var i = 0; i < fileInputSupervisor.files.length; i++) {                    
+                        for (var i = 0; i < fileInputSupervisor.files.length; i++) {
                             var file = fileInputSupervisor.files[i];                                                     
-                            const reader = new FileReader();                    
-                            reader.onloadend = () => {                                                       
-                                const base64String = reader.result;                                                                                                                                   
+                                const canvas = document.createElement("canvas");
+                                const ctx = canvas.getContext("2d");
+                                let currentImg = "";
+                                let webpImg = "";
+                                let convertedImg = "";
+                                currentImg = URL.createObjectURL(file);  
+                                webpImg = new Image();                            
+                                webpImg.onload = ()=>{
+                                canvas.width = webpImg.naturalWidth;
+                                canvas.height = webpImg.naturalHeight;
+                                ctx.drawImage(webpImg, 0, 0, canvas.width, canvas.height);
+                                convertedImg = canvas.toDataURL("image/jpeg", 1.0);                                
                                 axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
-                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],
-                                    p_evidencia:base64String                                   
+                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],                                   
+                                    p_evidencia: convertedImg
                                     });
-                            };
-                            reader.readAsDataURL(file);                                
+                                }                            
+                                webpImg.src = currentImg;                           
                         }
                         setComment("");
                         handleClose();
@@ -620,8 +629,8 @@ function RowTicket(props){
                 <td>{row.status}</td>
 
                 <td>
-                    <Button onClick={() => {setNewStatus(9); handleShow(); setCurrentTicket(row); }} className="btnClose">Cerrar</Button>
-                    <Button onClick={() => {setNewStatus(8); handleShow(); setCurrentTicket(row); }} variant="danger">Rechazar</Button>
+                    <Button onClick={() => {setOpen(!open); setNewStatus(9); handleShow(); setCurrentTicket(row); }} className="btnClose">Cerrar</Button>
+                    <Button onClick={() => {setOpen(!open); setNewStatus(8); handleShow(); setCurrentTicket(row); }} variant="danger">Rechazar</Button>
                 </td>                
             </tr>                                    
             <tr>
