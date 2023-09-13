@@ -29,6 +29,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import axios from "axios";
+import NavigationBar from "../Navbar/Navbar";
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -51,6 +52,7 @@ export default function HomeSupervisor() {
     const CancelToken = axios.CancelToken
     const cancelTokenSource = CancelToken.source()
 
+    const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
             "all_tickets": 0,
             "todays_tickets": 0,
@@ -69,8 +71,18 @@ export default function HomeSupervisor() {
                 "second_section": []
             }
     });
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
+
+    useEffect(() => {
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/homeS'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true)
+            else
+                window.location.href = "/";
+        })
+    }, [])
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
@@ -78,18 +90,7 @@ export default function HomeSupervisor() {
             setInfo(res.data);
         })
         .catch((err) => handleError(err));
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            })
-        .catch((err) => handleError(err));
     });
-
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
 
     const updateTicket = (action, ticket) => {
         let actionString = (action == 9) ? ["cerrar", "cerrado", "cierra"] : ["rechazar", "rechazado", "rechaza"];
@@ -207,7 +208,7 @@ export default function HomeSupervisor() {
             title: {
                 display: true,
                 text: 'Chart.js Line Chart'
-            }
+                }
             }
         },
     };
@@ -224,230 +225,211 @@ export default function HomeSupervisor() {
                 display: true,
                 text: 'Chart.js Line Chart'
             }
-            }
+          }
         },
     };
 
     return (
         <Container className="containerLogin">
-            <Navbar className="bg-body-tertiary" expand="lg" >
-                <Container id="navContainer">
-                    <Navbar.Brand><img id="logoImg" alt="Ltp global software" src="/images/logo.png"/></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}>Home</Nav.Link>
-                    </Nav>
-                    <div>
-                        <Row>
-                            <Col>
-                            <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                            </Col>
-                            <Col>
-                                <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                    <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
-                                </NavDropdown>
-                                <label style={{color:'#51177D'}}>
-                                    {useremail}
-                                </label>                        
-                            </Col>
-                        </Row>                        
-                    </div>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-
-            <Row className="rowHomeSupervisor">
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Tickets totales
-                                <h2 className="dashboardTitle">{info["all_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1} >
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/ticket.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Tiempo promedio mensual de atención por ticket &#40;prioridad alta&#41;
-                                <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["high_prior"]["time"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/clock.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-            </Row>
-            <Row className="rowHomeSupervisor">
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Incidencias levantadas hoy
-                                <h2 className="dashboardTitle">{info["todays_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/warning.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Tiempo promedio mensual de atención por ticket &#40;prioridad media&#41;
-                                <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["medium_prior"]["time"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/clock.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-            </Row>
-            <Row className="rowHomeSupervisor">
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Tickets mensuales resueltos fuera de tiempo
-                                <h2 className="dashboardTitle">{info["out_of_time_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/calendar.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Tiempo promedio mensual de atención por ticket &#40;prioridad baja&#41;
-                                <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["low_prior"]["time"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/clock.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Generar historial de tickets
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/archivo.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row className="rowHomeSupervisor">
-                            <Col xs={8}>
-                                Generar reporte
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3}>
-                                <img className="dashboardIcon" src="/images/archivo.png"/>
-                            </Col>
-                        </Row>
-                    </div>
-                </Col>
-            </Row>
-
-            <Row className="graphicsArea">
-                <Col>
-                    <Line options={weekly} data={weeklyData} />
-                </Col>
-                <Col>
-                    <Line options={monthly} data={monthlyData} />
-                </Col>
-            </Row>
-
-            <Row className="graphicsArea">
-                <h2>Tickets</h2>
-                <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Categoria</th>
-                            <th>Cliente</th>
-                            <th>Fecha y hora</th>
-                            <th>Prioridad</th>
-                            <th>Comentario</th>
-                            <th>Tecnico</th>
-                            <th>Estado</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { info["tickets"]["first_section"].map((row) => (
-                            <RowTicket key={row.ticketId} row={row} />
-                        ))}                        
-                    </tbody>
-                </Table>
-            </Row>
-
-            <Row className="graphicsArea">
-                <h2>Historial</h2>
-                <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Categoria</th>
-                            <th>Cliente</th>
-                            <th>Fecha y hora</th>
-                            <th>Prioridad</th>
-                            <th>Comentario</th>
-                            <th>Tecnico</th>
-                            <th>Estado</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>  
-                        { info["tickets"]["second_section"].map((row) => (
-                            <RowTicketHistory key={row.ticketId} row={row} />
-                        ))}                                                
-                    </tbody>
-                </Table>
-            </Row>
+            {
+                (isAccesible) ?
+                <>
+                <NavigationBar/>
+                <Row className="rowHomeSupervisor">
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Tickets totales
+                                    <h2 className="dashboardTitle">{info["all_tickets"]}</h2>
+                                </Col>
+                                <Col xs={1} >
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/ticket.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Tiempo promedio mensual de atención por ticket &#40;prioridad alta&#41;
+                                    <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["high_prior"]["time"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/clock.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                </Row>
+                <Row className="rowHomeSupervisor">
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Incidencias levantadas hoy
+                                    <h2 className="dashboardTitle">{info["todays_tickets"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/warning.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Tiempo promedio mensual de atención por ticket &#40;prioridad media&#41;
+                                    <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["medium_prior"]["time"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/clock.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                </Row>
+                <Row className="rowHomeSupervisor">
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Tickets mensuales resueltos fuera de tiempo
+                                    <h2 className="dashboardTitle">{info["out_of_time_tickets"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/calendar.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Tiempo promedio mensual de atención por ticket &#40;prioridad baja&#41;
+                                    <h2 className="dashboardTitle">{info["avg_time_for_tickets"]["low_prior"]["time"]}</h2>
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/clock.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Generar historial de tickets
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/archivo.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="dashboardButton">
+                            <Row className="rowHomeSupervisor">
+                                <Col xs={8}>
+                                    Generar reporte
+                                </Col>
+                                <Col xs={1}>
+                                    <div className="divSeparator"></div>
+                                </Col>
+                                <Col xs={3}>
+                                    <img className="dashboardIcon" src="/images/archivo.png"/>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Col>
+                </Row>
+    
+                <Row className="graphicsArea">
+                    <Col>
+                        <Line options={weekly} data={weeklyData} />
+                    </Col>
+                    <Col>
+                        <Line options={monthly} data={monthlyData} />
+                    </Col>
+                </Row>
+    
+                <Row className="graphicsArea">
+                    <h2>Tickets</h2>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Categoria</th>
+                                <th>Cliente</th>
+                                <th>Fecha y hora</th>
+                                <th>Prioridad</th>
+                                <th>Comentario</th>
+                                <th>Tecnico</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { info["tickets"]["first_section"].map((row) => (
+                                <RowTicket key={row.ticketId} row={row} />
+                            ))}                        
+                        </tbody>
+                    </Table>
+                </Row>
+    
+                <Row className="graphicsArea">
+                    <h2>Historial</h2>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Categoria</th>
+                                <th>Cliente</th>
+                                <th>Fecha y hora</th>
+                                <th>Prioridad</th>
+                                <th>Comentario</th>
+                                <th>Tecnico</th>
+                                <th>Estado</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { info["tickets"]["second_section"].map((row) => (
+                                <RowTicketHistory key={row.ticketId} row={row} />
+                            ))}                                                
+                        </tbody>
+                    </Table>
+                </Row>
+                </>
+                    :
+                null
+            }
         </Container>
     )
 }
@@ -480,8 +462,6 @@ function RowTicket(props){
     const [mdlEvidences, setShowEvidences] = useState(false);    
     const showEvidences = () => setShowEvidences(true);     
     const closeEvidences = () => setShowEvidences(false);   
-
-
 
     const updateTicket = () =>  {
         
@@ -580,7 +560,6 @@ function RowTicket(props){
         
     return(        
         <React.Fragment>
-            
                 <Modal show={show} onHide={handleClose} style={{color:"#66CCC5"}}>
                     <Modal.Header closeButton>
                         <Modal.Title>Ticket: {currentTicket.ticketId}</Modal.Title>

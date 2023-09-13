@@ -156,9 +156,8 @@ module.exports.forgot_password = async(req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error);
-
             if(results[0].length == 0)
-                res.send('Not registered user');
+                res.json(-1);
             else {
                 const token = crypto.randomBytes(20).toString('hex');
 
@@ -170,17 +169,17 @@ module.exports.forgot_password = async(req, res) => {
                             res.send(error);
                         else {
                             const transporter = nodemailer.createTransport({
-                                service: 'Outlook365',
-                                host:'smtp.office365.com',
-                                port:587,
+                                service: 'gmail',
+                                port: 587,
+                                secureConnection: false,
                                 auth: {
-                                    user: 'nltpglobal@ltpglobal.onmicrosoft.com',
-                                    pass: 'Gl0b4l2023!#',
+                                    user: 'soporteanam@gmail.com',
+                                    pass: 'qbhp txbp ejsi vxzr',
                                 }
                             })
 
                             const mailOptions = {
-                                from: 'nltpglobal@ltpglobal.onmicrosoft.com',
+                                from: 'soporteanam@gmail.com',
                                 to: `${req.body.email}`,
                                 subject: 'Reestablecimiento de contraseña',
                                 text:  'Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.\n\n'
@@ -193,7 +192,7 @@ module.exports.forgot_password = async(req, res) => {
                                 if(err)
                                     console.error("There was an errror: " + err);
                                 else
-                                    console.log("Recovery email sent");
+                                    res.json(1);
                             })
                         }
                     }
@@ -227,6 +226,20 @@ module.exports.reset_password = async (req, res) => {
         (error, results, fields) => {
             if(error)
                 res.send(error);
+        }
+    )
+}
+
+//Check privileges
+module.exports.check_privilege = async (req, res) => {
+    connection.query(
+        "CALL access_by_user(?, ?)",
+        [req.body.userId, req.body.nextPath],
+        (error, results, fields) => {
+            if(error)
+                console.log(error);
+
+            res.json(results[0][0]["result"]);
         }
     )
 }

@@ -7,9 +7,6 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 import { API_BASE_URL } from '../constants.js';
 import Swal from 'sweetalert2';
-
-
-
 import './HomeTecnical.css'
 import Report from'../Reports/ReportMaintenance.js'
 
@@ -21,12 +18,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper } from '@mui/material';
+import NavigationBar from '../Navbar/Navbar';
 
 import { PDFDownloadLink,PDFViewer, pdf} from '@react-pdf/renderer';
 import ReactPDF from '@react-pdf/renderer';
 
 import { saveAs } from "file-saver";
-
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
@@ -37,10 +34,8 @@ function handleError(e) {
         console.log(e.message);
 }
 
-export default function HomeTecnical(){  
-
-    const [ticketResultTechnical, setticketResultTechnical] = React.useState([]);
-
+export default function HomeTecnical(){
+    const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
         "paused_tickets": 0,
@@ -48,126 +43,101 @@ export default function HomeTecnical(){
         "on_revision_tickets": 0,
         "my_tickets": []
     });
-    const [username, setUsername] = React.useState("");
-    const [useremail, setUseremail] = React.useState("");
+
+    useEffect(() => {
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/homeT'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true)
+            else
+                window.location.href = "/";
+        })
+    }, [])
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
             }).catch((err) => handleError(err));
-        axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token, mode: 'cors'})
-            .then((res) => {
-                setUseremail(res.data["EMAIL"]);
-                setUsername(res.data["FULLNAME"]);
-            }).catch((err) => handleError(err));
     });
 
-    
-
-    
-
-    const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
-        window.location.href = "/";
-    }
-
     return(
-        <div>    
-            <div>
-            <Navbar expand="md" className="bg-body-tertiary">
-                <Container id='containerNav'>
-                    <Navbar.Brand><img className="imgNav" alt="LTP Global Software" src="/images/logo.png" /></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/home" onClick={() => {cancelTokenSource.cancel('Operation canceled')}} style={{fontWeight:'bold'}}>Home</Nav.Link>
-                        </Nav>                         
+        <div>
+            {
+                (isAccesible) ?
+                    <>
                         <div>
-                            <Row>
-                                <Col>
-                                <img src='/images/user.png' style={{width:'2.5rem', height:'2.5rem'}}></img>
-                                </Col>
-                                <Col>
-                                    <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                        <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout()}}>Cerrar Sesión</NavDropdown.Item>                            
-                                    </NavDropdown>                        
-                                    <label style={{color:'#51177D'}}>
-                                        {useremail}
-                                    </label>                        
-                                </Col>
-                            </Row>                        
-                        </div>
+                            <NavigationBar/>                              
+                        </div>               
                         
-                    </Navbar.Collapse>
-                    
-                </Container>                        
-            </Navbar>                                
-            </div>               
-            
-            <Row className="rowTecnical">
-                <Col>
-                    <div className="dashboardButton">
-                        <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets sin atender
-                                <h2 style={{ fontSize:'4rem'}}>{info["tickets_without_attendance"]}</h2>
+                        <Row className="rowTecnical">
+                            <Col>
+                                <div className="dashboardButton">
+                                    <Row>
+                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                            Tickets sin atender
+                                            <h2 style={{ fontSize:'4rem'}}>{info["tickets_without_attendance"]}</h2>
+                                        </Col>
+                                        <Col xs={1} >
+                                            <div className="divSeparator"></div>
+                                        </Col>
+                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                            <img className="imgInformation" src="/images/informacion.png"></img>
+                                        </Col>
+                                    </Row>                
+                                </div>
                             </Col>
-                            <Col xs={1} >
-                                <div className="divSeparator"></div>
+                            <Col>
+                                <div className="dashboardButton">
+                                    <Row>
+                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                            Tickets pausados
+                                            <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets"]}</h2>
+                                        </Col>
+                                        <Col xs={1}>
+                                            <div className="divSeparator"></div>
+                                        </Col>
+                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                            <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
+                                        </Col>
+                                    </Row>                                        
+                                </div>
                             </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
-                                <img className="imgInformation" src="/images/informacion.png"></img>
+                        </Row>
+                        <Row className="rowTecnical">                    
+                            <Col>
+                                <div className="dashboardButton">
+                                    <Row>
+                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                            Tickets cerrados
+                                            <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets"]}</h2>
+                                        </Col>
+                                        <Col xs={1}>
+                                            <div className="divSeparator"></div>
+                                        </Col>                            
+                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                            <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
+                                        </Col>
+                                    </Row>         
+                                </div>                                                   
                             </Col>
-                        </Row>                
-                    </div>
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets pausados
-                                <h2 style={{ fontSize:'4rem'}}>{info["paused_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
-                                <img className="imgInformation" src="/images/boton-de-pausa-de-video.png"></img>
-                            </Col>
-                        </Row>                                        
-                    </div>
-                </Col>
-            </Row>
-            <Row className="rowTecnical">                    
-                <Col>
-                    <div className="dashboardButton">
-                        <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets cerrados
-                                <h2 style={{ fontSize:'4rem'}}>{info["closed_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>                            
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
-                                <img className="imgInformation" src="/images/marca-de-verificacion.png"></img>
-                            </Col>
-                        </Row>         
-                    </div>                                                   
-                </Col>
-                <Col>
-                    <div className="dashboardButton">
-                        <Row>
-                            <Col xs={8} style={{fontSize:'1.2rem'}} >
-                                Tickets con petición de cierre
-                                <h2 style={{ fontSize:'4rem'}}>{info["on_revision_tickets"]}</h2>
-                            </Col>
-                            <Col xs={1}>
-                                <div className="divSeparator"></div>
-                            </Col>
-                            <Col xs={3} style={{marginTop:"1rem"}} >                                
-                                <img className="imgInformation" src="/images/detener.png"></img>
+                            <Col>
+                                <div className="dashboardButton">
+                                    <Row>
+                                        <Col xs={8} style={{fontSize:'1.2rem'}} >
+                                            Tickets con petición de cierre
+                                            <h2 style={{ fontSize:'4rem'}}>{info["on_revision_tickets"]}</h2>
+                                        </Col>
+                                        <Col xs={1}>
+                                            <div className="divSeparator"></div>
+                                        </Col>
+                                        <Col xs={3} style={{marginTop:"1rem"}} >                                
+                                            <img className="imgInformation" src="/images/detener.png"></img>
+                                        </Col>
+                                    </Row>                        
+                                </div>
                             </Col>
                         </Row>                        
                     </div>
@@ -201,17 +171,15 @@ export default function HomeTecnical(){
                     </Box>
                 </TableContainer>
             </Row>
-            
-        </div>        
+            </>
+            :
+            null
+        </div>      
     )
 }
 
 
 function RowTicket(props){    
-
-
-    
-    
     const [mdlReporte, setShowReporte] = React.useState(false);
     const handleCloseReporte = () => setShowReporte(0);
     const handleShowReporte = () => setShowReporte(true);
@@ -352,10 +320,7 @@ function RowTicket(props){
         })
         .catch((err) => handleError(err));
     }  
-    
-    
-    
-        
+  
     return(        
         <React.Fragment>            
             <Modal show={show} onHide={handleClose} style={{color:"#66CCC5"}}>
@@ -438,10 +403,7 @@ function RowTicket(props){
                         </Modal.Footer>                               
                     </Row>
                 }
-            </Modal>   
-
-
-            
+            </Modal>    
 
             <Modal show={mdlEvidences} onHide={closeEvidences} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>
