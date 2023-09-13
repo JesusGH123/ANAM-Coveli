@@ -20,10 +20,7 @@ import TableContainer from  '@mui/material/TableContainer';
 import { Paper } from '@mui/material';
 import NavigationBar from '../Navbar/Navbar';
 
-import { PDFDownloadLink,PDFViewer, pdf} from '@react-pdf/renderer';
-import ReactPDF from '@react-pdf/renderer';
-
-import { saveAs } from "file-saver";
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
@@ -34,7 +31,7 @@ function handleError(e) {
         console.log(e.message);
 }
 
-export default function HomeTecnical(){
+export default function HomeTecnical() {
     const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
@@ -63,7 +60,7 @@ export default function HomeTecnical(){
             }).catch((err) => handleError(err));
     });
 
-    return(
+    return (
         <>
             {
                 (isAccesible) ?
@@ -169,16 +166,12 @@ export default function HomeTecnical(){
                     </>
                     :
                     null
-            }                
+            }
         </>
     )
 }
 
-
 function RowTicket(props){    
-    const [mdlReporte, setShowReporte] = React.useState(false);
-    const handleCloseReporte = () => setShowReporte(0);
-    const handleShowReporte = () => setShowReporte(true);
     const [show, setShow] = React.useState(false);
     const [modalType, setModalType] = React.useState(0);
     const [currentTicket, setCurrentTicket] = React.useState({});
