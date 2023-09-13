@@ -60,7 +60,7 @@ module.exports.get_technical_home = async (req, res) => {
 
 module.exports.update_ticket = async (req, res) => {        
     connection.query(
-        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;",
+        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
         [
             req.body.p_userId,
             req.body.p_ticketId,
