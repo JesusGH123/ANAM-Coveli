@@ -6,7 +6,7 @@ import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Fo
 import Swal from 'sweetalert2';
 
 import './HomeClient.css'
-import Report from './ReportClient.js'
+
 import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
@@ -18,9 +18,9 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
-import { Paper, TableHead } from '@mui/material';
+import { Paper} from '@mui/material';
 
-import { PDFDownloadLink} from '@react-pdf/renderer';
+
 
 
 
@@ -148,17 +148,26 @@ export default function HomeClient(){
                 })
                 .then((res) => {
                     if(res.data["@p_result"] == 1){
-                        for (var i = 0; i < fileInput.files.length; i++) {                    
-                            var file = fileInput.files[i];                                                     
-                            const reader = new FileReader();                    
-                            reader.onloadend = () => {                        
-                                const base64String = reader.result;                                                                            
-                                axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
-                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],                                   
-                                    p_evidencia:base64String                                   
-                                    });
-                            };
-                            reader.readAsDataURL(file);                    
+                        for (var i = 0; i < fileInput.files.length; i++) {                                                
+                            var file = fileInput.files[i];
+                            const canvas = document.createElement("canvas");
+                            const ctx = canvas.getContext("2d");
+                            let currentImg = "";
+                            let webpImg = "";
+                            let convertedImg = "";
+                            currentImg = URL.createObjectURL(file);  
+                            webpImg = new Image();                            
+                            webpImg.onload = ()=>{
+                               canvas.width = webpImg.naturalWidth;
+                               canvas.height = webpImg.naturalHeight;
+                               ctx.drawImage(webpImg, 0, 0, canvas.width, canvas.height);
+                               convertedImg = canvas.toDataURL("image/jpeg", 1.0);                               
+                               axios.post(`${API_BASE_URL}/homeC/add_evidences`,{
+                                p_ticketHistoryId:res.data["@p_ticketHistoryID"],                                   
+                                p_evidencia: convertedImg
+                                });
+                            }                            
+                            webpImg.src = currentImg;
                         }
                         closeNewUser(); 
                         Swal.fire({
@@ -500,7 +509,7 @@ function RowTicket(props){
                 <td>{row.openDate}</td>
                 <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.statusid == 9 ? <PDFDownloadLink  document={<Report/>} fileName={'ReporteTikect('+ row.ticketId +').pdf'}><Button variant='success'style={{borderRadius:'3rem'}}>Generar Reporte</Button></PDFDownloadLink> : row.status}</td>
+                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.status}</td>
             </tr>                                    
             <tr>
                 <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
