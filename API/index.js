@@ -13,7 +13,20 @@ let clients = require('./routes/homeC');
 let monitorist = require('./routes/homeM');
 let technical = require('./routes/homeT');
 
-app.use(cors());
+const config = {
+    application: {
+        cors: {
+            server: [
+                {
+                    origin: "192.168.1.:3001",
+                    credentials: true
+                }
+            ]
+        }
+	}
+}
+
+app.use(cors(config.application.cors.server));
 app.use(bodyParser.json({limit:'1gb'}));
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
