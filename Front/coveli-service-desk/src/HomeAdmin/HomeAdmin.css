@@ -1,18 +1,17 @@
 
 .dashboardButton {
     background-color: #1979FF;
-    width: 27rem;     
-    height: 8.5rem;     
+    width: 23rem;  
+    height: 9rem;     
     border-radius: 1.5rem;      
     color:white ;     
     margin:1rem auto;
-    padding: 10px;    
-    
+    padding: 10px;
 }
 
 .divSeparator {
     border-left: 1px solid white;
-    height: 7.5rem;                
+    height: 8rem;                
 }
 
 .imgNav {

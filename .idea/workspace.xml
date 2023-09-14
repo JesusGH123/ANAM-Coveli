@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.css" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/HomeSupervisor/HomeSupervisor.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +28,9 @@
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "fix/responsive-view",
+    "database.data.extractors.current.export.id": "SQL Inserts",
+    "database.data.extractors.current.id": "SQL Inserts",
+    "git-widget-placeholder": "fix/mobile-view",
     "last_opened_file_path": "C:/Users/JosedeJesusGarciaHer",
     "settings.editor.selected.configurable": "configurable.group.editor"
   },

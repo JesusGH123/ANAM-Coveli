@@ -88,19 +88,19 @@ export default function UserRegister() {
                     <NavigationBar/>
 
                     <Row>
-                        <Col sm="10"><h2>Cuentas</h2></Col>
-                        <Col><Button onClick={handleShow} variant="dark">Agregar usuario</Button></Col>
+                        <Col><h2>Cuentas</h2></Col>
+                        <Col style={{marginTop: 10}} sm="3"><Button onClick={handleShow} variant="dark">Agregar usuario</Button></Col>
                     </Row>
 
                     <Row>
-                        <Table striped bordered hover responsive>
-                            <thead>
+                        <Table style={{margin: 10}} striped bordered hover>
+                            <thead id="tableHeader">
                                 <tr>
                                     <Row>
-                                        <Col sm="4"><th>Correo</th></Col>
-                                        <Col sm="4"><th>Nombre</th></Col>
-                                        <Col sm="1"><th>Rol</th></Col>
-                                        <Col sm="3"><th></th></Col>
+                                        <Col xs="4"><th>Correo</th></Col>
+                                        <Col xs="4"><th>Nombre</th></Col>
+                                        <Col xs="1"><th>Rol</th></Col>
+                                        <Col xs="3"><th></th></Col>
                                     </Row>
                                 </tr>
                             </thead>
@@ -113,11 +113,11 @@ export default function UserRegister() {
                                                 <Row>
                                                     <Col sm="4"><td>{user["EMAIL"]}</td></Col>
                                                     <Col sm="4"><td>{user["FULLNAME"]}</td></Col>
-                                                    <Col sm="2"><td>{user["ROLE"]}</td></Col>
-                                                    <Col sm="2">
+                                                    <Col sm="1"><td>{user["ROLE"]}</td></Col>
+                                                    <Col sm="3">
                                                         <td>
-                                                            <Button onClick={() => launchSwal(["eliminar", "eliminado"], user["USERID"], 3)} variant="dark">Eliminar</Button>
-                                                            <Button onClick={() => launchSwal(["desactivar", "desactivado"], user["USERID"], 2)} variant="dark">Desactivar</Button>
+                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["USERID"], 3)} variant="dark">Eliminar</Button>
+                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["desactivar", "desactivado"], user["USERID"], 2)} variant="dark">Desactivar</Button>
                                                         </td>
                                                     </Col>
                                                 </Row>
