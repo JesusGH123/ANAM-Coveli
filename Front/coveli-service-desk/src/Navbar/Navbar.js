@@ -27,9 +27,9 @@ export default function NavigationBar(props) {
     useEffect(() => {
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
         .then((res) => {
-            setUseremail(res.data["EMAIL"]);
-            setUsername(res.data["FULLNAME"]);
-            setRole(res.data["ROLEID"]);
+            setUseremail(res.data["email"]);
+            setUsername(res.data["fullName"]);
+            setRole(res.data["roleId"]);
         })
         .catch((err) => handleError(err));
     }, []);
@@ -54,6 +54,7 @@ export default function NavigationBar(props) {
                         (role == 1) ? <Nav.Link href="/users" onClick={() => {cancelTokenSource.cancel('Operation canceled')}}>Usuarios</Nav.Link> : <></>
                     }
                 </Nav>
+
                 <div>
                     <Row>
                         <Col>

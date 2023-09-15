@@ -57,14 +57,15 @@ export default function HomeClient(){
                 window.location.href = "/";
         })
     }, [])
+    
     useEffect(() =>{        
         axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {                
+            .then((res) => {              
                 setInfo(res.data);                
             }).catch((e) =>{
                 handleError(e);
             });                          
-    }, []);
+    });
     
     function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
@@ -243,7 +244,7 @@ export default function HomeClient(){
                                 <tbody>                        
                                     { info["tickets"].map((row) => (
                                         <RowTicket key={row.ticketId} row={row} />
-                                    ))}                    
+                                    ))}
                                 </tbody>
                             </Table>
                         </Box>
@@ -332,6 +333,9 @@ export default function HomeClient(){
 
 function RowTicket(props){
     var currentdate = new Date(); 
+
+    //alert((Math.abs(new Date('septiembre 14, 2023 05:24:03 PM') - currentdate)/ 36e5) <= 2 ? "OK":"NO");
+
     var datetime = (currentdate.getMonth()+1) + "/"
                     + currentdate.getDate()  + "/" 
                     + currentdate.getFullYear() + " "  
@@ -463,9 +467,9 @@ function RowTicket(props){
                 </td>                
                 <td>{row.category}</td>
                 <td>{row.openDate}</td>
-                <td>{row.modificationDate}</td>
+                <td>{row.modificationDateDisplay}</td>
                 <td>{row.priority}</td>
-                <td style={{textAlign:'center'}}>{(row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2)  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {setOpen(!open); showDecline(); }}>No resuelto</Button>: row.status}</td>
+                <td style={{textAlign:'center'}}>{row.statusid == 9 && (Math.abs(new Date(row.modificationDate) - currentdate)/ 36e5) <= 2  ? <Button variant='danger' style={{borderRadius:'3rem'}} onClick={()=> {showDecline(); }}>No resuelto</Button>: row.status}</td>
             </tr>                                    
             <tr>
                 <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
