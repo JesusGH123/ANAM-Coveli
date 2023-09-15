@@ -200,7 +200,7 @@ function RowTicket(props){
 
         var message = "";
         var fileInputTechnical = document.getElementById("fileEvindece");
-        if ('files' in fileInputTechnical) {            
+        if (fileInputTechnical == null || 'files' in fileInputTechnical) {
             if(comment == "")
             {               
                 if(modalType==1)
@@ -208,12 +208,12 @@ function RowTicket(props){
                 else
                     message = "¡Ingrese algún motivo!";
             }
-            else if (fileInputTechnical.files.length == 0) {
+            else if (fileInputTechnical != null && fileInputTechnical.files.length == 0) {
                 message = "¡Ingresar al menos una evidencia!";
             }
-            else if(fileInputTechnical.files.length > 2){
+            else if(fileInputTechnical != null && fileInputTechnical.files.length > 2){
                 message = "¡Ingresar máximo dos imágenes de evidencia!";
-            }                        
+            }
             else{            
                 axios.put(`${API_BASE_URL}/homeT/update_ticket`,{
                     p_userId:cookies.get("USER_TOKEN"),
@@ -302,9 +302,9 @@ function RowTicket(props){
     }     
 
     const getTicketHistoryEvidences = (ticketHistoryId) => {
+        console.log(ticketHistoryId);
         axios.get(`${API_BASE_URL}/home/getTicketEvidences/${ticketHistoryId}`, {cancelToken: cancelTokenSource.token})        
-        .then((res) => {                      
-            
+        .then((res) => {                                  
             setTicketHistEvi(res.data);                        
         })
         .catch((err) => handleError(err));
@@ -440,7 +440,6 @@ function RowTicket(props){
                             (row.statusid == 6) ? 
                             <td>
                                 <Button onClick={() => {
-                                    setOpen(!open);
                                     setModalType(3);
                                     handleShow();
                                     setCurrentTicket(row);
@@ -449,7 +448,6 @@ function RowTicket(props){
                             :
                             <td>
                                 <Button onClick={() => {
-                                    setOpen(!open);
                                     setModalType(2);
                                     handleShow();
                                     setCurrentTicket(row);
