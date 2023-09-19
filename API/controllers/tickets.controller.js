@@ -271,9 +271,9 @@ module.exports.get_maintenance_report = async(req, res)=>{
           if(error)
             res.send(error);                                                                             
           try {              
-              res.json(              
-                  reporte[0]
-              );
+              res.json({              
+                  'resumen_reporte_mantenimiento': reporte[0]
+              });
           } catch (error) {        
               console.log(error);
           } 

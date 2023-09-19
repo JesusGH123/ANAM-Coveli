@@ -31,48 +31,13 @@ const styleReport = StyleSheet.create({
     separatorBottom: {width: '100%', height: '18px', fontSize:'10px', fontFamily:'Helvetica-Bold'},
     titleRows:{width:'7%', fontSize:'8px', borderRight:0.5, textAlign:'center'},
     titleRowsDesc:{width:'16%', fontSize:'8px', borderRight:0.5, textAlign:'center'},
-    titleRowsRight:{width:'7%', fontSize:'8px', borderLeft:0.5, textAlign:'center'},
-    valueRows:{width:'7%', fontSize:'8px', borderRight:0.5},
-    valueRowsDesc:{width:'16%', fontSize:'8px', borderRight:0.5},
-    valueRowsRight:{width:'7%', fontSize:'8px', borderLeft:0.5},
+    titleRowsRight:{width:'7%', fontSize:'8px', textAlign:'center'},
+    valueRows:{width:'7%', fontSize:'8px', borderRight:0.5, paddingLeft:'2px'},
+    valueRowsDesc:{width:'16%', fontSize:'8px', borderRight:0.5, paddingLeft:'2px'},
+    valueRowsRight:{width:'7%', fontSize:'8px', paddingLeft:'2px'},
 });
 
 const ReportMaintance = (props) => {
-console.log("OK")
-const [reporte, setReporte] = React.useState({
-    "resumen_reporte_mantenimiento": [
-        {
-            "ticketId": 0,
-            "comment": "",            
-            "equipmentLocation": "",            
-            "equipmentModel": "",            
-            "equipmentSerial": "",
-            "openDate": "",
-            "openDateHour": "",
-            "asignedTime": "",
-            "openDateValidate": "",
-            "openDateHourValidate": "",
-            "openDateClose": "",
-            "openDateHourClose": "",
-            "equipmentStatus": ""
-        }            
-    ]
-});
-
-useEffect(() => {
-    axios.post(`${API_BASE_URL}/home/getreportMaintenaceSumary/`,
-    {
-        status: "9",
-        startDate: props.startDate,
-        finishDate: props.finishDate
-    })
-    .then((res) => {
-        setReporte(res.data);   
-        console.log(res.data);
-    });
-},[]);
-
-
 
 return(
     <Document>
@@ -122,7 +87,7 @@ return(
                 </View>            
             </View>
             <View style={styleReport.tableContainerBody}>
-            {reporte["resumen_reporte_mantenimiento"]?.map((row) => (
+            {props.data["resumen_reporte_mantenimiento"]?.map((row) => (
                 <View style={styleReport.row}>
                     <Text style={styleReport.valueRows}>{row["ticketId"]}</Text>
                     <Text style={styleReport.valueRowsDesc}>{row["comment"]}</Text>
