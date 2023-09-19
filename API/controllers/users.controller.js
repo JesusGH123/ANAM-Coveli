@@ -119,11 +119,12 @@ module.exports.get_accesible_views = async (req, res) => {
         "call get_accesible_views(?);",
         req.body.role,
         (error, results, fields) => {
-            if(error)
-                res.send(error)
-            
+            if(error){                
+                res.send(error);
+            }                
             try {
                 res.send(results[0]);
+                console.log(results[0]);
             } catch (error) {
                 console.log(error);
             }
