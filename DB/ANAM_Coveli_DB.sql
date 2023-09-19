@@ -162,6 +162,7 @@ CREATE TABLE ticketshistory
 );
 CREATE INDEX FK_ticketshistory_tickets_idx ON ticketshistory (ticketId);
 
+
 CREATE TABLE evidences
 (
     ticketHistoryId INT NOT NULL,
@@ -255,7 +256,7 @@ BEGIN
      SET p_result = 0;
      SET p_message = CONCAT('El usuario ' , p_email , ', ya existe!');
 	ELSE
-		INSERT INTO USERS VALUES (0,p_fullname, p_email, p_password, 1, p_roleid, NULL, NULL);
+		INSERT INTO users VALUES (0,p_fullname, p_email, p_password, 1, p_roleid, NULL, NULL);
         SET @count = (SELECT count(*) FROM users WHERE email=p_email AND statusid = 1);    
         IF @count = 0 THEN
 			SET p_result = 0;
@@ -326,6 +327,16 @@ BEGIN
 	INNER JOIN equipmentmodels eqm ON (eqml.equipmentModelId = eqm.equipmentModelId)
 	WHERE eqml.equipmentLocationId = p_equipmentLocationId
 	ORDER BY eqm.equipmentModel;    
+END //
+DELIMITER ;
+
+DROP PROCEDURE get_evindeces;
+DELIMITER //
+CREATE PROCEDURE `get_evindeces`(IN p_ticketHistoryId INT)
+BEGIN
+
+SET NAMES "utf8mb4";
+select ticketHistoryId, evidencia from evidences where ticketHistoryId = p_ticketHistoryId;
 END //
 DELIMITER ;
 
