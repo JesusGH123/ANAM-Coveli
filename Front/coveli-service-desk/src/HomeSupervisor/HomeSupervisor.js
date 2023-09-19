@@ -68,6 +68,8 @@ export default function HomeSupervisor() {
 
     const [startDate, setStartDate] = useState(new Date())
     const [finishDate, setFinishDate] = useState(new Date())
+    const [startDateFormat, setStartDateFormat] = useState(new Date())
+    const [finishDateFormat, setFinishDateFormat] = useState(new Date())
 
     const [showReport, setShowReport] = React.useState(false);
     const handleCloseReport = () => setShowReport(false);
@@ -262,7 +264,7 @@ export default function HomeSupervisor() {
             })
             .then(async (res) => {
                 const blob = await pdf((
-                    <ReportSumary data={res.data} />
+                    <ReportSumary data={res.data} period={"Del " +  startDateFormat + " al " + finishDateFormat} />
                 )).toBlob();
                 saveAs(blob, "reporte_mantenimiento.pdf");
             });
@@ -413,12 +415,12 @@ export default function HomeSupervisor() {
                             <Modal.Body style={{alignItems:'center', textAlign:'center'}}>
                                 <div style={{marginBottom:10}}>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker label={"Fecha Inicio"} id="dpFechaIni" selected={startDate} onChange={(date) => setStartDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D)} />
+                                    <DatePicker label={"Fecha Inicio"} id="dpFechaIni" selected={startDate} onChange={(date) => { setStartDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D); setStartDateFormat( date.$D + "-" + (date.$M + 1) + "-"+ date.$y);}} />
                                     </LocalizationProvider>
                                 </div>                                            
                                 <div>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker label={"Fecha Fin"} id="dpFechaFin" selected={finishDate} onChange={(date) => setFinishDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D)} />
+                                    <DatePicker label={"Fecha Fin"} id="dpFechaFin" selected={finishDate} onChange={(date) => {setFinishDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D); setFinishDateFormat( date.$D + "-" + (date.$M + 1) + "-"+ date.$y);}} />
                                     </LocalizationProvider>
                                 </div>
                                 <div>                                                                                

@@ -24,7 +24,7 @@ const styleReport = StyleSheet.create({
     tableHeader: {flexDirection: 'row',alignItems: 'center', textAlign: 'center',flexGrow: 1, fontSize:'8px', width:'33.3%'},
     tableHeaderRightText: {flexDirection: 'row',alignItems: 'center', textAlign: 'left',flexGrow: 1, fontSize:'8px', width:'10%'},
     tableHeaderRightValue: {flexDirection: 'row',alignItems: 'center', textAlign: 'left',flexGrow: 1, fontSize:'8px', width:'23.3%',textAlign:'center'},
-    tableHeaderRightValueBorder: {flexDirection: 'row',alignItems: 'center', textAlign: 'left',flexGrow: 1, fontSize:'8px', width:'23.3%', borderBottom:0.5},
+    tableHeaderRightValueBorder: {flexDirection: 'row',alignItems: 'center', textAlign: 'center',flexGrow: 1, fontSize:'8px', width:'23.3%', borderBottom:0.5},
     titleReport: {width: '100%', height: '18px', fontSize:'10px', paddingTop:'4px', fontFamily:'Helvetica-Bold', backgroundColor:'#E7EAEF', textAlign:'center', borderBottom:0.5, borderTop:0.5},
     row: {textAlign:'left',flexDirection: 'row'},
     separatorTop: {width: '100%', height: '10px', fontSize:'10px', fontFamily:'Helvetica-Bold'},
@@ -65,7 +65,7 @@ return(
                         <Text style={styleReport.tableHeader}></Text>
                         <Text style={styleReport.tableHeader}>Alc. Miguel Hidalgo. Ciudad de Mexico</Text>
                         <Text style={styleReport.tableHeaderRightText}>Periodo:</Text>                
-                        <Text style={styleReport.tableHeaderRightValueBorder}></Text>
+                        <Text style={styleReport.tableHeaderRightValueBorder}>{props.period}</Text>
                     </View>                                
                     <Text style={styleReport.separatorBottom}></Text>
                     <Text style={styleReport.titleReport}>RESUMEN DE MANTENIMIENTO CORRECTIVO DEL MES</Text>
