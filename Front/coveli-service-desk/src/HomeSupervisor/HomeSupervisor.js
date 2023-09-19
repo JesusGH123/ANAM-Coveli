@@ -529,18 +529,9 @@ function RowTicket(props){
     const updateTicket = () =>  {
         
         var message = "";              
-        var fileInputSupervisor = document.getElementById("fileEvindece");
-
-        if ('files' in fileInputSupervisor) {
+        
             if(comment == ""){
                 message = "¡Ingresar comentarios!";
-            }
-            else if (fileInputSupervisor.files.length == 0) {
-                message = "¡Ingresar al menos una imagen de evidencia!";
-            
-            }
-            else if(fileInputSupervisor.files.length > 2){
-                message = "¡Ingresar máximo dos imágenes de evidencia!";
             }            
             else{
                   
@@ -551,31 +542,9 @@ function RowTicket(props){
                     comment:comment,            
                     technicalId: currentTicket.technicalId
                 })
-                .then((res) => {                         
-                    if(res.data["@p_result"] == 1){
-                        for (var i = 0; i < fileInputSupervisor.files.length; i++) {
-                            var file = fileInputSupervisor.files[i];                                                     
-                                const canvas = document.createElement("canvas");
-                                const ctx = canvas.getContext("2d");
-                                let currentImg = "";
-                                let webpImg = "";
-                                let convertedImg = "";
-                                currentImg = URL.createObjectURL(file);  
-                                webpImg = new Image();                            
-                                webpImg.onload = ()=>{
-                                canvas.width = webpImg.naturalWidth;
-                                canvas.height = webpImg.naturalHeight;
-                                ctx.drawImage(webpImg, 0, 0, canvas.width, canvas.height);
-                                convertedImg = canvas.toDataURL("image/jpeg", 1.0);                                
-                                axios.post(`${API_BASE_URL}/homeT/add_evidences`,{
-                                    p_ticketHistoryId:res.data["@p_ticketHistoryID"],                                   
-                                    p_evidencia: convertedImg
-                                    });
-                                }                            
-                                webpImg.src = currentImg;                           
-                        }
-                        setComment("");
-                        handleClose();
+                .then((res) => {   
+                    console.log(res.data);
+                    if(res.data["@p_result"] == 1){                                                
                         Swal.fire({
                             icon: 'success',
                             title: "" + res.data["@p_message"] + ""
@@ -587,19 +556,11 @@ function RowTicket(props){
                             title: ""+ res.data["@p_message"] + ""
                         })
                     }                    
+                    setComment("");
+                    handleClose();
                 });
             }        
-        }
-        else{
-            if (fileInputSupervisor.value == "") {
-                message += "Please browse for one or more files.";
-                message += "<br />Use the Control or Shift key for multiple selection.";
-            }
-            else {
-                message += "Your browser doesn't support the files property!";
-                message += "<br />The path of the selected file: " + fileInputSupervisor.value;
-            }
-        }
+        
         var info = document.getElementById ("info");
         info.innerHTML = message;
     }
@@ -634,11 +595,6 @@ function RowTicket(props){
                         <InputGroup className='mb-2'>
                             <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
                             <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required value={comment} onChange={(e) => onChange(e)}/>
-                        </InputGroup>
-                        <InputGroup className='mb-2'>
-                            <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
-                            </InputGroup.Text>
-                            <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
                         </InputGroup>                        
                         <div id="info" style={{marginTop:'30px', color:'red'}}></div>
                         
@@ -692,8 +648,8 @@ function RowTicket(props){
                 <td>{row.status}</td>
 
                 <td>
-                    <Button onClick={() => {setOpen(!open); setNewStatus(9); handleShow(); setCurrentTicket(row); }} className="btnClose">Cerrar</Button>
-                    <Button onClick={() => {setOpen(!open); setNewStatus(8); handleShow(); setCurrentTicket(row); }} variant="danger">Rechazar</Button>
+                    <Button onClick={() => {setNewStatus(8); handleShow(); setCurrentTicket(row); }} variant="danger">Rechazar</Button>
+                    <Button onClick={() => {setNewStatus(9); handleShow(); setCurrentTicket(row); }} className="btnClose">Cerrar</Button>
                 </td>                
             </tr>                                    
             <tr>

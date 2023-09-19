@@ -60,6 +60,15 @@ export default function UserRegister() {
     const [roles, setRoles] = useState([]);
 
     useEffect(() => {
+        axios.get(`${API_BASE_URL}/users`, { cancelToken: cancelTokenSource.token })
+            .then((res) => {
+                setUsers(res.data);
+            }).catch((err) => 
+                handleError(err)
+            )
+    })
+
+    useEffect(() => {
             axios.post(`${API_BASE_URL}/users/checkPermissions`, {
                 userId: cookies.get("USER_TOKEN"),
                 nextPath: '/users'
@@ -69,12 +78,6 @@ export default function UserRegister() {
                 else
                     window.location.href = "/";
             })
-            axios.get(`${API_BASE_URL}/users`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setUsers(res.data);
-            }).catch((err) => 
-                handleError(err)
-            )
             axios.get(`${API_BASE_URL}/users/roles`, { cancelToken: cancelTokenSource.token })
             .then((res) => setRoles(res.data))
             .catch((err) => handleError(err));
@@ -111,13 +114,13 @@ export default function UserRegister() {
                                             return (
                                                 (user["USERID"] != cookies.get("USER_TOKEN")) ?
                                                 <Row>
-                                                    <Col sm="4"><td>{user["EMAIL"]}</td></Col>
-                                                    <Col sm="4"><td>{user["FULLNAME"]}</td></Col>
-                                                    <Col sm="1"><td>{user["ROLE"]}</td></Col>
+                                                    <Col sm="4"><td>{user["email"]}</td></Col>
+                                                    <Col sm="4"><td>{user["fullName"]}</td></Col>
+                                                    <Col sm="1"><td>{user["role"]}</td></Col>
                                                     <Col sm="3">
                                                         <td>
-                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["USERID"], 3)} variant="dark">Eliminar</Button>
-                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["desactivar", "desactivado"], user["USERID"], 2)} variant="dark">Desactivar</Button>
+                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["userId"], 3)} variant="dark">Eliminar</Button>
+                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["desactivar", "desactivado"], user["userId"], 2)} variant="dark">Desactivar</Button>
                                                         </td>
                                                     </Col>
                                                 </Row>
