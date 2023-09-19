@@ -357,7 +357,10 @@ function RowTicket(props) {
                         })}                                                                                            
                     </Form.Select> 
                 </td>                
-                <td style={{textAlign:'center'}}><Button className='btn-save-monitoris' onClick={()=>{asignTiciket(row.ticketId);}}>Guardar</Button><Button className='btn-save-monitoris' onClick={()=>{clearSelected(row.ticketId);}}>cancelar</Button></td>
+                <td style={{textAlign:'center'}}>
+                    <Button className='btn-save-monitoris' onClick={()=>{clearSelected(row.ticketId);}}>Cancelar</Button>
+                    <Button className='btn-save-monitoris' onClick={()=>{asignTiciket(row.ticketId);}}>Guardar</Button>
+                </td>
             </tr>                                    
             <tr>
                 <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
