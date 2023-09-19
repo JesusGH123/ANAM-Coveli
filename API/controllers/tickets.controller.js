@@ -258,3 +258,25 @@ module.exports.get_maintenance_report = async(req, res)=>{
       }
     )
   }
+
+  module.exports.post_report_maintenance_sumary = async(req, res)=>{    
+    connection.query(    
+        'call db_coveli.get_tickets_by_date(?,?,?);',
+        [
+          req.body.status,
+          req.body.startDate,
+          req.body.finishDate
+        ],                
+        (error, reporte, fields) => {
+          if(error)
+            res.send(error);                                                                             
+          try {              
+              res.json({              
+                  'resumen_reporte_mantenimiento': reporte[0]
+              });
+          } catch (error) {        
+              console.log(error);
+          } 
+        }
+      )
+    }

@@ -53,3 +53,14 @@
 .btn {
     border-radius: 25px;
 }
+
+.dashboardButtonClick:hover {
+    background-color: #1979FF;
+    width: 23rem;  
+    height: 9rem;     
+    border-radius: 1.5rem;      
+    color:white ;     
+    margin:1rem auto;
+    padding: 10px;
+    cursor: pointer;
+}

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Table, Navbar, Container, Nav, Row, Col, NavDropdown, Modal, InputGroup, Form, Carousel } from "react-bootstrap";
+import { Button, Table, Container, Row, Col, Modal, InputGroup, Form, Carousel } from "react-bootstrap";
+import { Page, Text, View, Document, StyleSheet,PDFDownloadLink, Image } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
+
 
 
 import Cookies from "universal-cookie";
@@ -17,6 +21,14 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper, colors } from '@mui/material';
 
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+import ReportSumary from'../Reports/ReportMaintenanceSummary.js';
+
+
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -30,6 +42,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import axios from "axios";
 import NavigationBar from "../Navbar/Navbar";
+
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -42,15 +55,24 @@ import NavigationBar from "../Navbar/Navbar";
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
 let cancelTokenSource = CancelToken.source();
-
+let clicked = false;
 function handleError(e) {
     if(axios.isCancel(e))
         console.log(e.message);
 }
 
 export default function HomeSupervisor() {
-    const CancelToken = axios.CancelToken
-    const cancelTokenSource = CancelToken.source()
+    
+    const CancelToken = axios.CancelToken;
+    const cancelTokenSource = CancelToken.source();
+
+    const [startDate, setStartDate] = useState(new Date())
+    const [finishDate, setFinishDate] = useState(new Date())
+
+    const [showReport, setShowReport] = React.useState(false);
+    const handleCloseReport = () => setShowReport(false);
+    const handleShowReport = () => setShowReport(true);
+    
 
     const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
@@ -71,6 +93,8 @@ export default function HomeSupervisor() {
                 "second_section": []
             }
     });
+
+    
 
     useEffect(() => {
         axios.post(`${API_BASE_URL}/users/checkPermissions`, {
@@ -229,6 +253,21 @@ export default function HomeSupervisor() {
         },
     };
 
+    const generatePdfDocument = () => {        
+        axios.post(`${API_BASE_URL}/home/getreportMaintenaceSumary/`,
+            {
+                status: "9",
+                startDate: startDate,
+                finishDate: finishDate
+            })
+            .then(async (res) => {
+                const blob = await pdf((
+                    <ReportSumary data={res.data} />
+                )).toBlob();
+                saveAs(blob, "reporte_mantenimiento.pdf");
+            });
+    };    
+
     return (
         <Container className="containerLogin">
             {
@@ -354,19 +393,39 @@ export default function HomeSupervisor() {
                         </div>
                     </Col>
                     <Col>
-                        <div className="dashboardButton">
+                        <div className="dashboardButton dashboardButtonClick" onClick={handleShowReport}>
                             <Row className="rowHomeSupervisor">
                                 <Col xs={7}>
-                                    Generar reporte
+                                    Generar reporte                                    
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
                                 </Col>
                                 <Col xs={2}>
-                                    <img className="dashboardIcon" src="/images/archivo.png"/>
+                                    <img className="dashboardIcon" src="/images/archivo.png" />
                                 </Col>
                             </Row>
                         </div>
+                        <Modal show={showReport} onHide={handleCloseReport} style={{color:"#66CCC5"}}>
+                            <Modal.Header closeButton>                                        
+                                RESUMEN DE MANTENIMIENTO CORRECTIVO
+                            </Modal.Header>
+                            <Modal.Body style={{alignItems:'center', textAlign:'center'}}>
+                                <div style={{marginBottom:10}}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker label={"Fecha Inicio"} id="dpFechaIni" selected={startDate} onChange={(date) => setStartDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D)} />
+                                    </LocalizationProvider>
+                                </div>                                            
+                                <div>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker label={"Fecha Fin"} id="dpFechaFin" selected={finishDate} onChange={(date) => setFinishDate(date.$y + "-" + (date.$M + 1) + "-"+ date.$D)} />
+                                    </LocalizationProvider>
+                                </div>
+                                <div>                                                                                
+                                    <Button variant="primary" onClick={generatePdfDocument} >Generar</Button>
+                                </div>
+                            </Modal.Body>                                                 
+                        </Modal>   
                     </Col>
                 </Row>
     
@@ -435,15 +494,19 @@ export default function HomeSupervisor() {
 }
 
 
+
 function RowTicket(props){    
 
     const [ticketResultTechnical, setticketResultTechnical] = React.useState([]);
 
     const [show, setShow] = React.useState(false);
-    const [newStatus, setNewStatus] = React.useState(0);
-    const [currentTicket, setCurrentTicket] = React.useState({});
     const handleClose = () => setShow(0);
     const handleShow = () => setShow(true);
+
+
+    const [newStatus, setNewStatus] = React.useState(0);
+    const [currentTicket, setCurrentTicket] = React.useState({});
+    
     const [comment, setComment] = useState("");
     const onChange = (event) => {
         setComment(event.target.value);
@@ -674,8 +737,6 @@ function RowTicket(props){
     );
 }
 
-
-
 function RowTicketHistory(props){        
 
     const { row } = props;    
@@ -784,3 +845,8 @@ function RowTicketHistory(props){
         </React.Fragment>
     );
 }
+
+
+
+
+

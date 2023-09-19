@@ -8,7 +8,9 @@ import axios from "axios";
 import { API_BASE_URL } from '../constants.js';
 import Swal from 'sweetalert2';
 import './HomeTecnical.css'
-import Report from'../Reports/ReportMaintenance.js'
+import Report from'../Reports/ReportMaintenance.js';
+
+
 
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -20,7 +22,7 @@ import TableContainer from  '@mui/material/TableContainer';
 import { Paper } from '@mui/material';
 import NavigationBar from '../Navbar/Navbar';
 
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
@@ -65,8 +67,12 @@ export default function HomeTecnical() {
             {
                 (isAccesible) ?
                     <>
-                        <NavigationBar/>                                          
-                        
+                        <NavigationBar/>
+                        {/* <Row className='rowTecnical'>r
+                        <PDFViewer style={{height:'600px'}}>
+                            <ReportSumary />
+                        </PDFViewer>
+                        </Row>                         */}
                         <Row className="rowTecnical">
                             <Col>
                                 <div className="dashboardButton">
@@ -200,7 +206,9 @@ function RowTicket(props){
 
         var message = "";
         var fileInputTechnical = document.getElementById("fileEvindece");
-        if ('files' in fileInputTechnical) {            
+        
+
+        if (fileInputTechnical == null || 'files' in fileInputTechnical) {            
             if(comment == "")
             {               
                 if(modalType==1)
@@ -208,10 +216,10 @@ function RowTicket(props){
                 else
                     message = "¡Ingrese algún motivo!";
             }
-            else if (fileInputTechnical.files.length == 0) {
+            else if (fileInputTechnical != null && fileInputTechnical.files.length == 0) {
                 message = "¡Ingresar al menos una evidencia!";
             }
-            else if(fileInputTechnical.files.length > 2){
+            else if(fileInputTechnical != null && fileInputTechnical.files.length > 2){
                 message = "¡Ingresar máximo dos imágenes de evidencia!";
             }                        
             else{            
@@ -415,7 +423,7 @@ function RowTicket(props){
                     <IconButton
                             aria-label="expand row"
                             size="small"
-                            onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
+                            onClick={() =>{getTicketHistory(row.ticketId);}}                        >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
                     </IconButton>                             
                     {row.ticketId}
