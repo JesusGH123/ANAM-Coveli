@@ -11,8 +11,10 @@ import HomeMonitorist from "./HomeMonitorist/HomeMonitorist";
 import UsersView from "./UsersView/UsersView";
 import ResetPassword from "./ResetPassword/ResetPassword";
 
+
 function App() {
-  return (
+  
+  return (    
     <div className="App">
         <HashRouter>          
         </HashRouter>
@@ -26,7 +28,7 @@ function App() {
             <ProtectedRoutes path="/homeM" component={HomeMonitorist}/>
             <ProtectedRoutes path="/users" component={UsersView}/>
         </Switch>
-    </div>
+    </div>    
   );
 }
 

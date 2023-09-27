@@ -8,11 +8,6 @@ import axios from "axios";
 import { API_BASE_URL } from '../constants.js';
 import Swal from 'sweetalert2';
 import './HomeTecnical.css'
-import { saveAs } from 'file-saver';
-import { pdf } from '@react-pdf/renderer';
-
-
-
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -22,12 +17,17 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper } from '@mui/material';
 import NavigationBar from '../Navbar/Navbar';
+import { styled } from '@mui/system';
+import {
+    TablePagination,
+    tablePaginationClasses as classes,
+  } from '@mui/base/TablePagination';
 
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
 let cancelTokenSource = CancelToken.source();
+
 
 function handleError(e) {
     if(axios.isCancel(e))
@@ -35,6 +35,8 @@ function handleError(e) {
 }
 
 export default function HomeTecnical() {
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [isAccesible, setIsAccesible] = React.useState(false);
     const [info, setInfo] = React.useState({
         "tickets_without_attendance": 0,
@@ -65,17 +67,23 @@ export default function HomeTecnical() {
         }
     });
 
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["my_tickets"].length) : 0;    
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     return (
         <>
             {
                 (isAccesible) ?
                     <>
-                        <NavigationBar/>
-                        {/* <Row className='rowTecnical'>r
-                        <PDFViewer style={{height:'600px'}}>
-                            <ReportSumary />
-                        </PDFViewer>
-                        </Row>                         */}
+                        <NavigationBar/>                        
                         <Row className="rowTecnical">
                             <Col>
                                 <div className="dashboardButton">
@@ -151,10 +159,13 @@ export default function HomeTecnical() {
                                     <Typography variant="h4" gutterBottom component="div">
                                         Tickets
                                     </Typography>
-                                    <Table  striped hover responsive aria-label='customized table'>
+                                    <Table  striped hover responsive aria-label='custom pagination table'>
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
+                                                <th>Ubicación</th>
+                                                <th>Equipo</th>
+                                                <th>Serie</th>
                                                 <th>Situación</th>
                                                 <th>Cliente</th>
                                                 <th>Fecha creación</th>
@@ -164,10 +175,38 @@ export default function HomeTecnical() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { info["my_tickets"].map((row) => (
-                                                <RowTicket key={row.ticketId} row={row} />
-                                            ))} 
+                                            {(rowsPerPage > 0 ?info["my_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                                            info["my_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} />))
+                                            }  
+                                            {emptyRows > 0 && (
+                                                <tr style={{ height: 34 * emptyRows }}>
+                                                <td colSpan={10} aria-hidden />
+                                                </tr>
+                                            )}                                                                
                                         </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <CustomTablePagination
+                                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                                colSpan={10}
+                                                count={info["my_tickets"].length}
+                                                rowsPerPage={rowsPerPage}
+                                                page={page}
+                                                slotProps={{
+                                                    select: {
+                                                    'aria-label': 'Tickets por pagina',
+                                                    },                                    
+                                                    actions: {
+                                                    showFirstButton: true,
+                                                    showLastButton: true,
+                                                    },
+                                                }}
+                                                labelRowsPerPage = {'Tickets por pagina'}                                
+                                                onPageChange={handleChangePage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                                />
+                                            </tr>
+                                        </tfoot>
                                     </Table>
                                 </Box>
                             </TableContainer>
@@ -179,6 +218,95 @@ export default function HomeTecnical() {
         </>
     )
 }
+
+const blue = {
+    50: '#F0F7FF',
+    200: '#A5D8FF',
+    400: '#3399FF',
+    900: '#003A75',
+  };
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E7EBF0',
+    200: '#E0E3E7',
+    300: '#CDD2D7',
+    400: '#B2BAC2',
+    500: '#A0AAB4',
+    600: '#6F7E8C',
+    700: '#3E5060',
+    800: '#2D3843',
+    900: '#1A2027',
+  };
+  
+const CustomTablePagination = styled(TablePagination)(
+    ({ theme }) => `
+    & .${classes.spacer} {
+      display: none;
+    }
+  
+    & .${classes.toolbar}  {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+  
+      @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  
+    & .${classes.selectLabel} {
+      margin: 0;
+    }
+  
+    & .${classes.select}{
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+  
+    & .${classes.displayedRows} {
+      margin: 0;
+  
+      @media (min-width: 768px) {
+        margin-left: auto;
+      }
+    }
+  
+    & .${classes.actions} {
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      text-align: center;
+    }
+  
+    & .${classes.actions} > button {
+      margin: 0 8px;
+      border: transparent;
+      border-radius: 2px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+    `,
+  );
 
 function RowTicket(props){    
     const [show, setShow] = React.useState(false);
@@ -431,10 +559,13 @@ function RowTicket(props){
                     </IconButton>                             
                     {row.ticketId}
                 </td>                
+                <td>{row.equipmentLocation}</td>
+                <td>{row.equipmentModel}</td>
+                <td>{row.equipmentSerial}</td>
                 <td>{row.situation}</td>
-                <td>{row.cliente}</td>
+                <td>{row.client}</td>
                 <td>{row.openDate}</td>
-                <td>{row.modificationDate}</td>
+                <td>{row.modificationDateDisplay}</td>
                 <td>{row.priority}</td>
                 {   
                     row.statusid == 7 || row.statusid == 9 ?
@@ -464,7 +595,7 @@ function RowTicket(props){
                 }
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">

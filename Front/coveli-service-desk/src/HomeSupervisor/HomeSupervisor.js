@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Table, Container, Row, Col, Modal, InputGroup, Form, Carousel } from "react-bootstrap";
-import { Page, Text, View, Document, StyleSheet,PDFDownloadLink, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { pdf } from '@react-pdf/renderer';
-
-
-
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
 import { API_BASE_URL } from '../constants.js';
 import Swal from 'sweetalert2';
-
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -19,17 +14,12 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
-import { Paper, colors } from '@mui/material';
-
+import { Paper } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 import ReportSumary from'../Reports/ReportMaintenanceSummary.js';
 import Report from'../Reports/ReportMaintenance.js';
-
-
-
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -43,35 +33,31 @@ import {
 import { Line } from 'react-chartjs-2';
 import axios from "axios";
 import NavigationBar from "../Navbar/Navbar";
+import { styled } from '@mui/system';
+import {
+  TablePagination,
+  tablePaginationClasses as classes,
+} from '@mui/base/TablePagination';
 
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  );
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
 let cancelTokenSource = CancelToken.source();
-let clicked = false;
+
 function handleError(e) {
     if(axios.isCancel(e))
         console.log(e.message);
 }
 
 export default function HomeSupervisor() {
-    
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);    
     const CancelToken = axios.CancelToken;
     const cancelTokenSource = CancelToken.source();
-
     const [startDate, setStartDate] = useState(new Date())
     const [finishDate, setFinishDate] = useState(new Date())
     const [startDateFormat, setStartDateFormat] = useState(new Date())
     const [finishDateFormat, setFinishDateFormat] = useState(new Date())
-
     const [showReport, setShowReport] = React.useState(false);
     const handleCloseReport = () => setShowReport(false);
     const handleShowReport = () => setShowReport(true);
@@ -276,6 +262,18 @@ export default function HomeSupervisor() {
             });
     };    
 
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["tickets"]["first_section"].length) : 0;   
+    const emptyRowsHistory = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["tickets"]["second_section"].length) : 0;   
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     return (
         <Container className="containerLogin">
             {
@@ -385,20 +383,7 @@ export default function HomeSupervisor() {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        {/* <div className="dashboardButton">
-                            <Row className="rowHomeSupervisor">
-                                <Col xs={7}>
-                                    Generar historial de tickets
-                                </Col>
-                                <Col xs={1}>
-                                    <div className="divSeparator"></div>
-                                </Col>
-                                <Col xs={2}>
-                                    <img className="dashboardIcon" src="/images/archivo.png"/>
-                                </Col>
-                            </Row>
-                        </div> */}
+                    <Col>                        
                     </Col>
                     <Col>
                         <div className="dashboardButton dashboardButtonClick" onClick={handleShowReport}>
@@ -452,10 +437,13 @@ export default function HomeSupervisor() {
                     <Typography variant="h4" gutterBottom component="div">
                     Tickets
                     </Typography>
-                    <Table striped bordered hover responsive>
+                    <Table striped bordered hover responsive aria-label='custom pagination table'>
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th style={{width:"3rem"}}>Id</th>
+                                <th>Ubicación</th>
+                                <th>Equipo</th>
+                                <th>Serie</th>
                                 <th>Categoria</th>
                                 <th>Cliente</th>
                                 <th>Fecha y hora</th>
@@ -467,10 +455,38 @@ export default function HomeSupervisor() {
                             </tr>
                         </thead>
                         <tbody>
-                            { info["tickets"]["first_section"].map((row) => (
-                                <RowTicket key={row.ticketId} row={row} />
-                            ))}                        
+                            {(rowsPerPage > 0 ? info["tickets"]["first_section"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                            info["tickets"]["first_section"]).map((row) => (<RowTicket key={row.ticketId} row={row} />))
+                            }  
+                            {emptyRows > 0 && (
+                                <tr style={{ height: 34 * emptyRows }}>
+                                <td colSpan={11} aria-hidden />
+                                </tr>
+                            )}                                                                                                                  
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <CustomTablePagination
+                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                colSpan={10}
+                                count={info["tickets"]["first_section"].length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                slotProps={{
+                                    select: {
+                                    'aria-label': 'Tickets por pagina',
+                                    },                                    
+                                    actions: {
+                                    showFirstButton: true,
+                                    showLastButton: true,
+                                    },
+                                }}
+                                labelRowsPerPage = {'Tickets por pagina'}                                
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                />
+                            </tr>
+                        </tfoot>
                     </Table>
                     </Box>
                 </TableContainer>                
@@ -482,10 +498,13 @@ export default function HomeSupervisor() {
                     <Typography variant="h4" gutterBottom component="div">
                     Historial
                     </Typography>
-                    <Table striped bordered hover responsive>
+                    <Table striped bordered hover responsive aria-label='custom pagination table'>
                         <thead>
                             <tr>
                                 <th>Id</th>
+                                <th>Ubicación</th>
+                                <th>Equipo</th>
+                                <th>Serie</th>
                                 <th>Categoria</th>
                                 <th>Cliente</th>
                                 <th>Fecha y hora</th>
@@ -497,10 +516,38 @@ export default function HomeSupervisor() {
                             </tr>
                         </thead>
                         <tbody>
-                            { info["tickets"]["second_section"].map((row) => (
-                                <RowTicketHistory key={row.ticketId} row={row} />
-                            ))}                                                
+                            {(rowsPerPage > 0 ? info["tickets"]["second_section"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                            info["tickets"]["second_section"]).map((row) => (<RowTicket key={row.ticketId} row={row} />))
+                            }  
+                            {emptyRowsHistory > 0 && (
+                                <tr style={{ height: 34 * emptyRowsHistory }}>
+                                <td colSpan={11} aria-hidden />
+                                </tr>
+                            )}                                                                                                                                              
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <CustomTablePagination
+                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                colSpan={10}
+                                count={info["tickets"]["second_section"].length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                slotProps={{
+                                    select: {
+                                    'aria-label': 'Tickets por pagina',
+                                    },                                    
+                                    actions: {
+                                    showFirstButton: true,
+                                    showLastButton: true,
+                                    },
+                                }}
+                                labelRowsPerPage = {'Tickets por pagina'}                                
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                />
+                            </tr>
+                        </tfoot>
                     </Table>
                 </Box>
                 </TableContainer>
@@ -515,6 +562,94 @@ export default function HomeSupervisor() {
     )
 }
 
+const blue = {
+    50: '#F0F7FF',
+    200: '#A5D8FF',
+    400: '#3399FF',
+    900: '#003A75',
+  };
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E7EBF0',
+    200: '#E0E3E7',
+    300: '#CDD2D7',
+    400: '#B2BAC2',
+    500: '#A0AAB4',
+    600: '#6F7E8C',
+    700: '#3E5060',
+    800: '#2D3843',
+    900: '#1A2027',
+  };
+  
+const CustomTablePagination = styled(TablePagination)(
+    ({ theme }) => `
+    & .${classes.spacer} {
+      display: none;
+    }
+  
+    & .${classes.toolbar}  {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+  
+      @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  
+    & .${classes.selectLabel} {
+      margin: 0;
+    }
+  
+    & .${classes.select}{
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+  
+    & .${classes.displayedRows} {
+      margin: 0;
+  
+      @media (min-width: 768px) {
+        margin-left: auto;
+      }
+    }
+  
+    & .${classes.actions} {
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      text-align: center;
+    }
+  
+    & .${classes.actions} > button {
+      margin: 0 8px;
+      border: transparent;
+      border-radius: 2px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+    `,
+  );
 
 
 function RowTicket(props){    
@@ -652,7 +787,7 @@ function RowTicket(props){
             </Modal>                        
                      
             <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <td component="th" scope='row'>                                   
+                <td component="th" scope='row' style={{width:'5rem'}}>                                   
                     <IconButton
                             aria-label="expand row"
                             size="small"
@@ -661,6 +796,9 @@ function RowTicket(props){
                     </IconButton>                             
                     {row.ticketId}
                 </td>                
+                <td>{row.equipmentLocation}</td>
+                <td>{row.equipmentModel}</td>
+                <td>{row.equipmentSerial}</td>            
                 <td>{row.category}</td>
                 <td>{row.client}</td>
                 <td>{row.openDate}</td>
@@ -675,7 +813,7 @@ function RowTicket(props){
                 </td>                
             </tr>                                    
             <tr>
-                <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+                <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -785,6 +923,9 @@ function RowTicketHistory(props){
                     </IconButton>                             
                     {row.ticketId}
                 </td>                
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.equipmentLocation}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.equipmentModel}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.equipmentSerial}</td>            
                 <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.category}</td>
                 <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.client}</td>
                 <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.openDate}</td>
@@ -794,7 +935,7 @@ function RowTicketHistory(props){
                 <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.statusid == 9 ? <Button variant='success'style={{borderRadius:'3rem'}} onClick={()=>{generatePdfDocument(row.ticketId)}}>Generar Reporte</Button> : row.status}</td>
             </tr>                                    
             <tr>
-                <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+                <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">

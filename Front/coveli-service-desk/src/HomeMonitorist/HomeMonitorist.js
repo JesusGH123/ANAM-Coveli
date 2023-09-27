@@ -1,12 +1,10 @@
-import { useEffect , useState, Fragment } from 'react';
+import { useEffect } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/js/src/collapse.js';
-import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup} from "react-bootstrap";
+import { Col, Row, Button, Table, Form } from "react-bootstrap";
 import Swal from 'sweetalert2';
-
 import './HomeMonitorist.css'
-
 import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
@@ -18,9 +16,13 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
-import { Paper, alertTitleClasses } from '@mui/material';
-import excludeVariablesFromRoot from '@mui/material/styles/excludeVariablesFromRoot';
+import { Paper} from '@mui/material';
 import NavigationBar from '../Navbar/Navbar';
+import { styled } from '@mui/system';
+import {
+  TablePagination,
+  tablePaginationClasses as classes,
+} from '@mui/base/TablePagination';
 
 const CancelToken = axios.CancelToken;
 const cancelTokenSource = CancelToken.source();   
@@ -32,6 +34,8 @@ function handleError(e) {
 }
 
 export default function HomeMonitorist(){  
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [isAccesible, setIsAccesible] = React.useState(false);      
     const [tickets, setTickets] = React.useState({        
         "recent_tickets": [],
@@ -70,6 +74,18 @@ export default function HomeMonitorist(){
                 handleError(e);                
             });
     });
+
+    const emptyRowsRecent = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets["recent_tickets"].length) : 0;   
+    const emptyRowsReassigned = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets["reassigned_tickets"].length) : 0;   
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     return(
     <div>
@@ -182,13 +198,16 @@ export default function HomeMonitorist(){
                 <Row className='graphicsArea'>
                     <TableContainer component={Paper}>
                         <Box sx={{ margin: 1 }}>
-                                    <Typography variant="h6" gutterBottom component="div">
-                                        Tickets recientes
-                                    </Typography>
-                            <Table  striped hover responsive aria-label='customized table'>
+                            <Typography variant="h6" gutterBottom component="div">
+                                Tickets recientes
+                            </Typography>
+                            <Table  striped hover responsive aria-label='custom pagination table'>
                                 <thead>
                                     <tr>                                          
-                                    <th># Ticket</th>
+                                        <th># Ticket</th>
+                                        <th>Ubicación</th>
+                                        <th>Equipo</th>
+                                        <th>Serie</th>
                                         <th>Categoria</th>
                                         <th>Cliente</th>
                                         <th>Fecha</th>
@@ -198,13 +217,39 @@ export default function HomeMonitorist(){
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>                        
-                                    { 
-                                    tickets["recent_tickets"].map((row) => (
-                                        <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
-                                    ))
-                                    }                    
+                                <tbody>        
+                                    {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                                    tickets["recent_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />))
+                                    }  
+                                    {emptyRowsRecent > 0 && (
+                                        <tr style={{ height: 34 * emptyRowsRecent }}>
+                                        <td colSpan={10} aria-hidden />
+                                        </tr>
+                                    )}                                   
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <CustomTablePagination
+                                        rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                        colSpan={10}
+                                        count={tickets["recent_tickets"].length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        slotProps={{
+                                            select: {
+                                            'aria-label': 'Tickets por pagina',
+                                            },                                    
+                                            actions: {
+                                            showFirstButton: true,
+                                            showLastButton: true,
+                                            },
+                                        }}
+                                        labelRowsPerPage = {'Tickets por pagina'}                                
+                                        onPageChange={handleChangePage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                        />
+                                    </tr>
+                                </tfoot>
                             </Table>
                         </Box>
                     </TableContainer>
@@ -215,10 +260,13 @@ export default function HomeMonitorist(){
                                     <Typography variant="h6" gutterBottom component="div">
                                         Tickets con reincidencia
                                     </Typography>
-                            <Table  striped hover responsive aria-label='customized table'>
+                            <Table  striped hover responsive aria-label='custom pagination table'>
                                 <thead>
                                     <tr>                                          
                                         <th># Ticket</th>
+                                        <th>Ubicación</th>
+                                        <th>Equipo</th>
+                                        <th>Serie</th>
                                         <th>Categoria</th>
                                         <th>Cliente</th>
                                         <th>Fecha</th>
@@ -228,13 +276,39 @@ export default function HomeMonitorist(){
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>                        
-                                    {
-                                    tickets["reassigned_tickets"].map((row) => (
-                                        <RowTicket key={row.ticketId} row={row} priorities ={tickets["priorities"]} technicals ={tickets["technicals"]} />
-                                    ))
-                                }                    
+                                <tbody>
+                                    {(rowsPerPage > 0 ?tickets["reassigned_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                                    tickets["reassigned_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />))
+                                    }  
+                                    {emptyRowsReassigned > 0 && (
+                                        <tr style={{ height: 34 * emptyRowsReassigned }}>
+                                        <td colSpan={10} aria-hidden />
+                                        </tr>
+                                    )}                                                                                      
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <CustomTablePagination
+                                        rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                        colSpan={10}
+                                        count={tickets["reassigned_tickets"].length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        slotProps={{
+                                            select: {
+                                            'aria-label': 'Tickets por pagina',
+                                            },                                    
+                                            actions: {
+                                            showFirstButton: true,
+                                            showLastButton: true,
+                                            },
+                                        }}
+                                        labelRowsPerPage = {'Tickets por pagina'}                                
+                                        onPageChange={handleChangePage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                        />
+                                    </tr>
+                                </tfoot>
                             </Table>
                         </Box>
                     </TableContainer>
@@ -246,6 +320,95 @@ export default function HomeMonitorist(){
     </div>
 )}
 
+
+const blue = {
+    50: '#F0F7FF',
+    200: '#A5D8FF',
+    400: '#3399FF',
+    900: '#003A75',
+  };
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E7EBF0',
+    200: '#E0E3E7',
+    300: '#CDD2D7',
+    400: '#B2BAC2',
+    500: '#A0AAB4',
+    600: '#6F7E8C',
+    700: '#3E5060',
+    800: '#2D3843',
+    900: '#1A2027',
+  };
+  
+const CustomTablePagination = styled(TablePagination)(
+    ({ theme }) => `
+    & .${classes.spacer} {
+      display: none;
+    }
+  
+    & .${classes.toolbar}  {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+  
+      @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  
+    & .${classes.selectLabel} {
+      margin: 0;
+    }
+  
+    & .${classes.select}{
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+  
+    & .${classes.displayedRows} {
+      margin: 0;
+  
+      @media (min-width: 768px) {
+        margin-left: auto;
+      }
+    }
+  
+    & .${classes.actions} {
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      text-align: center;
+    }
+  
+    & .${classes.actions} > button {
+      margin: 0 8px;
+      border: transparent;
+      border-radius: 2px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+    `,
+  );
 
 function RowTicket(props) {
     const { row } = props;        
@@ -335,7 +498,10 @@ function RowTicket(props) {
                     <input type="hidden" id={"hfpriority" + row.ticketId}  value={row.priorityId > 0 ? row.priorityId : 0 } />
                     <input type="hidden" id={"hftechnicalId" + row.ticketId}  value={row.technicalId > 0 ? row.technicalId : 0} />
                     
-                </td>                
+                </td>    
+                <td>{row.equipmentLocation}</td>
+                <td>{row.equipmentModel}</td>
+                <td>{row.equipmentSerial}</td>            
                 <td>{row.category}</td>
                 <td>{row.client}</td>
                 <td>{row.openDate}</td>
@@ -366,7 +532,7 @@ function RowTicket(props) {
                 </td>
             </tr>                                    
             <tr>
-                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+                <td  style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">

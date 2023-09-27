@@ -17,6 +17,12 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper} from '@mui/material';
+import { styled } from '@mui/system';
+import {
+  TablePagination,
+  tablePaginationClasses as classes,
+} from '@mui/base/TablePagination';
+
 
 const cookies = new Cookies();
 let CancelToken = axios.CancelToken;
@@ -28,8 +34,11 @@ function handleError(e) {
 }
 
 export default function HomeAdmin(){
-    const CancelToken = axios.CancelToken
-    const cancelTokenSource = CancelToken.source()
+
+    const CancelToken = axios.CancelToken;
+    const cancelTokenSource = CancelToken.source();
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [isAccesible, setIsAccesible] = React.useState(false);
 
@@ -63,55 +72,18 @@ export default function HomeAdmin(){
         }
     });
 
-    const [currentTicket, setCurrentTicket] = useState({});
-    const [comment, setComment] = useState("");
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const onChange = (event) => {
-        setComment(event.target.value);
-    }
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["all_tickets"].length) : 0;    
 
-    const updateTicket = (newStatus, comment) => {
-        axios.put(`${API_BASE_URL}/home/ticket`, {
-            userId: cookies.get("USER_TOKEN"),
-            ticketId: currentTicket.ticketId,
-            statusId: newStatus,
-            comment: comment,
-            technicalId: currentTicket.technicalId,
-        })
-
-        setComment("");
-    }
-
-    const ticketAction = async (action) =>{
-        //6 Pausar
-        //9 Cerrar
-        let actionString = (action == 9) ? ["cerrar", "cerrado"] : ["pausar", "pausado"];
-
-        Swal.fire({
-            title: `¿Deseas ${actionString[0]} el ticket ${currentTicket.ticketId}?`,
-            input: 'textarea',
-            inputLabel: `Motivo`,
-            inputAttributes: {
-              autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            cancelButtonText: "Cancelar",
-            confirmButtonText: actionString[0].charAt(0).toUpperCase() + actionString[0].substring(1, actionString[0].length) ,
-            showLoaderOnConfirm: true,
-            preConfirm: (login) => {
-                updateTicket(action, comment);
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-          }).then((result) => {
-            if (result.isConfirmed) {
-              Swal.fire({
-                title: `Ticket ${actionString[1]}`,
-              })
-            }
-          })
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
     };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    
 
     return(
         <div>    
@@ -210,8 +182,8 @@ export default function HomeAdmin(){
                     <Box sx={{ margin: 1 }}>
                         <Typography variant="h4" gutterBottom component="div">
                             Tickets
-                        </Typography>
-                        <Table striped bordered hover responsive>
+                        </Typography>                          
+                        <Table striped bordered hover responsive aria-label='custom pagination table'>
                         <thead>
                             <tr>
                                 <th>Id</th>
@@ -227,11 +199,40 @@ export default function HomeAdmin(){
                             </tr>
                         </thead>
                         <tbody>
-                            {   
-                            info["all_tickets"].map((row) => (<RowTicket key={row.ticketId} row={row} />))
-                            }                     
+                            {(rowsPerPage > 0 ?info["all_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                            info["all_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} />))
+                            }  
+                            {emptyRows > 0 && (
+                                <tr style={{ height: 34 * emptyRows }}>
+                                <td colSpan={10} aria-hidden />
+                                </tr>
+                            )}                   
                         </tbody>
-                    </Table>                    
+                        <tfoot>
+                            <tr>
+                                <CustomTablePagination
+                                rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+                                colSpan={10}
+                                count={info["all_tickets"].length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                slotProps={{
+                                    select: {
+                                    'aria-label': 'Tickets por pagina',
+                                    },                                    
+                                    actions: {
+                                    showFirstButton: true,
+                                    showLastButton: true,
+                                    },
+                                }}
+                                labelRowsPerPage = {'Tickets por pagina'}                                
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}                                
+                                />
+                            </tr>
+                        </tfoot>
+                    </Table>
+                    
                     </Box>                
                     </TableContainer>                
                     </Col>
@@ -243,6 +244,95 @@ export default function HomeAdmin(){
         </div>        
     )
 }
+
+const blue = {
+    50: '#F0F7FF',
+    200: '#A5D8FF',
+    400: '#3399FF',
+    900: '#003A75',
+  };
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E7EBF0',
+    200: '#E0E3E7',
+    300: '#CDD2D7',
+    400: '#B2BAC2',
+    500: '#A0AAB4',
+    600: '#6F7E8C',
+    700: '#3E5060',
+    800: '#2D3843',
+    900: '#1A2027',
+  };
+  
+const CustomTablePagination = styled(TablePagination)(
+    ({ theme }) => `
+    & .${classes.spacer} {
+      display: none;
+    }
+  
+    & .${classes.toolbar}  {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+  
+      @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  
+    & .${classes.selectLabel} {
+      margin: 0;
+    }
+  
+    & .${classes.select}{
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+  
+    & .${classes.displayedRows} {
+      margin: 0;
+  
+      @media (min-width: 768px) {
+        margin-left: auto;
+      }
+    }
+  
+    & .${classes.actions} {
+      padding: 2px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+      border-radius: 50px;
+      text-align: center;
+    }
+  
+    & .${classes.actions} > button {
+      margin: 0 8px;
+      border: transparent;
+      border-radius: 2px;
+      background-color: transparent;
+  
+      &:hover {
+        background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
+      }
+  
+      &:focus {
+        outline: 1px solid ${theme.palette.mode === 'dark' ? blue[400] : blue[200]};
+      }
+    }
+    `,
+  );
 
 function RowTicket(props){    
     const { row } = props;
@@ -354,3 +444,4 @@ function RowTicket(props){
         </React.Fragment>
     );
 }
+
