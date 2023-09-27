@@ -1,26 +1,13 @@
 import React from "react";
-import { useState, useEffect } from 'react';
-
-
-import { Page, Text, View, Document, StyleSheet,ReactPDF, renderToFile, PDFDownloadLink, Image, Font } from '@react-pdf/renderer';
-import { API_BASE_URL } from '../constants.js';
-import axios from "axios";
-
-let CancelToken = axios.CancelToken;
-let cancelTokenSource = CancelToken.source();
-
-function handleError(e) {
-    if(axios.isCancel(e))
-        console.log(e.message);
-}
+import { Page, Text, View, Document, StyleSheet,Image } from '@react-pdf/renderer';
 
 const styleReport = StyleSheet.create({
     page: {margin:0},
     section: { color: 'black', textAlign: 'center', paddingTop:'10px',fontSize:'11px'},    
     imgBackground: { position: 'absolute', marginTop:10, marginLeft:20, display: 'block', width: '150px', height: '70px'},
     imgBackgroundWaterMark: { position: 'absolute', marginTop:80,marginLeft:160, display: 'block', width: '500px',  opacity:0.1},
-    tableContainerHeader: { margin: '10px 30px 0 30px',flexDirection: 'row',flexWrap: 'wrap',borderTop: 0.5, borderRight: 0.5, borderLeft:0.5, borderColor:'gray'},    
-    tableContainerBody: { margin: '0 30px 0 30px',flexDirection: 'row',flexWrap: 'wrap',border:0.5, borderColor:'gray'},    
+    tableContainerHeader: { margin: '10px 10px 0 10px',flexDirection: 'row',flexWrap: 'wrap',borderTop: 0.5, borderRight: 0.5, borderLeft:0.5, borderColor:'gray'},    
+    tableContainerBody: { margin: '0 10px 0 10px',flexDirection: 'row',flexWrap: 'wrap',borderTop:0.5, borderLeft:0.5, borderRight:0.5, borderColor:'gray'},    
     tableHeader: {flexDirection: 'row',alignItems: 'center', textAlign: 'center',flexGrow: 1, fontSize:'8px', width:'33.3%'},
     tableHeaderRightText: {flexDirection: 'row',alignItems: 'center', textAlign: 'left',flexGrow: 1, fontSize:'8px', width:'10%'},
     tableHeaderRightValue: {flexDirection: 'row',alignItems: 'center', textAlign: 'left',flexGrow: 1, fontSize:'8px', width:'23.3%',textAlign:'center'},
@@ -29,12 +16,12 @@ const styleReport = StyleSheet.create({
     row: {textAlign:'left',flexDirection: 'row'},
     separatorTop: {width: '100%', height: '10px', fontSize:'10px', fontFamily:'Helvetica-Bold'},
     separatorBottom: {width: '100%', height: '18px', fontSize:'10px', fontFamily:'Helvetica-Bold'},
-    titleRows:{width:'7%', fontSize:'8px', borderRight:0.5, textAlign:'center'},
-    titleRowsDesc:{width:'16%', fontSize:'8px', borderRight:0.5, textAlign:'center'},
-    titleRowsRight:{width:'7%', fontSize:'8px', textAlign:'center'},
-    valueRows:{width:'7%', fontSize:'8px', borderRight:0.5, paddingLeft:'2px'},
-    valueRowsDesc:{width:'16%', fontSize:'8px', borderRight:0.5, paddingLeft:'2px'},
-    valueRowsRight:{width:'7%', fontSize:'8px', paddingLeft:'2px'},
+    titleRows:{width:'7%', fontSize:'7px', fontFamily:'Helvetica-Bold', borderRight:0.5, textAlign:'center'},
+    titleRowsDesc:{width:'16%', fontSize:'7px', fontFamily:'Helvetica-Bold', borderRight:0.5, textAlign:'center'},
+    titleRowsRight:{width:'7%', fontSize:'7px', fontFamily:'Helvetica-Bold', textAlign:'center'},
+    valueRows:{width:'7%', fontSize:'7px', borderRight:0.5, borderBottom:0.5, paddingLeft:'2px'},
+    valueRowsDesc:{width:'16%', fontSize:'7px', borderRight:0.5, borderBottom:0.5, paddingLeft:'2px'},
+    valueRowsRight:{width:'7%', fontSize:'7px', paddingLeft:'2px', borderBottom:0.5},
 });
 
 const ReportMaintance = (props) => {
@@ -59,7 +46,7 @@ return(
                         <Text style={styleReport.tableHeader}></Text>
                         <Text style={styleReport.tableHeader}>Monte everest 210, Lomas de Chapultepec,</Text>
                         <Text style={styleReport.tableHeaderRightText}></Text>                
-                        <Text style={styleReport.tableHeaderRightValue}>“Servicio de equipamiento Aeroportuario”</Text>
+                        <Text style={styleReport.tableHeaderRightValue}>Servicio de Equipamiento Aeroportuario</Text>
                     </View>
                     <View style={styleReport.row}>
                         <Text style={styleReport.tableHeader}></Text>
@@ -68,7 +55,7 @@ return(
                         <Text style={styleReport.tableHeaderRightValueBorder}>{props.period}</Text>
                     </View>                                
                     <Text style={styleReport.separatorBottom}></Text>
-                    <Text style={styleReport.titleReport}>RESUMEN DE MANTENIMIENTO CORRECTIVO DEL MES</Text>
+                    <Text style={styleReport.titleReport}>RESUMEN DE MANTENIMIENTO CORRECTIVO</Text>
                     <View style={styleReport.row}>
                         <Text style={styleReport.titleRows}>No. Ticket</Text>
                         <Text style={styleReport.titleRowsDesc}>Descripción Falla</Text>

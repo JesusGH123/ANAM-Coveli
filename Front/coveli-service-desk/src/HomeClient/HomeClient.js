@@ -1,16 +1,13 @@
-import { useEffect , useState, Fragment } from 'react';
+import { useEffect , useState } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/js/src/collapse.js';
-import { Col, Row,  Container, Nav, Navbar, Button, Modal,NavDropdown, Table, Form, FormGroup, Tab, Select, option, InputGroup, ModalBody, ModalFooter} from "react-bootstrap";
+import { Col, Row, Button, Modal, Table, Form, InputGroup} from "react-bootstrap";
 import Swal from 'sweetalert2';
-
 import './HomeClient.css'
-
 import axios from 'axios';
 import { API_BASE_URL } from '../constants.js';
 import Cookies from 'universal-cookie';
-
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -19,7 +16,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import TableContainer from  '@mui/material/TableContainer';
 import { Paper} from '@mui/material';
-import { PDFDownloadLink} from '@react-pdf/renderer';
+
 import NavigationBar from '../Navbar/Navbar';
 
 const cookies = new Cookies();
@@ -58,13 +55,15 @@ export default function HomeClient(){
         })
     }, [])
     
-    useEffect(() =>{        
-        axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {              
+    useEffect(() =>{
+        if(cookies.get("USER_TOKEN")) {
+            axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
+            .then((res) => {             
                 setInfo(res.data);                
             }).catch((e) =>{
                 handleError(e);
             });                          
+        }
     });
     
     function getEquipmentByLocation(locationId){        
@@ -109,6 +108,9 @@ export default function HomeClient(){
             else if(document.getElementById("txtSituation").value == ""){
                 message = "¡Ingrese la situación!";
             }
+            else if(document.getElementById("txtSituation").value.length > 50){
+                message = "¡Máximo 50 caracteres!";
+            }
             else if(document.getElementById("ddlLocation").value == 0){
                 message = "¡Seleccione una Ubicación!";
             }
@@ -120,6 +122,9 @@ export default function HomeClient(){
             }            
             else if(document.getElementById("txtComment").value == ""){
                 message = "¡Ingrese los comentarios!";
+            }
+            else if(document.getElementById("txtComment").value.length > 2000){
+                message = "¡Máximo 2000 caracteres!";
             }
             else if (fileInput.files.length == 0) {
                 message = "¡Ingresar al menos una imagen de evidencia!";
@@ -227,9 +232,9 @@ export default function HomeClient(){
                     <Row className='graphicsArea'>
                         <TableContainer component={Paper}>
                         <Box sx={{ margin: 1 }}>
-                                    <Typography variant="h4" gutterBottom component="div">
-                                        Tickets
-                                    </Typography>
+                            <Typography variant="h4" gutterBottom component="div">
+                                Tickets
+                            </Typography>
                             <Table  striped hover responsive aria-label='customized table'>
                                 <thead>
                                     <tr>                                          
@@ -332,9 +337,7 @@ export default function HomeClient(){
 }
 
 function RowTicket(props){
-    var currentdate = new Date(); 
-
-    //alert((Math.abs(new Date('septiembre 14, 2023 05:24:03 PM') - currentdate)/ 36e5) <= 2 ? "OK":"NO");
+    var currentdate = new Date();     
 
     var datetime = (currentdate.getMonth()+1) + "/"
                     + currentdate.getDate()  + "/" 

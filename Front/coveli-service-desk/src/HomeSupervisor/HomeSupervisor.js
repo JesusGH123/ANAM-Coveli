@@ -26,6 +26,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import ReportSumary from'../Reports/ReportMaintenanceSummary.js';
+import Report from'../Reports/ReportMaintenance.js';
 
 
 
@@ -111,11 +112,13 @@ export default function HomeSupervisor() {
     }, [])
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-        .then((res) => {
-            setInfo(res.data);
-        })
-        .catch((err) => handleError(err));
+        if(cookies.get("USER_TOKEN")) {
+            axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+                .then((res) => {
+                    setInfo(res.data);
+                })
+                .catch((err) => handleError(err));
+                }
     });
 
     const updateTicket = (action, ticket) => {
@@ -152,7 +155,7 @@ export default function HomeSupervisor() {
     let monthDataClosed = Array(12).fill(0);
     
     for(const elem in info["graphic_data"]["monthly"]) {
-        if(info["graphic_data"]["monthly"][elem]["statusId"] == 9) {
+        if(info["graphic_data"]["monthly"][elem]["statusId"] == 9) {            
             monthDataClosed.splice(info["graphic_data"]["monthly"][elem]["period"]-1, 0, info["graphic_data"]["monthly"][elem]["count"])
         }
         else if(info["graphic_data"]["monthly"][elem]["statusId"] == 6) {
@@ -223,6 +226,7 @@ export default function HomeSupervisor() {
     }
 
     const monthly = {
+        maintainAspectRatio : false,
         type: 'line',
         data: monthlyData,
         options: {
@@ -239,6 +243,7 @@ export default function HomeSupervisor() {
         },
     };
     const weekly = {
+        maintainAspectRatio : false,
         type: 'line',
         data: weeklyData,
         options: {
@@ -255,7 +260,8 @@ export default function HomeSupervisor() {
         },
     };
 
-    const generatePdfDocument = () => {        
+    const generatePdfDocument = () => {     
+        handleCloseReport();   
         axios.post(`${API_BASE_URL}/home/getreportMaintenaceSumary/`,
             {
                 status: "9",
@@ -380,7 +386,7 @@ export default function HomeSupervisor() {
                 </Row>
                 <Row>
                     <Col>
-                        <div className="dashboardButton">
+                        {/* <div className="dashboardButton">
                             <Row className="rowHomeSupervisor">
                                 <Col xs={7}>
                                     Generar historial de tickets
@@ -392,7 +398,7 @@ export default function HomeSupervisor() {
                                     <img className="dashboardIcon" src="/images/archivo.png"/>
                                 </Col>
                             </Row>
-                        </div>
+                        </div> */}
                     </Col>
                     <Col>
                         <div className="dashboardButton dashboardButtonClick" onClick={handleShowReport}>
@@ -432,16 +438,20 @@ export default function HomeSupervisor() {
                 </Row>
     
                 <Row className="graphicsArea">
-                    <Col>
+                    <Col md={6} lg={6} xs={12}>
                         <Line options={weekly} data={weeklyData} />
                     </Col>
-                    <Col>
+                    <Col md={6} lg={6} xs={12}>
                         <Line options={monthly} data={monthlyData} />
                     </Col>
                 </Row>
     
                 <Row className="graphicsArea">
-                    <h2>Tickets</h2>
+                <TableContainer component={Paper}>
+                    <Box sx={{ margin: 1 }}>
+                    <Typography variant="h4" gutterBottom component="div">
+                    Tickets
+                    </Typography>
                     <Table striped bordered hover responsive>
                         <thead>
                             <tr>
@@ -462,10 +472,16 @@ export default function HomeSupervisor() {
                             ))}                        
                         </tbody>
                     </Table>
+                    </Box>
+                </TableContainer>                
                 </Row>
     
                 <Row className="graphicsArea">
-                    <h2>Historial</h2>
+                <TableContainer component={Paper}>
+                    <Box sx={{ margin: 1 }}>
+                    <Typography variant="h4" gutterBottom component="div">
+                    Historial
+                    </Typography>
                     <Table striped bordered hover responsive>
                         <thead>
                             <tr>
@@ -486,6 +502,10 @@ export default function HomeSupervisor() {
                             ))}                                                
                         </tbody>
                     </Table>
+                </Box>
+                </TableContainer>
+                    
+                    
                 </Row>
                 </>
                     :
@@ -724,7 +744,17 @@ function RowTicketHistory(props){
             setTicketHistEvi(res.data);            
         })
         .catch((err) => handleError(err));
-    }    
+    }   
+    
+    const generatePdfDocument = (ticketId) => {        
+        axios.get(`${API_BASE_URL}/home/getMaintenanceReport/${ticketId}`)
+        .then(async(res) => {            
+            const blob = await pdf((
+                <Report data={res.data} />
+            )).toBlob();
+            saveAs(blob, "reporte_ticket("+ticketId+").pdf");                            
+        });        
+    };      
         
     return(        
         <React.Fragment>            
@@ -745,8 +775,8 @@ function RowTicketHistory(props){
                     </Carousel>                    
                 </Modal.Body>                
             </Modal>                        
-            <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <td component="th" scope='row'>                                   
+            <tr  sx={{ '& > *': { borderBottom: 'unset' } }} >
+                <td component="th" scope='row' style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>                                   
                     <IconButton
                             aria-label="expand row"
                             size="small"
@@ -755,13 +785,13 @@ function RowTicketHistory(props){
                     </IconButton>                             
                     {row.ticketId}
                 </td>                
-                <td>{row.category}</td>
-                <td>{row.client}</td>
-                <td>{row.openDate}</td>
-                <td>{row.priority}</td>
-                <td>{row.situation}</td>
-                <td>{row.technical}</td>
-                <td>{row.status}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.category}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.client}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.openDate}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.priority}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.situation}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.technical}</td>
+                <td style={{color: row.onTime == 0 ?'red': row.onTime == 1 ?'green' : 'black'}}>{row.statusid == 9 ? <Button variant='success'style={{borderRadius:'3rem'}} onClick={()=>{generatePdfDocument(row.ticketId)}}>Generar Reporte</Button> : row.status}</td>
             </tr>                                    
             <tr>
                 <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>

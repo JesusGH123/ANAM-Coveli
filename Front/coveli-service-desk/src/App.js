@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, HashRouter } from "react-router-dom";
 
 import Login from './Login/Login';
 import HomeSupervisor from "./HomeSupervisor/HomeSupervisor";
@@ -14,6 +14,8 @@ import ResetPassword from "./ResetPassword/ResetPassword";
 function App() {
   return (
     <div className="App">
+        <HashRouter>          
+        </HashRouter>
         <Switch>
             <Route exact path="/" component={Login}/>
             <Route exact path="/reset/:key" component={ResetPassword}/>

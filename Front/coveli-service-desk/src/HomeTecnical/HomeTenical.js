@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/js/src/collapse.js';
-import { Col, Row, Container, Nav, Navbar, Table, Button, Modal, NavDropdown, Form, InputGroup, Carousel} from "react-bootstrap";
+import { Col, Row, Table, Button, Modal, Form, InputGroup, Carousel} from "react-bootstrap";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { API_BASE_URL } from '../constants.js';
 import Swal from 'sweetalert2';
 import './HomeTecnical.css'
-import Report from'../Reports/ReportMaintenance.js';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
 
 
 
@@ -56,10 +57,12 @@ export default function HomeTecnical() {
     }, [])
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+        if(cookies.get("USER_TOKEN")) {
+            axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setInfo(res.data);
             }).catch((err) => handleError(err));
+        }
     });
 
     return (
@@ -315,7 +318,7 @@ function RowTicket(props){
             setTicketHistEvi(res.data);                        
         })
         .catch((err) => handleError(err));
-    }  
+    }    
   
     return(        
         <React.Fragment>            
@@ -324,8 +327,8 @@ function RowTicket(props){
                     <Modal.Title>Ticket: {currentTicket.ticketId}</Modal.Title>
                 </Modal.Header>
                 {
-                    (modalType == 1) ?
-                    <Row className='rowTecnical'>
+                    (modalType == 1) ?                    
+                    <>
                         <Modal.Body>                                
                             <InputGroup className='mb-2'>
                                 <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
@@ -348,11 +351,12 @@ function RowTicket(props){
                                 style={{margin:'1rem'}}>
                                 Aceptar
                             </Button>
-                        </Modal.Footer>  
-                    </Row>                      
+                        </Modal.Footer>
+                    </>  
+                                 
                         :
                     (modalType == 2) ?                            
-                    <Row>
+                    <>
                         <Modal.Body >
                         <InputGroup className='mb-2'>
                             ¿Estas seguro de que deseas pausar el ticket?
@@ -374,9 +378,9 @@ function RowTicket(props){
                                 Aceptar
                             </Button>
                         </Modal.Footer> 
-                    </Row>                                                         
+                    </>                                                         
                         :
-                    <Row>
+                    <>
                         <Modal.Body>                                        
                             <InputGroup className='mb-2'>
                                 ¿Deseas retomar el ticket?
@@ -397,7 +401,7 @@ function RowTicket(props){
                                 Aceptar
                             </Button>
                         </Modal.Footer>                               
-                    </Row>
+                    </>
                 }
             </Modal>    
 
@@ -422,7 +426,7 @@ function RowTicket(props){
                     <IconButton
                             aria-label="expand row"
                             size="small"
-                            onClick={() =>{getTicketHistory(row.ticketId);}}                        >
+                            onClick={() =>{getTicketHistory(row.ticketId);setOpen(!open);}}                        >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
                     </IconButton>                             
                     {row.ticketId}
@@ -432,40 +436,31 @@ function RowTicket(props){
                 <td>{row.openDate}</td>
                 <td>{row.modificationDate}</td>
                 <td>{row.priority}</td>
-                { 
-                    (row.statusid == 9 ) ?                    
-                        <td>
-                            <PDFDownloadLink document={<Report ticketId={row.ticketId}/>}>                                        
-                                <Button variant='success'style={{borderRadius:'3rem'}}
-                                >Generar Reporte</Button>
-                            </PDFDownloadLink>
-                        </td>
+                {   
+                    row.statusid == 7 || row.statusid == 9 ?
+                    <td>{row.status}</td>
                     :
-                        (row.statusid == 7) ?
-                            <td>{row.status}</td>
-                            :
-                            (row.statusid == 6) ? 
-                            <td>
-                                <Button onClick={() => {
-                                    setModalType(3);
-                                    handleShow();
-                                    setCurrentTicket(row);
-                                }} variant='warning' style={{borderRadius:20}}>Retomar</Button>
-                            </td>
-                            :
-                            <td>
-                                <Button onClick={() => {
-                                    setModalType(2);
-                                    handleShow();
-                                    setCurrentTicket(row);
-                                }} variant='warning' style={{borderRadius:20}}>Pausar</Button>
-                                <Button onClick={() => {
-                                    setOpen(!open);
-                                    setModalType(1);
-                                    handleShow();
-                                    setCurrentTicket(row);
-                                }} variant='secondary' style={{borderRadius:20}}>Solicitar cierre</Button>
-                            </td>
+                    row.statusid == 6 ? 
+                    <td>
+                        <Button onClick={() => {
+                            setModalType(3);
+                            handleShow();
+                            setCurrentTicket(row);
+                        }} variant='warning' style={{borderRadius:20}}>Retomar</Button>
+                    </td>
+                    :
+                    <td>
+                        <Button onClick={() => {
+                            setModalType(2);
+                            handleShow();
+                            setCurrentTicket(row);
+                        }} variant='warning' style={{borderRadius:20}}>Pausar</Button>
+                        <Button onClick={() => {                                    
+                            setModalType(1);
+                            handleShow();
+                            setCurrentTicket(row);
+                        }} variant='secondary' style={{borderRadius:20}}>Solicitar cierre</Button>
+                    </td>
                 }
             </tr>                                    
             <tr>

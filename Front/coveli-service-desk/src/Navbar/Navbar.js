@@ -20,7 +20,7 @@ export default function NavigationBar(props) {
     const cookies = new Cookies();
 
     const logout = () => {
-        cookies.remove("USER_TOKEN", {path: "/"});
+        cookies.remove("USER_TOKEN", {path: "/"});        
         window.location.href = "/";
     }
 

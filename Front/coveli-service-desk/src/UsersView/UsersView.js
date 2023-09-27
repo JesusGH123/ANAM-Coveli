@@ -25,16 +25,17 @@ function generateRandomPassword() {
 }
 
 function launchSwal(messages, userId, actionId) {
+    console.log("uid: " + userId + " action: " + actionId)
     Swal.fire({
         title: `Desea ${messages[0]} el usuario`,
         showDenyButton: true,
         confirmButtonText: messages[0][0].toUpperCase() + messages[0].substring(1, messages[0].length),
         denyButtonText: `Cancelar`,
       }).then((result) => {
-        if (result.isConfirmed) {
-            axios.put(`${API_BASE_URL}/users/user`, {
+        if (result.isConfirmed) {            
+            axios.put(`${API_BASE_URL}/users/updateUser/`, {
                 p_userid: userId,
-                p_statusid: 3,
+                p_statusid: actionId,
             })
           Swal.fire(`Usuario ${messages[1]} correctamente`)
         }
@@ -100,9 +101,10 @@ export default function UserRegister() {
                             <thead id="tableHeader">
                                 <tr>
                                     <Row>
-                                        <Col xs="4"><th>Correo</th></Col>
+                                        <Col xs="3"><th>Correo</th></Col>
                                         <Col xs="4"><th>Nombre</th></Col>
                                         <Col xs="1"><th>Rol</th></Col>
+                                        <Col xs="1"><th>Estatus</th></Col>
                                         <Col xs="3"><th></th></Col>
                                     </Row>
                                 </tr>
@@ -112,16 +114,32 @@ export default function UserRegister() {
                                     {
                                         users.map((user) => {                                    
                                             return (
-                                                (user["USERID"] != cookies.get("USER_TOKEN")) ?
+                                                (user["userID"] != cookies.get("USER_TOKEN")) ?
                                                 <Row>
-                                                    <Col sm="4"><td>{user["email"]}</td></Col>
+                                                    <Col sm="3"><td>{user["email"]}</td></Col>
                                                     <Col sm="4"><td>{user["fullName"]}</td></Col>
                                                     <Col sm="1"><td>{user["role"]}</td></Col>
+                                                    <Col sm="1"><td>{user["status"]}</td></Col>
                                                     <Col sm="3">
-                                                        <td>
-                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["userId"], 3)} variant="dark">Eliminar</Button>
-                                                            <Button style={{marginTop: 5}} onClick={() => launchSwal(["desactivar", "desactivado"], user["userId"], 2)} variant="dark">Desactivar</Button>
-                                                        </td>
+                                                        {
+                                                            user["statusId"] == 1 ?
+                                                                <td>                                                            
+                                                                    <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["userID"], 3)} variant="dark">Eliminar</Button>
+                                                                    <Button style={{marginTop: 5}} onClick={() => launchSwal(["desactivar", "desactivado"], user["userID"], 2)} variant="dark">Desactivar</Button>                                                                                                                        
+                                                                </td>
+                                                                :
+                                                                user["statusId"] == 2 ?
+                                                                <td>
+                                                                    <Button style={{marginTop: 5}} onClick={() => launchSwal(["eliminar", "eliminado"], user["userID"], 3)} variant="dark">Eliminar</Button>
+                                                                    <Button style={{marginTop: 5}} onClick={() => launchSwal(["activar", "activado"], user["userID"], 1)} variant="dark">Activar</Button>
+                                                                </td>
+                                                                :
+                                                                <td>                                                            
+                                                                </td>                                                            
+                                                        }
+
+                                                        
+                                                        
                                                     </Col>
                                                 </Row>
                                                 :

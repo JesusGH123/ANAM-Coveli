@@ -56,7 +56,7 @@ export default function HomeMonitorist(){
         })
     }, [])
 
-    useEffect(() => {                     
+    useEffect(() => {
         axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                                                
                 setTickets(res.data);                    
@@ -295,6 +295,9 @@ function RowTicket(props) {
                             title: ""+ res.data["@p_message"] + ""
                           })
                     }         
+                })
+                .catch((ex) =>{
+                    console.log(ex);
                 });
             } 
           })        

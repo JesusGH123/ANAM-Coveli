@@ -14,9 +14,10 @@ module.exports.get_client_home = async(req, res)=>{
                 "CALL get_tickets_by_status('4,5,6,7,8,9,10', ?);",
                 req.params.id,
                 (error, tickets, fields) => {                    
-                    if(error)
-                        res.send(error);                                                                            
-                 
+                    if(error){
+                        console.log(error);
+                        res.send(error);
+                    }
                     try {
                         res.json({
                             'all_tickets': all_tickets[0][0]["count"],                        

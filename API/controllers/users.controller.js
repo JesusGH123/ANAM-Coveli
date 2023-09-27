@@ -69,15 +69,15 @@ module.exports.add_user = async (req, res, rows) => {
 module.exports.update_status_user = async (req, res) => {
     //Status 1: Activate
     //Status 2: Deactivate
-    //Status 3: Remove
-    connection.query(
+    //Status 3: Remove    
+    connection.query(        
         "call update_status_user(?, ?, @p_result, @p_message); select @p_result, @p_message",
         [
             req.body.p_userid,
             req.body.p_statusid
         ],
         (error, results, fields) => {
-        if(error) {
+        if(error) {            
             res.send(error);
         }
 
@@ -240,7 +240,10 @@ module.exports.check_privilege = async (req, res) => {
             if(error)
                 console.log(error);
 
-            res.json(results[0][0]["result"]);
+            if(results == null)
+                res.json(results[0][0]["result"]);
+            else
+                res.json("null")
         }
     )
 }
