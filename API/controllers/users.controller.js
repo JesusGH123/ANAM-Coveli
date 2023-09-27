@@ -57,11 +57,50 @@ module.exports.add_user = async (req, res, rows) => {
             res.send(error);
         }
 
-        try {
-            res.send(results[1][0]);
-        } catch (error) {                  
-            console.log(error);
-        }
+        const token = crypto.randomBytes(20).toString('hex');
+
+        connection.query(
+            'CALL create_forgot_password_token(?, ?)',
+            [req.body.email, token],
+            (error, results, fields) => {
+                if(error)
+                    res.send(error);
+                else {
+                    const transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        port: 587,
+                        secureConnection: false,
+                        auth: {
+                            user: 'soporteanam@gmail.com',
+                            pass: 'qbhp txbp ejsi vxzr',
+                        }
+                    })
+
+                    const mailOptions = {
+                        from: 'soporteanam@gmail.com',
+                        to: `${req.body.p_email}`,
+                        subject: 'Generación de nuevo usuario',
+                        text:  'Se ha creado su cuenta de manera exitosa\n'
+                        + 'De click en el siguiente enlace para establecer su contraseña y poder iniciar sesión: \n\n'
+                        + `\n\n`,
+                        html: `
+                        <img src='https://cdn.axxonsoft.com/storage/technology/ltp_global_software/hsmGUN1CrWBaFSdJBvNpauo5NeMnuyhgEKxOmtrP.png' alt='Ltp logo' width="150px">
+                        
+                        <h2>Generación de nuevo usuario</h2>
+                        <p>Se ha creado su cuenta de manera exitosa</p>
+                        <p>De click en el siguiente enlace para establecer su nueva contraseña para iniciar sesión </p> <a href="${FRONTEND_URL}/reset/${token}">Cambiar contraseña</a>
+                        `
+                    }
+
+                    transporter.sendMail(mailOptions, (err, response) => {
+                        if(err)
+                            console.error("There was an errror: " + err);
+                        else
+                            res.send("Email sent");
+                    })
+                }
+            }
+        )
     });
 }
 
@@ -183,10 +222,15 @@ module.exports.forgot_password = async(req, res) => {
                                 from: 'soporteanam@gmail.com',
                                 to: `${req.body.email}`,
                                 subject: 'Reestablecimiento de contraseña',
-                                text:  'Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.\n\n'
-                                + 'De click en el siguiente enlace para completar el proceso:\n\n'
-                                + `${FRONTEND_URL}/reset/${token}\n\n`
-                                + 'Si usted no ha solicitado el cambio de contraseña, haga caso omiso a este correo.\n'
+                                html: `
+                                <img src='https://cdn.axxonsoft.com/storage/technology/ltp_global_software/hsmGUN1CrWBaFSdJBvNpauo5NeMnuyhgEKxOmtrP.png' alt='Ltp logo' width="150px">
+                                
+                                <h2>Reestablecimiento de contraseña</h2>
+                                <p>Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.</p>
+                                <p>De click en el siguiente enlace para completar el proceso: </p> <a href="${FRONTEND_URL}/reset/${token}">Reestablecer contraseña</a>
+
+                                <p><i>Si usted no ha solicitado el cambio de contraseña, haga caso omiso a este correo</i></p>
+                                `
                             }
 
                             transporter.sendMail(mailOptions, (err, response) => {
@@ -212,6 +256,7 @@ module.exports.check_token = async(req, res) => {
             if(error)
                 res.send(error);
             else {
+
                 res.json(results[0][0]['keyExists']);
             }
         }

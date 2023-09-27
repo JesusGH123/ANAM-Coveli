@@ -16,11 +16,11 @@ export default function ResetPassword() {
   useEffect(() => {
     axios.get(`${API_BASE_URL}/users/validateToken/${params.key}`)
       .then((res) => {
-        console.log(res["data"])
+        console.log(typeof res["data"])
         if(res["data"]) {
-          setTokenValid(false);
-        } else {
           setTokenValid(true);
+        } else {
+          setTokenValid(false);
         }
       })
       .catch((err) => console.log(err));
