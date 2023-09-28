@@ -25,6 +25,16 @@ function sendPasswordLink(email) {
   } 
 }
 
+function sendLogEvent(userId, message) {
+  axios.post(
+    `${API_BASE_URL}/users/event`,
+    {
+      userId: userId,
+      message: message
+    }
+  )
+}
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,7 +69,8 @@ export default function Login() {
           }
 
           axios(authConfig)
-            .then((authResult) => {              
+            .then((authResult) => {  
+              sendLogEvent(valResult.data["@p_userid"], "Inicio de sesión");
               window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
             })
         } else {

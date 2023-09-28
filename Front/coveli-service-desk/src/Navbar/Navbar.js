@@ -9,6 +9,16 @@ function handleError(e) {
         console.log(e.message);
 }
 
+function sendLogEvent(userId, message) {
+    axios.post(
+      `${API_BASE_URL}/users/event`,
+      {
+        userId: userId,
+        message: message
+      }
+    )
+}
+
 export default function NavigationBar(props) {
     const CancelToken = axios.CancelToken
     const cancelTokenSource = CancelToken.source()
@@ -22,7 +32,7 @@ export default function NavigationBar(props) {
     const logout = () => {
         cookies.remove("USER_TOKEN", {path: "/"});        
         window.location.href = "/";
-    }
+    }      
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/users/user/${cookies.get("USER_TOKEN")}`)
@@ -62,7 +72,11 @@ export default function NavigationBar(props) {
                         </Col>
                         <Col>
                             <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
-                                <NavDropdown.Item onClick={() => { cancelTokenSource.cancel('Operation canceled'); logout();}}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
+                                <NavDropdown.Item onClick={() => { 
+                                    cancelTokenSource.cancel('Operation canceled');
+                                    sendLogEvent(cookies.get("USER_TOKEN"), "Cierre de sesión");
+                                    logout();
+                                }}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
                             </NavDropdown>
                             <label style={{color:'#51177D'}}>
                                 {useremail}

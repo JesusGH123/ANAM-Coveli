@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="db_coveli@192.168.1.149" uuid="8031e003-bc3a-43ab-9356-547db0109659">
-      <driver-ref>mariadb</driver-ref>
+    <data-source source="LOCAL" name="ANAM DB" uuid="854c72e0-d903-4236-b9f4-fe27909db6bc">
+      <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://192.168.1.149:3306/db_coveli</jdbc-url>
+      <remarks>Sistema de tickets</remarks>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://192.168.1.71:3306/db_coveli</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

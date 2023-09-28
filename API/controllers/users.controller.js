@@ -291,3 +291,15 @@ module.exports.check_privilege = async (req, res) => {
         }
     )
 }
+
+//Write event in log
+module.exports.write_log = async (req, res) => {
+    connection.query(
+        "CALL write_event(?, ?)",
+        [req.body.userId, req.body.message],
+        (error, results, fields) => {
+            if(error)
+                console.log(error);
+        }
+    )
+}

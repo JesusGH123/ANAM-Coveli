@@ -17,4 +17,6 @@ router.put('/updatePassword', userController.reset_password);
 
 router.get('/roles', userController.get_roles);
 
+router.post('/event', userController.write_log);
+
 module.exports = router;
