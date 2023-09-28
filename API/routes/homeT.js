@@ -6,5 +6,6 @@ let technicalController = require('../controllers/technicals.controller.js');
 router.put('/update_ticket', technicalController.update_ticket);
 router.post('/add_evidences', technicalController.add_evidences);
 router.get('/getTechnicalHome/:userId', technicalController.get_technical_home);
+router.get('/getFreeTechnican', technicalController.get_free_technician);
 
 module.exports = router;

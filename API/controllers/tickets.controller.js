@@ -197,7 +197,7 @@ module.exports.add_ticket = async (req, res) => {}
 module.exports.update_ticket = (req, res) => {
   
   connection.query(
-    "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
+    "call update_ticket(?, ?, ?, ?, ?, 0, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
     [
       req.body.userId,
       req.body.ticketId,

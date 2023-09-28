@@ -60,7 +60,7 @@ module.exports.get_technical_home = async (req, res) => {
 
 module.exports.update_ticket = async (req, res) => {        
     connection.query(
-        "call update_ticket(?, ?, ?, ?, ?, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
+        "call update_ticket(?, ?, ?, ?, ?, 0, 0, @p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_result, @p_message;",
         [
             req.body.p_userId,
             req.body.p_ticketId,
@@ -95,4 +95,23 @@ module.exports.add_evidences = async (req, res, rows) => {
             res.status(1);
         }     
     });
+}
+
+module.exports.get_free_technician = async(req, res) => {
+  connection.query(
+      "CALL get_free_technician();",
+      (error, techichalId, fields) => {
+          console.log(techichalId[0][0]["userId"]);
+          if(error)
+              res.send(error);
+
+          try {
+              res.json({                
+                  'techichalId': techichalId[0][0]["userId"]
+              });
+          } catch(error) {
+              console.log(error);
+          }
+      }                                
+  )                            
 }

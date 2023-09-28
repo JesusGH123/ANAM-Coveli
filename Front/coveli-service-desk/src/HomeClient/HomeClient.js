@@ -473,14 +473,7 @@ const CustomTablePagination = styled(TablePagination)(
   );
 
 function RowTicket(props){
-    var currentdate = new Date();     
-
-    var datetime = (currentdate.getMonth()+1) + "/"
-                    + currentdate.getDate()  + "/" 
-                    + currentdate.getFullYear() + " "  
-                    + currentdate.getHours() + ":"  
-                    + currentdate.getMinutes() + ":" 
-                    + currentdate.getSeconds();    
+    var currentdate = new Date();         
     
     const [mdlDecline, setShowDecline] = useState(false);        
     const showDecline = () => setShowDecline(true);     

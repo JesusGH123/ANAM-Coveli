@@ -146,13 +146,14 @@ module.exports.get_dasboard_home = async(req, res)=> {
 
 module.exports.update_ticket = async (req, res) => {        
     connection.query(
-        'call update_ticket(?, ?, ?, "", ?, ?, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;',
+        'call update_ticket(?, ?, ?, "", ?, ?, ?, @p_ticketHistoyID, @p_result, @p_message); select @p_ticketHistoyID, @p_result, @p_message;',
         [
             req.body.p_userId,
             req.body.p_ticketId,
             req.body.p_statusId,            
             req.body.p_technicalId,
-            req.body.p_priorityId
+            req.body.p_priorityId,
+            req.body.p_wasAutoasigned
         ],
         (error, results, fields) => {
         if(error) {

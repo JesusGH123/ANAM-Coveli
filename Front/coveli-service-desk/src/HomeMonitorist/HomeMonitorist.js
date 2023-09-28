@@ -33,10 +33,11 @@ function handleError(e) {
         console.log(e.message);
 }
 
-export default function HomeMonitorist(){  
+export default function HomeMonitorist(){ 
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [isAccesible, setIsAccesible] = React.useState(false);      
+    const [isAccesible, setIsAccesible] = React.useState(false);          
     const [tickets, setTickets] = React.useState({        
         "recent_tickets": [],
         "reassigned_tickets": [],
@@ -86,6 +87,8 @@ export default function HomeMonitorist(){
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
+
 
     return(
     <div>
@@ -217,10 +220,55 @@ export default function HomeMonitorist(){
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>        
+                                <tbody> 
                                     {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
-                                    tickets["recent_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />))
-                                    }  
+                                    tickets["recent_tickets"]).map((row) => {
+                                        var currentdate = new Date();                                                                                                                                                               
+                                        
+                                        if(((currentdate - new Date(row.openDate))/ 36e5).toFixed(2) > 0.2){
+                                            axios.get(`${API_BASE_URL}/homeT/getFreeTechnican`, {cancelToken: cancelTokenSource.token})
+                                            .then((res) => {                                                
+                                                axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
+                                                    p_userId:cookies.get("USER_TOKEN"),
+                                                    p_ticketId:row.ticketId,
+                                                    p_statusId:5,                    
+                                                    p_technicalId:res.data["userId"],
+                                                    p_priorityId: 2,
+                                                    p_wasAutoasigned: 1
+                                                 })                                                
+                                            }).catch((e) =>{
+                                                handleError(e);                
+                                            });  
+                                            
+                                            
+                                        }
+                                       return( <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />)
+                                    })
+                                    }         
+                                    {/* {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                                    tickets["recent_tickets"]).map((row) => {
+                                        var currentdate = new Date();                                                                                                                                                               
+                                        if(((currentdate - new Date(row.openDate))/ 36e5).toFixed(2) > 0.3){                                            
+                                            console.log("OK");
+                                            // axios.get(`${API_BASE_URL}/homeT/getFreeTechnican`, {cancelToken: cancelTokenSource.token})
+                                            // .then((res) => {                                                
+                                            //     axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
+                                            //         p_userId:cookies.get("USER_TOKEN"),
+                                            //         p_ticketId:row.ticketId,
+                                            //         p_statusId:5,                    
+                                            //         p_technicalId:res.data["userId"],
+                                            //         p_priorityId: 2,
+                                            //         p_wasAutoasigned: 1
+                                            //      })                                                
+                                            // }).catch((e) =>{
+                                            //     handleError(e);                
+                                            // });  
+                                            
+                                            
+                                        }
+                                        <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
+                                    })
+                                    }   */}
                                     {emptyRowsRecent > 0 && (
                                         <tr style={{ height: 34 * emptyRowsRecent }}>
                                         <td colSpan={10} aria-hidden />
