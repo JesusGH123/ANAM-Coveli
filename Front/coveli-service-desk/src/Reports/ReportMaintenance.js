@@ -1,13 +1,6 @@
 import React from "react";
 import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 
-
-
-
-
-
-
-
 const ReportClient = (props) => {        
 
     const stylesTable = StyleSheet.create({
@@ -163,7 +156,6 @@ const ReportClient = (props) => {
                 <Image src='/images/logo_back.png' style={stylesTable.imgBackgroundWaterMark}>                                                                
                 </Image>                                                            
                 <View style={stylesTable.tableContainer}>
-                    <Text style={stylesTable.separatorTop}></Text>                    
                     <View style={stylesTable.tableHeader}>
                         <Text style={stylesTable.titleReport}>Reporte de mantenimiento correctivo</Text>                    
                     </View>
@@ -171,14 +163,20 @@ const ReportClient = (props) => {
                         <Text style={stylesTable.noTicket}>Numero de Ticket:</Text>
                         <Text style={stylesTable.noTicketValue}>{props.data["reporte_mantenimiento"][0]["noTicket"]}</Text>
                         <Text style={stylesTable.fechaHora}>Fecha: </Text>                
-                        <Text style={stylesTable.fechaHoraValue}>{props.data["reporte_mantenimiento"][0]["fecha"]}</Text>
+                        <Text style={stylesTable.fechaHoraValue}>{props.data["reporte_mantenimiento"][0]["fecha"]}</Text>                                                                
                     </View>
                     <View style={stylesTable.row}>
-                        <Text style={stylesTable.noTicket}></Text>
-                        <Text style={stylesTable.noTicketValue}></Text>
+                        <Text style={stylesTable.noTicket}>No. de contrato:</Text>
+                        <Text style={stylesTable.noTicketValue}>ANAM/UAF/DRMSG/AD/013/2022</Text>
                         <Text style={stylesTable.fechaHora}>Hora: </Text>                
-                        <Text style={stylesTable.fechaHoraValue}>{props.data["reporte_mantenimiento"][0]["hora"]}</Text>
+                        <Text style={stylesTable.fechaHoraValue}>{props.data["reporte_mantenimiento"][0]["hora"]}</Text>                                      
                     </View>
+                    <View style={stylesTable.row}>
+                        <Text style={stylesTable.noTicket}>Proyecto:</Text>
+                        <Text style={stylesTable.noTicketValue}>Servicio de Equipamiento Aeroportuario</Text>
+                        <Text style={stylesTable.fechaHora}></Text>                
+                        <Text style={stylesTable.fechaHoraValue}></Text>                                      
+                    </View>                    
                     <Text style={stylesTable.separatorBottom}></Text>                                        
                     <View style={stylesTable.tableHeader}>
                         <Text style={stylesTable.titleGroup}>Visita en sitio</Text>                    

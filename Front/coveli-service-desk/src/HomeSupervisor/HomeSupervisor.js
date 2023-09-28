@@ -517,7 +517,7 @@ export default function HomeSupervisor() {
                         </thead>
                         <tbody>
                             {(rowsPerPage > 0 ? info["tickets"]["second_section"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
-                            info["tickets"]["second_section"]).map((row) => (<RowTicket key={row.ticketId} row={row} />))
+                            info["tickets"]["second_section"]).map((row) => (<RowTicketHistory key={row.ticketId} row={row} />))
                             }  
                             {emptyRowsHistory > 0 && (
                                 <tr style={{ height: 34 * emptyRowsHistory }}>
@@ -699,8 +699,7 @@ function RowTicket(props){
                     comment:comment,            
                     technicalId: currentTicket.technicalId
                 })
-                .then((res) => {   
-                    console.log(res.data);
+                .then((res) => {                       
                     if(res.data["@p_result"] == 1){                                                
                         Swal.fire({
                             icon: 'success',

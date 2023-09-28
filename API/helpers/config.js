@@ -1,7 +1,7 @@
 let config = {
-    host: '192.168.1.149',
+    host: '192.168.1.71',
     user: 'anam',
-    password: 'root',
+    password: 'Gl0b4l2023!#',
     database: 'db_coveli',
     multipleStatements: true,
     charset: 'utf8mb4'

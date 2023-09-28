@@ -14,8 +14,7 @@ module.exports.get_client_home = async(req, res)=>{
                 "CALL get_tickets_by_status('4,5,6,7,8,9,10', ?);",
                 req.params.id,
                 (error, tickets, fields) => {                    
-                    if(error){
-                        console.log(error);
+                    if(error){                        
                         res.send(error);
                     }
                     try {
@@ -125,7 +124,6 @@ module.exports.add_ticket = async (req, res, rows) => {
         }
     });
 }
-
 
 module.exports.add_evidences = async (req, res, rows) => {
     connection.query(

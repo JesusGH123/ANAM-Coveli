@@ -100,8 +100,7 @@ module.exports.add_evidences = async (req, res, rows) => {
 module.exports.get_free_technician = async(req, res) => {
   connection.query(
       "CALL get_free_technician();",
-      (error, techichalId, fields) => {
-          console.log(techichalId[0][0]["userId"]);
+      (error, techichalId, fields) => {          
           if(error)
               res.send(error);
 

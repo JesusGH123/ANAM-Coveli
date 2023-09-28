@@ -439,8 +439,7 @@ function RowTicket(props){
         .catch((err) => handleError(err));
     }     
 
-    const getTicketHistoryEvidences = (ticketHistoryId) => {
-        console.log(ticketHistoryId);
+    const getTicketHistoryEvidences = (ticketHistoryId) => {        
         axios.get(`${API_BASE_URL}/home/getTicketEvidences/${ticketHistoryId}`, {cancelToken: cancelTokenSource.token})        
         .then((res) => {                                  
             setTicketHistEvi(res.data);                        

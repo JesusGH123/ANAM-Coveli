@@ -24,8 +24,7 @@ function generateRandomPassword() {
     return result;
 }
 
-function launchSwal(messages, userId, actionId) {
-    console.log("uid: " + userId + " action: " + actionId)
+function launchSwal(messages, userId, actionId) {    
     Swal.fire({
         title: `Desea ${messages[0]} el usuario`,
         showDenyButton: true,

@@ -42,12 +42,18 @@ export default function HomeMonitorist(){
         "recent_tickets": [],
         "reassigned_tickets": [],
         "priorities":[],
-        "technicals":[]
+        "technicals":[],
+        "assigned": 0,
+        "revision": 0,
+        "reassigned": 0, 
+        "open": 0,
+        "paused": 0,
+        "closed": 0
     });   
 
-    const [dashboard, setDashboard] = React.useState({        
-        "assigned": 0,"revision": 0,"reassigned": 0, "open": 0,"paused": 0,"closed": 0
-    });
+    // const [dashboard, setDashboard] = React.useState({        
+    //     "assigned": 0,"revision": 0,"reassigned": 0, "open": 0,"paused": 0,"closed": 0
+    // });
 
     useEffect(() => {
         axios.post(`${API_BASE_URL}/users/checkPermissions`, {
@@ -68,12 +74,12 @@ export default function HomeMonitorist(){
             }).catch((e) =>{
                 handleError(e);                
             });  
-        axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {                
-                setDashboard(res.data);  
-            }).catch((e) =>{
-                handleError(e);                
-            });
+        // axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
+        //     .then((res) => {                
+        //         setDashboard(res.data);  
+        //     }).catch((e) =>{
+        //         handleError(e);                
+        //     });
     });
 
     const emptyRowsRecent = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets["recent_tickets"].length) : 0;   
@@ -104,7 +110,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets asignados
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["assigned"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["assigned"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -120,7 +126,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets con petición de cierre
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["revision"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["revision"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -136,7 +142,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets con reincidencia
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["reassigned"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["reassigned"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -154,7 +160,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets abiertos
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["open"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["open"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -170,7 +176,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets pausados
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["paused"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["paused"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -186,7 +192,7 @@ export default function HomeMonitorist(){
                             <Row>
                                 <Col xs={7} style={{fontSize:'1.2rem'}} >
                                     Tickets cerrados
-                                    <h2 style={{ fontSize:'4rem'}}>{dashboard["closed"]}</h2>
+                                    <h2 style={{ fontSize:'4rem'}}>{tickets["closed"]}</h2>
                                 </Col>
                                 <Col xs={1}>
                                     <div className="divSeparator"></div>
@@ -220,55 +226,10 @@ export default function HomeMonitorist(){
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody> 
+                                <tbody>                                     
                                     {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
-                                    tickets["recent_tickets"]).map((row) => {
-                                        var currentdate = new Date();                                                                                                                                                               
-                                        
-                                        if(((currentdate - new Date(row.openDate))/ 36e5).toFixed(2) > 0.2){
-                                            axios.get(`${API_BASE_URL}/homeT/getFreeTechnican`, {cancelToken: cancelTokenSource.token})
-                                            .then((res) => {                                                
-                                                axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
-                                                    p_userId:cookies.get("USER_TOKEN"),
-                                                    p_ticketId:row.ticketId,
-                                                    p_statusId:5,                    
-                                                    p_technicalId:res.data["userId"],
-                                                    p_priorityId: 2,
-                                                    p_wasAutoasigned: 1
-                                                 })                                                
-                                            }).catch((e) =>{
-                                                handleError(e);                
-                                            });  
-                                            
-                                            
-                                        }
-                                       return( <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />)
-                                    })
-                                    }         
-                                    {/* {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
-                                    tickets["recent_tickets"]).map((row) => {
-                                        var currentdate = new Date();                                                                                                                                                               
-                                        if(((currentdate - new Date(row.openDate))/ 36e5).toFixed(2) > 0.3){                                            
-                                            console.log("OK");
-                                            // axios.get(`${API_BASE_URL}/homeT/getFreeTechnican`, {cancelToken: cancelTokenSource.token})
-                                            // .then((res) => {                                                
-                                            //     axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
-                                            //         p_userId:cookies.get("USER_TOKEN"),
-                                            //         p_ticketId:row.ticketId,
-                                            //         p_statusId:5,                    
-                                            //         p_technicalId:res.data["userId"],
-                                            //         p_priorityId: 2,
-                                            //         p_wasAutoasigned: 1
-                                            //      })                                                
-                                            // }).catch((e) =>{
-                                            //     handleError(e);                
-                                            // });  
-                                            
-                                            
-                                        }
-                                        <RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />
-                                    })
-                                    }   */}
+                                    tickets["recent_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />))
+                                    }  
                                     {emptyRowsRecent > 0 && (
                                         <tr style={{ height: 34 * emptyRowsRecent }}>
                                         <td colSpan={10} aria-hidden />
@@ -487,10 +448,11 @@ function RowTicket(props) {
             if (result.isConfirmed) {                
                 axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
                     p_userId:cookies.get("USER_TOKEN"),
-                    p_ticketId:document.getElementById("hfticketId" + item).value,
+                    p_ticketId: document.getElementById("hfticketId" + item).value,
                     p_statusId:5,                    
                     p_technicalId: document.getElementById("ddlTechnical" + item).value,
-                    p_priorityId: document.getElementById("ddlPriority" + item).value
+                    p_priorityId: document.getElementById("ddlPriority" + item).value,
+                    p_wasAutoassigned: 0
                  })
                  .then((res) => {                    
                     

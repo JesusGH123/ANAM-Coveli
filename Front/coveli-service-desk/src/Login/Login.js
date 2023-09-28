@@ -16,8 +16,7 @@ function sendPasswordLink(email) {
       `${API_BASE_URL}/users/forgotPassword`,
     {
       email
-    }).then((res) => {
-      console.log(res["data"])
+    }).then((res) => {      
       if(res["data"] == -1)
         alert("Usuario no existente");
       else
@@ -60,8 +59,7 @@ export default function Login() {
           }
 
           axios(authConfig)
-            .then((authResult) => {
-              console.log(authResult.data[0]["path"]);
+            .then((authResult) => {              
               window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
             })
         } else {
