@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659/storage_v2/_src_/schema/db_coveli.uamh_w.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659/storage_v2/_src_/schema/db_coveli.uamh_w.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659/storage_v2/_src_/schema/mysql.osA4Bg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8031e003-bc3a-43ab-9356-547db0109659/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/constants.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/controllers/users.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/controllers/users.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/routes/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/Navbar/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/Navbar/Navbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/constants.js" afterDir="false" />
-    </list>
+    <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

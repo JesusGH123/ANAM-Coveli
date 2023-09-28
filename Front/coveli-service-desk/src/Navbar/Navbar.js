@@ -44,6 +44,10 @@ export default function NavigationBar(props) {
         .catch((err) => handleError(err));
     }, []);
 
+    window.onbeforeunload = function (event) {
+        sendLogEvent(cookies.get("USER_TOKEN"), "Cierre de sesión");
+    };
+
     return (
         <Navbar className="bg-body-tertiary" expand="lg" >
             <Container id="navContainer">
