@@ -437,43 +437,60 @@ function RowTicket(props) {
         .catch((err) => handleError(err));
     }
 
-    const asignTiciket = async (item) =>  {      
-        await Swal.fire({
-            title: '¿Desea guardar los cambios?',                        
-            confirmButtonText: 'Si',
-            confirmButtonColor: 'green',
-            showCancelButton:true,
-            cancelButtonText:"No"            
-          }).then((result) => {            
-            if (result.isConfirmed) {                
-                axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
-                    p_userId:cookies.get("USER_TOKEN"),
-                    p_ticketId: document.getElementById("hfticketId" + item).value,
-                    p_statusId:5,                    
-                    p_technicalId: document.getElementById("ddlTechnical" + item).value,
-                    p_priorityId: document.getElementById("ddlPriority" + item).value,
-                    p_wasAutoassigned: 0
-                 })
-                 .then((res) => {                    
-                    
-                    if(res.data["@p_result"] == 1){
-                        Swal.fire({
-                            icon: 'success',
-                            title: ""+ res.data["@p_message"] + ""
-                          })
-                    }
-                    else{
-                        Swal.fire({
-                            icon: 'error',
-                            title: ""+ res.data["@p_message"] + ""
-                          })
-                    }         
-                })
-                .catch((ex) =>{
-                    console.log(ex);
-                });
-            } 
-          })        
+    const asignTiciket = async (item) =>  {
+        var infoT = document.getElementById ("infoTechnical" + item);
+        var infoP = document.getElementById ("infoPriority" + item);
+        infoT.innerHTML = "";
+        infoP.innerHTML = "";
+        
+        if(document.getElementById("ddlPriority" + item).value == 0){            
+            infoP.innerHTML = "Seleccionar prioridad";  
+        }      
+        else if(document.getElementById("ddlPriority" + item).value > 0){                    
+            infoP.innerHTML = "";  
+            if(document.getElementById("ddlTechnical" + item).value == 0){                
+                infoT.innerHTML = "Seleccionar técnico";              
+            }
+            else if(document.getElementById("ddlTechnical" + item).value > 0){                
+                infoT.innerHTML = "";                              
+                await Swal.fire({
+                    title: '¿Desea guardar los cambios?',                        
+                    confirmButtonText: 'Si',
+                    confirmButtonColor: 'green',
+                    showCancelButton:true,
+                    cancelButtonText:"No"            
+                  }).then((result) => {            
+                    if (result.isConfirmed) {                
+                        axios.put(`${API_BASE_URL}/homeM/updateTicket`,{
+                            p_userId:cookies.get("USER_TOKEN"),
+                            p_ticketId: document.getElementById("hfticketId" + item).value,
+                            p_statusId:5,                    
+                            p_technicalId: document.getElementById("ddlTechnical" + item).value,
+                            p_priorityId: document.getElementById("ddlPriority" + item).value,
+                            p_wasAutoassigned: 0
+                         })
+                         .then((res) => {                    
+                            
+                            if(res.data["@p_result"] == 1){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: ""+ res.data["@p_message"] + ""
+                                  })
+                            }
+                            else{
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: ""+ res.data["@p_message"] + ""
+                                  })
+                            }         
+                        })
+                        .catch((ex) =>{
+                            console.log(ex);
+                        });
+                    } 
+                  })
+            }
+        }        
     }
 
     const clearSelected = async (item) =>  {
@@ -522,19 +539,19 @@ function RowTicket(props) {
                     <Form.Select id={"ddlPriority" + row.ticketId}>
                         <option value={0}>-- Seleccione --</option>
                         { priorities.map((p) => {
-                            return(<option value={p.priorityId} selected={row.priorityId != p.priorityId ? false : true}>{p.priority}</option>
-                            )                            
+                            return(<option value={p.priorityId} selected={row.priorityId != p.priorityId ? false : true}>{p.priority}</option>)
                         })}                                                                                            
                     </Form.Select> 
+                    <div id={"infoPriority" + row.ticketId} style={{ color:'red'}}></div>
                 </td>
                 <td>
                     <Form.Select id={"ddlTechnical" + row.ticketId}>
                     <option value={0}>-- Seleccione --</option>
                         { technicals.map((t) => {
-                            return(<option value={t.userId} selected={row.technicalId != t.userId ? false : true} >{t.fullName}</option>
-                            )                            
+                            return(<option value={t.userId} selected={row.technicalId != t.userId ? false : true} >{t.fullName}</option>)
                         })}                                                                                            
                     </Form.Select> 
+                    <div id={"infoTechnical" + row.ticketId} style={{color:'red'}}></div>
                 </td>                
                 <td style={{textAlign:'center'}}>
                     <Button className='btn-save-monitoris' onClick={()=>{clearSelected(row.ticketId);}}>Cancelar</Button>
