@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Col, Row, Table, Button, Modal, Carousel} from "react-bootstrap";
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 
 import './HomeAdmin.css'
 import NavigationBar from '../Navbar/Navbar';
@@ -60,17 +60,23 @@ export default function HomeAdmin(){
             else
                 window.location.href = "/";
         })
-    }, [])
-    
-    useEffect(() => {
-        if(cookies.get("USER_TOKEN")) {
-            axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setInfo(res.data);
-            })
-            .catch((err) => handleError(err));
+
+        const fetchData = async () => {
+            if(cookies.get("USER_TOKEN")) {
+                await axios.get(`${API_BASE_URL}/home/getAdminHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+                .then((res) => {
+                    setInfo(res.data);
+                })
+                .catch((err) => handleError(err));
+            }
         }
-    });
+        fetchData();
+
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
+    }, [])
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["all_tickets"].length) : 0;    
 

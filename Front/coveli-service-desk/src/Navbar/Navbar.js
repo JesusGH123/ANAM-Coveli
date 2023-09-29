@@ -10,13 +10,15 @@ function handleError(e) {
 }
 
 function sendLogEvent(userId, message) {
-    axios.post(
-      `${API_BASE_URL}/users/event`,
-      {
-        userId: userId,
-        message: message
-      }
-    )
+    if(userId != null) {
+        axios.post(
+            `${API_BASE_URL}/users/event`,
+            {
+              userId: userId,
+              message: message
+            }
+          )
+    }
 }
 
 export default function NavigationBar(props) {
@@ -77,8 +79,8 @@ export default function NavigationBar(props) {
                         <Col>
                             <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
                                 <NavDropdown.Item onClick={() => { 
-                                    cancelTokenSource.cancel('Operation canceled');
                                     sendLogEvent(cookies.get("USER_TOKEN"), "Cierre de sesión");
+                                    cancelTokenSource.cancel('Operation canceled');
                                     logout();
                                 }}>Cerrar sesi&oacute;n</NavDropdown.Item>                            
                             </NavDropdown>

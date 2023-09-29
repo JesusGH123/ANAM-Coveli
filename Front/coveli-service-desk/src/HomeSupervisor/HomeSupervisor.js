@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { pdf } from '@react-pdf/renderer';
 import Cookies from "universal-cookie";
 import './HomeSupervisor.css';
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 import Swal from 'sweetalert2';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -81,9 +81,7 @@ export default function HomeSupervisor() {
                 "first_section": [],
                 "second_section": []
             }
-    });
-
-    
+    });    
 
     useEffect(() => {
         axios.post(`${API_BASE_URL}/users/checkPermissions`, {
@@ -95,17 +93,23 @@ export default function HomeSupervisor() {
             else
                 window.location.href = "/";
         })
-    }, [])
 
-    useEffect(() => {
-        if(cookies.get("USER_TOKEN")) {
-            axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-                .then((res) => {
-                    setInfo(res.data);
-                })
-                .catch((err) => handleError(err));
+        const fetchData = async () => {
+            if(cookies.get("USER_TOKEN")) {
+                axios.get(`${API_BASE_URL}/home/getSupervisorHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+                    .then((res) => {
+                        setInfo(res.data);
+                    })
+                    .catch((err) => handleError(err));
                 }
-    });
+        }
+        fetchData();
+
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
+    }, [])
 
     const updateTicket = (action, ticket) => {
         let actionString = (action == 9) ? ["cerrar", "cerrado", "cierra"] : ["rechazar", "rechazado", "rechaza"];

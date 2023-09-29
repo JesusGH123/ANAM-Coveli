@@ -3,7 +3,7 @@ import { useState, useEffect, componentWillUnmount } from 'react';
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Col, Row, Container, Nav, Navbar, NavDropdown, Table, Button, Form, Modal } from "react-bootstrap";
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 import Cookies from "universal-cookie";
 import Swal from 'sweetalert2';
 
@@ -60,27 +60,33 @@ export default function UserRegister() {
     const [roles, setRoles] = useState([]);
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/users`, { cancelToken: cancelTokenSource.token })
+        axios.post(`${API_BASE_URL}/users/checkPermissions`, {
+            userId: cookies.get("USER_TOKEN"),
+            nextPath: '/users'
+        }).then((res) => {
+            if(res.data)
+                setIsAccesible(true)
+            else
+                window.location.href = "/";
+        })
+        axios.get(`${API_BASE_URL}/users/roles`, { cancelToken: cancelTokenSource.token })
+        .then((res) => setRoles(res.data))
+        .catch((err) => handleError(err));
+
+        const fetchData = async () => {
+            await axios.get(`${API_BASE_URL}/users`, { cancelToken: cancelTokenSource.token })
             .then((res) => {
                 setUsers(res.data);
             }).catch((err) => 
                 handleError(err)
             )
-    })
+        }
+        fetchData();
 
-    useEffect(() => {
-            axios.post(`${API_BASE_URL}/users/checkPermissions`, {
-                userId: cookies.get("USER_TOKEN"),
-                nextPath: '/users'
-            }).then((res) => {
-                if(res.data)
-                    setIsAccesible(true)
-                else
-                    window.location.href = "/";
-            })
-            axios.get(`${API_BASE_URL}/users/roles`, { cancelToken: cancelTokenSource.token })
-            .then((res) => setRoles(res.data))
-            .catch((err) => handleError(err));
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
     }, []);
 
     return (

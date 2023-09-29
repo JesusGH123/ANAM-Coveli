@@ -5,7 +5,7 @@ import 'bootstrap/js/src/collapse.js';
 import { Col, Row, Table, Button, Modal, Form, InputGroup, Carousel} from "react-bootstrap";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 import Swal from 'sweetalert2';
 import './HomeTecnical.css'
 import Box from '@mui/material/Box';
@@ -34,6 +34,7 @@ function handleError(e) {
         console.log(e.message);
 }
 
+let i = 0;
 export default function HomeTecnical() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -56,16 +57,22 @@ export default function HomeTecnical() {
             else
                 window.location.href = "/";
         })
-    }, [])
 
-    useEffect(() => {
-        if(cookies.get("USER_TOKEN")) {
-            axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
-            .then((res) => {
-                setInfo(res.data);
-            }).catch((err) => handleError(err));
+        const fetchData = async () => {
+            if(cookies.get("USER_TOKEN")) {
+                await axios.get(`${API_BASE_URL}/homeT/getTechnicalHome/${cookies.get("USER_TOKEN")}`, { cancelToken: cancelTokenSource.token })
+                .then((res) => {
+                    setInfo(res.data);
+                }).catch((err) => handleError(err));
+            }
         }
-    });
+        fetchData();
+
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
+    }, [])
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - info["my_tickets"].length) : 0;    
 

@@ -12,7 +12,4 @@ router.post('/add_ticket', clientController.add_ticket);
 router.post('/add_evidences', clientController.add_evidences);
 router.put('/update_ticket', clientController.update_ticket);
 
-
-
-
 module.exports = router;
