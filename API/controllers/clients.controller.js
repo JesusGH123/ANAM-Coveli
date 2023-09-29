@@ -162,7 +162,3 @@ module.exports.update_ticket = async (req, res) => {
         }
     });
 }
-
-
-
-

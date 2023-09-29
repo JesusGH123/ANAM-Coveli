@@ -6,7 +6,7 @@ import { Col, Row, Button, Modal, Table, Form, InputGroup} from "react-bootstrap
 import Swal from 'sweetalert2';
 import './HomeClient.css'
 import axios from 'axios';
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 import Cookies from 'universal-cookie';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -58,18 +58,24 @@ export default function HomeClient(){
             else
                 window.location.href = "/";
         })
-    }, [])
-    
-    useEffect(() =>{
-        if(cookies.get("USER_TOKEN")) {
-            axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
-            .then((res) => {             
-                setInfo(res.data);                
-            }).catch((e) =>{
-                handleError(e);
-            });                          
+
+        const fetchData = async () => {
+            if(cookies.get("USER_TOKEN")) {
+                await axios.get(`${API_BASE_URL}/homeC/getClientHome/${cookies.get("USER_TOKEN")}`, {cancelToken: cancelTokenSource.token})
+                .then((res) => {             
+                    setInfo(res.data);                
+                }).catch((e) =>{
+                    handleError(e);
+                });                          
+            }
         }
-    });
+        fetchData();
+
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
+    }, [])
     
     function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)

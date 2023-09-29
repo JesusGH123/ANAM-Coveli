@@ -6,7 +6,7 @@ import { Col, Row, Button, Table, Form } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import './HomeMonitorist.css'
 import axios from 'axios';
-import { API_BASE_URL } from '../constants.js';
+import { API_BASE_URL, APP_REFRESHING_TIME } from '../constants.js';
 import Cookies from 'universal-cookie';
 
 import Box from '@mui/material/Box';
@@ -49,11 +49,7 @@ export default function HomeMonitorist(){
         "open": 0,
         "paused": 0,
         "closed": 0
-    });   
-
-    // const [dashboard, setDashboard] = React.useState({        
-    //     "assigned": 0,"revision": 0,"reassigned": 0, "open": 0,"paused": 0,"closed": 0
-    // });
+    });
 
     useEffect(() => {
         axios.post(`${API_BASE_URL}/users/checkPermissions`, {
@@ -65,22 +61,22 @@ export default function HomeMonitorist(){
             else
                 window.location.href = "/";
         })
-    }, [])
 
-    useEffect(() => {
-        axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
+        const fetchData = async () => {
+            await axios.get(`${API_BASE_URL}/homeM/getMonitoristHome`, {cancelToken: cancelTokenSource.token})
             .then((res) => {                                                
                 setTickets(res.data);                    
             }).catch((e) =>{
                 handleError(e);                
-            });  
-        // axios.get(`${API_BASE_URL}/homeM/getDasboardHome`, {cancelToken: cancelTokenSource.token})
-        //     .then((res) => {                
-        //         setDashboard(res.data);  
-        //     }).catch((e) =>{
-        //         handleError(e);                
-        //     });
-    });
+            });
+        }
+        fetchData();
+
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, APP_REFRESHING_TIME);
+        return () => clearInterval(intervalId);
+    }, [])
 
     const emptyRowsRecent = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets["recent_tickets"].length) : 0;   
     const emptyRowsReassigned = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets["reassigned_tickets"].length) : 0;   
