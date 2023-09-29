@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="" />
+    <list default="true" id="15e4db84-5984-4e4a-9745-cb51fc54959d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/Front/coveli-service-desk/src/Login/Login.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

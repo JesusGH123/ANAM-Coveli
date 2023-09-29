@@ -39,6 +39,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(true);
+  const [message, setMessage] = useState("");
   const cookies = new Cookies();
 
   const handleSubmit = (e) => {
@@ -55,7 +56,7 @@ export default function Login() {
 
     axios(validationConfig)
       .then((valResult) => {
-        if(valResult.data["@p_result"] != 0) {
+        if(valResult.data["@p_result"] == 1) {
           cookies.set("USER_TOKEN", valResult.data["@p_userid"], {
             path: "/",
           });
@@ -70,10 +71,12 @@ export default function Login() {
 
           axios(authConfig)
             .then((authResult) => {  
-              sendLogEvent(valResult.data["@p_userid"], "Inicio de sesión");
-              window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
+                sendLogEvent(valResult.data["@p_userid"], "Inicio de sesión");
+                window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
             })
-        } else {
+        } 
+        else {
+          setMessage(valResult.data["@p_message"]);
           setLogin(0);
         }
       })
@@ -115,7 +118,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            { login != "" ? (<></>) : (<p className="alertMessage">Usuario o contrase&ntilde;a incorrecta</p>) }
+            { login != "" ? (<></>) : (<p className="alertMessage">{message}</p>) }
             
             <a id="forgot-password-a" onClick={() => sendPasswordLink(email) }>Olvid&eacute; mi contrase&ntilde;a</a>
             <Button className="btnLogin" type="submit">Iniciar sesi&oacute;n</Button>
