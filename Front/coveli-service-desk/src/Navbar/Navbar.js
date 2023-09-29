@@ -10,13 +10,15 @@ function handleError(e) {
 }
 
 function sendLogEvent(userId, message) {
-    axios.post(
-      `${API_BASE_URL}/users/event`,
-      {
-        userId: userId,
-        message: message
-      }
-    )
+    if(userId != null) {
+        axios.post(
+            `${API_BASE_URL}/users/event`,
+            {
+              userId: userId,
+              message: message
+            }
+          )
+    }
 }
 
 export default function NavigationBar(props) {
