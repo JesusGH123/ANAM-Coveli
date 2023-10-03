@@ -4,20 +4,23 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { API_BASE_URL } from '../constants.js';
 
+
 function handleError(e) {
     if(axios.isCancel(e))
         console.log(e.message);
 }
 
-function sendLogEvent(userId, message) {
-    if(userId != null) {
-        axios.post(
+function sendLogEvent(userId, message) {           
+    if(userId > 0) {             
+        axios.post(            
             `${API_BASE_URL}/users/event`,
             {
               userId: userId,
               message: message
             }
           )
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
     }
 }
 
@@ -28,6 +31,7 @@ export default function NavigationBar(props) {
     const [username, setUsername] = React.useState("");
     const [useremail, setUseremail] = React.useState("");
     const [role, setRole] = React.useState(0);
+    const [userId, setUserId] = React.useState(0);
 
     const cookies = new Cookies();
 
@@ -42,12 +46,24 @@ export default function NavigationBar(props) {
             setUseremail(res.data["email"]);
             setUsername(res.data["fullName"]);
             setRole(res.data["roleId"]);
+            setUserId(res.data["userID"]);
         })
         .catch((err) => handleError(err));
     }, []);
 
-    window.onbeforeunload = function (event) {
-        sendLogEvent(cookies.get("USER_TOKEN"), "Cierre de sesión");
+    window.onbeforeunload = function (event) {                
+        if(userId > 0) {             
+            axios.post(            
+                `${API_BASE_URL}/users/event`,
+                {
+                  userId: userId,
+                  message: "Cierre de sesión"
+                }
+              )
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+        }
+        return "";
     };
 
     return (
@@ -79,7 +95,7 @@ export default function NavigationBar(props) {
                         <Col>
                             <NavDropdown title={username} id="basic-nav-dropdown" style={{textAlign:'right', fontWeight:'bold'}} drop='down-centered'>
                                 <NavDropdown.Item onClick={() => { 
-                                    sendLogEvent(cookies.get("USER_TOKEN"), "Cierre de sesión");
+                                    sendLogEvent(userId, "Cierre de sesión");
                                     cancelTokenSource.cancel('Operation canceled');
                                     logout();
                                 }}>Cerrar sesi&oacute;n</NavDropdown.Item>                            

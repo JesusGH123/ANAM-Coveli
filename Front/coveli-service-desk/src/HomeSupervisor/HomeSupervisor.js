@@ -251,7 +251,7 @@ export default function HomeSupervisor() {
     };
 
     const generatePdfDocument = () => {     
-        handleCloseReport();   
+        handleCloseReport();          
         axios.post(`${API_BASE_URL}/home/getreportMaintenaceSumary/`,
             {
                 status: "9",
@@ -262,7 +262,7 @@ export default function HomeSupervisor() {
                 const blob = await pdf((
                     <ReportSumary data={res.data} period={"Del " +  startDateFormat + " al " + finishDateFormat} />
                 )).toBlob();
-                saveAs(blob, "reporte_mantenimiento.pdf");
+                saveAs(blob, "reporte_mantenimiento_"+ startDateFormat +"_"+finishDateFormat+".pdf");
             });
     };    
 

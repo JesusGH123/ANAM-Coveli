@@ -297,9 +297,10 @@ module.exports.write_log = async (req, res) => {
     connection.query(
         "CALL write_event(?, ?)",
         [req.body.userId, req.body.message],
-        (error, results, fields) => {
+        (error, results, fields) => {            
             if(error)
                 console.log(error);
+            res.json("ok");
         }
     )
 }

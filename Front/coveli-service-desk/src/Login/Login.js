@@ -25,14 +25,13 @@ function sendPasswordLink(email) {
   } 
 }
 
-function sendLogEvent(userId, message) {
-  axios.post(
-    `${API_BASE_URL}/users/event`,
+function sendLogEvent(p_userId, p_message) {    
+  axios.post(`${API_BASE_URL}/users/event`,
     {
-      userId: userId,
-      message: message
+      userId: p_userId,
+      message: p_message
     }
-  )
+  )  
 }
 
 export default function Login() {
@@ -70,9 +69,17 @@ export default function Login() {
           }
 
           axios(authConfig)
-            .then((authResult) => {  
-                sendLogEvent(valResult.data["@p_userid"], "Inicio de sesión");
+            .then((authResult) => {                
+              axios.post(`${API_BASE_URL}/users/event`,
+                {
+                  userId: valResult.data["@p_userid"],
+                  message: "Inicio de sesión"
+                }
+              ).then((res) => {
                 window.location.href = `${authResult.data[0]["path"]}/${cookies.get("USER_TOKEN")}`;
+              })
+                //sendLogEvent(valResult.data["@p_userid"], "Inicio de sesión");
+                
             })
         } 
         else {
@@ -81,7 +88,7 @@ export default function Login() {
         }
       })
       .catch((error) => {
-        alert(error)
+        console.log(error);
       })
   }
 
@@ -121,7 +128,7 @@ export default function Login() {
             { login != "" ? (<></>) : (<p className="alertMessage">{message}</p>) }
             
             <a id="forgot-password-a" onClick={() => sendPasswordLink(email) }>Olvid&eacute; mi contrase&ntilde;a</a>
-            <Button className="btnLogin" type="submit">Iniciar sesi&oacute;n</Button>
+            <Button className="btnLogin" type="submit" >Iniciar sesi&oacute;n</Button>
           </Form>
         </Col>
       </Row>

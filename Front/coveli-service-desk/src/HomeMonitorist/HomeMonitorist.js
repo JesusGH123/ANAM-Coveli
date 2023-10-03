@@ -499,7 +499,7 @@ function RowTicket(props) {
           }).then((result) => {            
             if (result.isConfirmed) {                
                 document.getElementById("ddlPriority" + item).value=document.getElementById("hfpriority" + item).value;
-                document.getElementById("ddlTechnical" + item).value=document.getElementById("hftechnicalId" + item).value;        
+                document.getElementById("ddlTechnical" + item).value=document.getElementById("hftechnical" + item).value;        
                 Swal.fire('¡Cambios Cancelados!', '', 'success');
             } 
           })
@@ -519,7 +519,7 @@ function RowTicket(props) {
                     {row.ticketId}
                     <input type="hidden" id={"hfticketId" + row.ticketId}  value={row.ticketId} />
                     <input type="hidden" id={"hfpriority" + row.ticketId}  value={row.priorityId > 0 ? row.priorityId : 0 } />
-                    <input type="hidden" id={"hftechnicalId" + row.ticketId}  value={row.technicalId > 0 ? row.technicalId : 0} />
+                    <input type="hidden" id={"hftechnical" + row.ticketId}  value={row.technicalId > 0 ? row.technicalId : 0} />
                     
                 </td>    
                 <td>{row.equipmentLocation}</td>
@@ -544,7 +544,7 @@ function RowTicket(props) {
                     <Form.Select id={"ddlTechnical" + row.ticketId}>
                     <option value={0}>-- Seleccione --</option>
                         { technicals.map((t) => {
-                            return(<option value={t.userId} selected={row.technicalId != t.userId ? false : true} >{t.fullName}</option>)
+                            return(<option value={t.userId} selected={row.technicalId == null && row.technicalId != t.userId ? false : true} >{t.fullName}</option>)
                         })}                                                                                            
                     </Form.Select> 
                     <div id={"infoTechnical" + row.ticketId} style={{color:'red'}}></div>

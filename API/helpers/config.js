@@ -1,5 +1,5 @@
 let config = {
-    host: '192.168.1.71',
+    host: '127.0.0.1',
     user: 'anam',
     password: 'Gl0b4l2023!#',
     database: 'db_coveli',
