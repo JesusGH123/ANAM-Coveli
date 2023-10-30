@@ -1,5 +1,7 @@
+const constants = require("../constants");
+
 let config = {
-    host: '192.168.1.71',
+    host: constants.DATABASE_URL,
     user: 'anam',
     password: 'Gl0b4l2023!#',
     database: 'db_coveli',

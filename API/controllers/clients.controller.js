@@ -2,7 +2,6 @@ let mysql = require('mysql');
 let config = require('../helpers/config');
 let connection = mysql.createConnection(config);
 
-
 module.exports.get_client_home = async(req, res)=>{
     connection.query(
         "CALL get_all_tickets_count_by_status('4,5,6,7,8,9,10',?);",        

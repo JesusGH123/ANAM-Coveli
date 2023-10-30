@@ -5,8 +5,6 @@ let cors = require('cors')
 
 let port = 3001;
 
-let constants = require('./constants.js');
-let login = require('./routes/login');
 let home = require('./routes/home');
 let users = require('./routes/user');
 let clients = require('./routes/homeC');
@@ -40,7 +38,6 @@ app.listen(port, () => {
 })
 
 //Routes
-app.use('/', login);
 app.use('/home', home);
 app.use('/users', users);
 app.use('/homeC', clients);

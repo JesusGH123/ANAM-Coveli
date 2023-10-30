@@ -1,6 +1,5 @@
 let mysql = require('mysql');
 let config = require('../helpers/config');
-const { query } = require('express');
 let connection = mysql.createConnection(config);
 
 module.exports.get_monitorist_home = async(req, res)=>{

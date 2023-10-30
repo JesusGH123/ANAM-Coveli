@@ -84,12 +84,17 @@ module.exports.add_user = async (req, res, rows) => {
                         + 'De click en el siguiente enlace para establecer su contraseña y poder iniciar sesión: \n\n'
                         + `\n\n`,
                         html: `
-                        <img src='https://cdn.axxonsoft.com/storage/technology/ltp_global_software/hsmGUN1CrWBaFSdJBvNpauo5NeMnuyhgEKxOmtrP.png' alt='Ltp logo' width="150px">
+                        <img src='cid:ltpLogo' alt='Ltp logo' width="150px">
                         
                         <h2>Generación de nuevo usuario</h2>
                         <p>Se ha creado su cuenta de manera exitosa</p>
                         <p>De click en el siguiente enlace para establecer su nueva contraseña para iniciar sesión </p> <a href="${FRONTEND_URL}/reset/${token}">Cambiar contraseña</a>
-                        `
+                        `,
+                        attachments: [{
+                            filename: 'Ltp logo.png',
+                            path: '../API/helpers/Ltp logo.png',
+                            cid: 'ltpLogo'
+                        }]
                     }
 
                     transporter.sendMail(mailOptions, (err, response) => {
@@ -222,14 +227,19 @@ module.exports.forgot_password = async(req, res) => {
                                 to: `${req.body.email}`,
                                 subject: 'Reestablecimiento de contraseña',
                                 html: `
-                                <img src='https://cdn.axxonsoft.com/storage/technology/ltp_global_software/hsmGUN1CrWBaFSdJBvNpauo5NeMnuyhgEKxOmtrP.png' alt='Ltp logo' width="150px">
+                                <img src='cid:ltpLogo' alt='Ltp logo' width="150px">
                                 
                                 <h2>Reestablecimiento de contraseña</h2>
                                 <p>Esta recibiendo este correo porque alguien ha solicitado el reestablecimiento de su contraseña.</p>
                                 <p>De click en el siguiente enlace para completar el proceso: </p> <a href="${FRONTEND_URL}/reset/${token}">Reestablecer contraseña</a>
 
                                 <p><i>Si usted no ha solicitado el cambio de contraseña, haga caso omiso a este correo</i></p>
-                                `
+                                `,
+                                attachments: [{
+                                    filename: 'Ltp logo.png',
+                                    path: '../API/helpers/Ltp logo.png',
+                                    cid: 'ltpLogo'
+                                }]
                             }
 
                             transporter.sendMail(mailOptions, (err, response) => {
