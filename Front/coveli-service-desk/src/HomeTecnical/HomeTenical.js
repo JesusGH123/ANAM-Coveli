@@ -159,14 +159,13 @@ export default function HomeTecnical() {
                                 </div>
                             </Col>
                         </Row>   
-                        <Row className="graphicsArea">                    
-                            
+                        <Row className="graphicsArea">
                             <TableContainer component={Paper}>
                                 <Box sx={{ margin: 1 }}>
                                     <Typography variant="h4" gutterBottom component="div">
                                         Tickets
                                     </Typography>
-                                    <Table  striped hover responsive aria-label='custom pagination table'>
+                                    <Table striped hover responsive aria-label='custom pagination table'>
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
@@ -461,7 +460,7 @@ function RowTicket(props){
                     <Modal.Title>Ticket: {currentTicket.ticketId}</Modal.Title>
                 </Modal.Header>
                 {
-                    (modalType == 1) ?                    
+                    (modalType == 1) ?
                     <>
                         <Modal.Body>                                
                             <InputGroup className='mb-2'>
@@ -469,8 +468,7 @@ function RowTicket(props){
                                 <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required value={comment} onChange={(e) => onChange(e)}/>
                             </InputGroup>
                             <InputGroup className='mb-2'>
-                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias 
-                                </InputGroup.Text>
+                                <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Evidencias </InputGroup.Text>
                                 <Form.Control id="fileEvindece" type="file" accept=".png,.jpg,.jpeg" multiple/><br></br>                        
                             </InputGroup>
                             <div id="info" style={{marginTop:"30px", color:'red'}}></div>                                                                                   
@@ -481,6 +479,22 @@ function RowTicket(props){
                             </Button>
                             <Button variant="primary" onClick={ (event) => {                                    
                                 updateTicket(7, comment);
+
+                                axios.post(
+                                    API_BASE_URL + "/home/sendEmail",
+                                    {
+                                        "ticket": {
+                                            "id": currentTicket.ticketId,
+                                            "status": 7
+                                        },
+                                        "email": {
+                                            "subject": "Ticket en revisión",
+                                            "html": "Se informa que se ha enviado para su revisión el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                            + "Comentarios: " + comment + "<br>" +
+                                            "Gracias, saludos."
+                                        }
+                                    }
+                                );
                                 }}
                                 style={{margin:'1rem'}}>
                                 Aceptar
@@ -508,6 +522,22 @@ function RowTicket(props){
                             </Button>
                             <Button variant="primary" onClick={() => {                                        
                                 updateTicket(6, comment);
+
+                                axios.post(
+                                    API_BASE_URL + "/home/sendEmail",
+                                    {
+                                        "ticket": {
+                                            "id": currentTicket.ticketId,
+                                            "status": 56
+                                        },
+                                        "email": {
+                                            "subject": "Ticket pausado",
+                                            "html": "Se informa que se ha pausado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                            + "Comentarios: " + comment + "<br><br>" +
+                                            "Gracias, saludos."
+                                        }
+                                    }
+                                );
                             }}>
                                 Aceptar
                             </Button>
@@ -531,6 +561,22 @@ function RowTicket(props){
                             </Button>
                             <Button variant="primary" onClick={() => {                                        
                                 updateTicket(5, comment);
+
+                                axios.post(
+                                    API_BASE_URL + "/home/sendEmail",
+                                    {
+                                        "ticket": {
+                                            "id": currentTicket.ticketId,
+                                            "status": 56
+                                        },
+                                        "email": {
+                                            "subject": "Ticket retomado",
+                                            "html": "Se informa que se le ha retomado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                            + "Comentarios: " +  comment + "<br><br>" +
+                                            "Gracias, saludos."
+                                        }
+                                    }
+                                );
                             }}>
                                 Aceptar
                             </Button>

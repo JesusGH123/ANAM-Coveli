@@ -32,24 +32,20 @@ module.exports.get_client_home = async(req, res)=>{
     )
 }
 
-module.exports.get_ticketHistory_home = async(req, res) => {
-    
-        connection.query("CALL get_ticketHistory(?);",
-        req.params.id,
-        (error, ticketsHistory, fields) => {
-            if(error)
-                res.send(error);
-            
-            try {
-                res.json({'ticketsHistory' : ticketsHistory[0]});                
-            } catch (error) {
-                console.log(error);
-            }
+module.exports.get_ticketHistory_home = async(req, res) => {    
+    connection.query("CALL get_ticketHistory(?);",
+    req.params.id,
+    (error, ticketsHistory, fields) => {
+        if(error)
+            res.send(error);
+        
+        try {
+            res.json({'ticketsHistory' : ticketsHistory[0]});                
+        } catch (error) {
+            console.log(error);
         }
-        )
-
-    
-    
+    }
+    )
 }
 
 
@@ -101,7 +97,8 @@ module.exports.get_serials_by_Location_home = async(req, res) => {
 
 module.exports.add_ticket = async (req, res, rows) => {
     connection.query(
-        "call add_ticket(?, ?, ?, ?, ?, ?, ?,@p_ticketHistoryID, @p_result, @p_message); select @p_ticketHistoryID, @p_message, @p_result;",
+        `call add_ticket(?, ?, ?, ?, ?, ?, ?, @p_ticketId, @p_ticketHistoryID, @p_result, @p_message); 
+        select @p_ticketId, @p_ticketHistoryID, @p_message, @p_result;`,
         [
             req.body.p_categoryId,
             req.body.p_equipmentLocationId,

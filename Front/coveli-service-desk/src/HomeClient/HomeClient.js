@@ -22,6 +22,7 @@ import {
   TablePagination,
   tablePaginationClasses as classes,
 } from '@mui/base/TablePagination';
+import $ from 'jquery';
 
 const cookies = new Cookies();
 const CancelToken = axios.CancelToken
@@ -79,12 +80,12 @@ export default function HomeClient(){
     
     function getEquipmentByLocation(locationId){        
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
-                .then((res) => {                
-                    setEquipments(res.data["equipments"]);     
-                })
-                .catch((err) => {
-                    handleError(err);
-                });
+        .then((res) => {                
+            setEquipments(res.data["equipments"]);     
+        })
+        .catch((err) => {
+            handleError(err);
+        });
     }
 
     function getSerialsByEquipment(LocationEquipment){        
@@ -94,10 +95,10 @@ export default function HomeClient(){
                 })
                 .catch((err) => handleError(err));
     }
+    
     function clearEquimentsSerials(){
         setEquipments([]);
         setSerials([]);
-
     }   
 
     function showNewTicket(){
@@ -146,10 +147,10 @@ export default function HomeClient(){
             }                        
             else{
                 axios.post(`${API_BASE_URL}/homeC/add_ticket`,{
-                    p_categoryId:document.getElementById("ddlCategory").value,
-                    p_equipmentLocationId:document.getElementById("ddlLocation").value,
-                    p_equipmentModelId:document.getElementById("ddlEquipment").value.split("|")[1],
-                    p_equipmentSerialId:document.getElementById("ddlSerial").value,            
+                    p_categoryId: document.getElementById("ddlCategory").value,
+                    p_equipmentLocationId: document.getElementById("ddlLocation").value,
+                    p_equipmentModelId: document.getElementById("ddlEquipment").value.split("|")[1],
+                    p_equipmentSerialId: document.getElementById("ddlSerial").value,            
                     p_situation: document.getElementById("txtSituation").value,
                     p_comment: document.getElementById("txtComment").value,
                     p_userid: userId, 
@@ -176,6 +177,27 @@ export default function HomeClient(){
                                 });
                             }                            
                             webpImg.src = currentImg;
+
+                            axios.post(
+                                API_BASE_URL + "/home/sendEmail",
+                                {
+                                    "ticket": {
+                                        "id": res.data["@p_ticketId"],
+                                        "status": 4
+                                    },
+                                    "email": {
+                                        "subject": "Nuevo ticket",
+                                        "html": "Se informa que se ha creado un nuevo ticket con folio: " + res.data["@p_ticketId"] + "<br><br>" +
+                                        "Ubicacion: " + $("#ddlLocation option:selected").text() + "<br>" +
+                                        "Equipo: " + $("#ddlEquipment option:selected").text() + "<br>" +
+                                        "Serie: " + $("#ddlSerial option:selected").text() + "<br>" +
+                                        "Situación: " + document.getElementById("txtSituation").value + "<br>" + 
+                                        "Comentarios: " + document.getElementById("txtComment").value + "<br><br>" +
+                                        "Favor de ingresar al sistema y asignar al técnico que corresponda. <br>" +
+                                        "Gracias, saludos."
+                                    }
+                                }
+                            )
                         }
                         closeNewUser(); 
                         Swal.fire({

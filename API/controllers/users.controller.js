@@ -80,9 +80,6 @@ module.exports.add_user = async (req, res, rows) => {
                         from: 'soporteanam@gmail.com',
                         to: `${req.body.p_email}`,
                         subject: 'Generación de nuevo usuario',
-                        text:  'Se ha creado su cuenta de manera exitosa\n'
-                        + 'De click en el siguiente enlace para establecer su contraseña y poder iniciar sesión: \n\n'
-                        + `\n\n`,
                         html: `
                         <img src='cid:ltpLogo' alt='Ltp logo' width="150px">
                         

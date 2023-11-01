@@ -744,115 +744,158 @@ function RowTicket(props){
         
     return(        
         <React.Fragment>
-                <Modal show={show} onHide={handleClose} style={{color:"#66CCC5"}}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ticket: {currentTicket.ticketId}</Modal.Title>
-                    </Modal.Header>                    
-                    <Modal.Body>                                
-                        <InputGroup className='mb-2'>
-                            { newStatus == 9 ? "¿Deseas cerrar el ticket?" : "¿Deseas rechazar el ticket?"}                            
-                        </InputGroup>                                   
-                        <InputGroup className='mb-2'>
-                            <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
-                            <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required value={comment} onChange={(e) => onChange(e)}/>
-                        </InputGroup>                        
-                        <div id="info" style={{marginTop:'30px', color:'red'}}></div>
-                        
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={()=>{setComment(""); handleClose();}}>
-                            Cancelar
-                        </Button>
-                        <Button variant="primary" onClick={ (event) => {                            
-                            updateTicket();
-                            }}
-                            style={{margin:'1rem'}}>
-                            Aceptar
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={mdlEvidences} onHide={closeEvidences} style={{color:"#66CCC5"}}>
+            <Modal show={show} onHide={handleClose} style={{color:"#66CCC5"}}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Evidencias del Ticket({row.ticketId})</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Carousel>
-                    { ticketHistEvi["evidences"].map((ev) => {   
-                        return(
-                            <Carousel.Item>
-                                <img className='d-block w-100' src={ev.evidencia} ></img>                            
-                            </Carousel.Item>                        
-                        )                                                                         
-                    }) }
-                        
-                    </Carousel>                    
-                </Modal.Body>                
-            </Modal>                        
-                     
-            <tr  sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <td component="th" scope='row' style={{width:'5rem'}}>                                   
-                    <IconButton
-                            aria-label="expand row"
-                            size="small"
-                            onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
-                            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
-                    </IconButton>                             
-                    {row.ticketId}
-                </td>                
-                <td>{row.equipmentLocation}</td>
-                <td>{row.equipmentModel}</td>
-                <td>{row.equipmentSerial}</td>            
-                <td>{row.category}</td>
-                <td>{row.client}</td>
-                <td>{row.openDate}</td>
-                <td>{row.priority}</td>
-                <td>{row.situation}</td>
-                <td>{row.technical}</td>
-                <td>{row.status}</td>
+                    <Modal.Title>Ticket: {currentTicket.ticketId}</Modal.Title>
+                </Modal.Header>                    
+                <Modal.Body>                                
+                    <InputGroup className='mb-2'>
+                        { newStatus == 9 ? "¿Deseas cerrar el ticket?" : "¿Deseas rechazar el ticket?"}                            
+                    </InputGroup>                                   
+                    <InputGroup className='mb-2'>
+                        <InputGroup.Text style={{color:"#66CCC5", fontWeight:'bold'}}>Comentarios</InputGroup.Text>
+                        <Form.Control id="txtComment" as="textarea" aria-label="With textarea" style={{height:'5rem'}} required value={comment} onChange={(e) => onChange(e)}/>
+                    </InputGroup>                        
+                    <div id="info" style={{marginTop:'30px', color:'red'}}></div>
+                    
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={()=>{setComment(""); handleClose();}}>
+                        Cancelar
+                    </Button>
+                    <Button variant="primary" onClick={ (event) => {                            
+                        updateTicket();
 
-                <td>
-                    <Button onClick={() => {setNewStatus(8); handleShow(); setCurrentTicket(row); }} variant="danger">Rechazar</Button>
-                    <Button onClick={() => {setNewStatus(9); handleShow(); setCurrentTicket(row); }} className="btnClose">Cerrar</Button>
-                </td>                
-            </tr>                                    
-            <tr>
-                <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Historial del Ticket
-                            </Typography>
-                            <Table size="small" aria-label="purchases">
-                                <thead>
-                                    <tr>
-                                        <th>Estatus</th>
-                                        <th>Fecha modificación</th>                                        
-                                        <th>Comentarios</th>
-                                        <th>Técnico</th>
-                                        <th>Usuario</th>
-                                        <th>Evidencias</th>
+                        if(newStatus == 8) {
+                            axios.post(
+                                API_BASE_URL + "/home/sendEmail",
+                                {
+                                    "ticket": {
+                                        "id": currentTicket.ticketId,
+                                        "status": newStatus
+                                    },
+                                    "email": {
+                                        "subject": "Ticket rechazado",
+                                        "html": "Se informa que se ha rechazado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                        + "Comentarios: " + document.getElementById("txtComment").value + "<br>" +
+                                        "Gracias, saludos."
+                                    }
+                                }
+                            );
+                        } else {
+                            axios.post(
+                                API_BASE_URL + "/home/sendEmail",
+                                {
+                                    "ticket": {
+                                        "id": row.ticketId,
+                                        "status": newStatus
+                                    },
+                                    "email": {
+                                        "subject": "Ticket cerrado",
+                                        "html": "Se informa que se ha cerrado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                        + "Comentarios: " + document.getElementById("txtComment").value + "<br><br>"
+                                        + "Nota: A partir de este momento, le informamos que cuenta con 2 horas para poder rechazar el ticket, si es que la solución no fue la esperada.<br>" +
+                                        "Gracias, saludos."
+                                    }
+                                }
+                            );
+                        }
+                        }}
+                        style={{margin:'1rem'}}>
+                        Aceptar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={mdlEvidences} onHide={closeEvidences} style={{color:"#66CCC5"}}>
+            <Modal.Header closeButton>
+                <Modal.Title>Evidencias del Ticket({row.ticketId})</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Carousel>
+                { ticketHistEvi["evidences"].map((ev) => {   
+                    return(
+                        <Carousel.Item>
+                            <img className='d-block w-100' src={ev.evidencia} ></img>                            
+                        </Carousel.Item>                        
+                    )                                                                         
+                }) }
+                    
+                </Carousel>                    
+            </Modal.Body>                
+        </Modal>                        
+                    
+        <tr sx={{ '& > *': { borderBottom: 'unset' } }}>
+            <td component="th" scope='row' style={{width:'5rem'}}>                                   
+                <IconButton
+                    aria-label="expand row"
+                    size="small"
+                    onClick={() =>{setOpen(!open); getTicketHistory(row.ticketId);}}                        >
+                    {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}                            
+                </IconButton>
+                {row.ticketId}
+            </td>                
+            <td>{row.equipmentLocation}</td>
+            <td>{row.equipmentModel}</td>
+            <td>{row.equipmentSerial}</td>            
+            <td>{row.category}</td>
+            <td>{row.client}</td>
+            <td>{row.openDate}</td>
+            <td>{row.priority}</td>
+            <td>{row.situation}</td>
+            <td>{row.technical}</td>
+            <td>{row.status}</td>
+
+            <td>
+                <Button onClick={() => {
+                    setNewStatus(8);
+                    handleShow();
+                    setCurrentTicket(row);
+                }} variant="danger">Rechazar</Button>
+                <Button onClick={() => {
+                    setNewStatus(9);
+                    handleShow();
+                    setCurrentTicket(row);
+                }} className="btnClose">Cerrar</Button>
+            </td>                
+        </tr>                                    
+        <tr>
+            <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Box sx={{ margin: 1 }}>
+                        <Typography variant="h6" gutterBottom component="div">
+                            Historial del Ticket
+                        </Typography>
+                        <Table size="small" aria-label="purchases">
+                            <thead>
+                                <tr>
+                                    <th>Estatus</th>
+                                    <th>Fecha modificación</th>                                        
+                                    <th>Comentarios</th>
+                                    <th>Técnico</th>
+                                    <th>Usuario</th>
+                                    <th>Evidencias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { ticketHist["ticketsHistory"].map((the) => {   
+                                    return(<>
+                                    <tr  key={the.comment} component="th" scope='row'>                                                       
+                                        <td >{the.status}</td>
+                                        <td>{the.currentDate}</td>
+                                        <td>{the.comment}</td>
+                                        <td>{the.technicalFullName}</td>
+                                        <td>{the.userFullName}</td>
+                                        <td>{the.evidences > 0 ?<Button style={{margin:0}} onClick={()=>{showEvidences(); getTicketHistoryEvidences(the.ticketsHistoryId);}}>Ver</Button>:""}</td>                                                                
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    { ticketHist["ticketsHistory"].map((the) => {   
-                                        return(<>
-                                        <tr  key={the.comment} component="th" scope='row'>                                                       
-                                            <td >{the.status}</td>
-                                            <td>{the.currentDate}</td>
-                                            <td>{the.comment}</td>
-                                            <td>{the.technicalFullName}</td>
-                                            <td>{the.userFullName}</td>
-                                            <td >{the.evidences > 0 ?<Button style={{margin:0}} onClick={()=>{showEvidences(); getTicketHistoryEvidences(the.ticketsHistoryId);}}>Ver</Button>:""}</td>                                                                
-                                        </tr>
-                                        </>)                                                                         
-                                    }) }
-                                </tbody>
-                            </Table>                                                    
-                        </Box>                                                
-                    </Collapse>
-                </td>
-            </tr>                                                                                                                     
-        </React.Fragment>
+                                    </>)                                                                         
+                                }) }
+                            </tbody>
+                        </Table>                                                    
+                    </Box>                                                
+                </Collapse>
+            </td>
+        </tr>                                                                                                                     
+    </React.Fragment>
     );
 }
 
@@ -977,8 +1020,3 @@ function RowTicketHistory(props){
         </React.Fragment>
     );
 }
-
-
-
-
-
