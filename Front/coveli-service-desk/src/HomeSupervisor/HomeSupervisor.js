@@ -776,7 +776,7 @@ function RowTicket(props){
                                     },
                                     "email": {
                                         "subject": "Ticket rechazado",
-                                        "html": "Se informa que se ha rechazado el ticket con folio: " + currentTicket.ticketId + "<br>" +
+                                        "html": "Se informa que se ha rechazado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
                                         + "Comentarios: " + document.getElementById("txtComment").value + "<br>" +
                                         "Gracias, saludos."
                                     }
@@ -792,7 +792,7 @@ function RowTicket(props){
                                     },
                                     "email": {
                                         "subject": "Ticket cerrado",
-                                        "html": "Se informa que se ha cerrado el ticket con folio: " + currentTicket.ticketId + "<br>" +
+                                        "html": "Se informa que se ha cerrado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
                                         + "Comentarios: " + document.getElementById("txtComment").value + "<br><br>"
                                         + "Nota: A partir de este momento, le informamos que cuenta con 2 horas para poder rechazar el ticket, si es que la solución no fue la esperada.<br>" +
                                         "Gracias, saludos."

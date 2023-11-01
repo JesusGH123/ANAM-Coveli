@@ -489,8 +489,8 @@ function RowTicket(props){
                                         },
                                         "email": {
                                             "subject": "Ticket en revisión",
-                                            "html": "Se informa que se ha enviado para su revisión el ticket con folio: " + currentTicket.ticketId + "<br><br>" +
-                                            + "Comentarios: " + comment + "<br><br>" +
+                                            "html": "Se informa que se ha enviado para su revisión el ticket con folio: " + currentTicket.ticketId + "<br><br>"
+                                            + "Comentarios: " + comment + "<br>" +
                                             "Gracias, saludos."
                                         }
                                     }
@@ -528,11 +528,11 @@ function RowTicket(props){
                                     {
                                         "ticket": {
                                             "id": currentTicket.ticketId,
-                                            "status": 6
+                                            "status": 56
                                         },
                                         "email": {
                                             "subject": "Ticket pausado",
-                                            "html": "Se informa que se ha pausado el ticket con folio: " + currentTicket.ticketId + "<br><br>" +
+                                            "html": "Se informa que se ha pausado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
                                             + "Comentarios: " + comment + "<br><br>" +
                                             "Gracias, saludos."
                                         }
@@ -567,11 +567,11 @@ function RowTicket(props){
                                     {
                                         "ticket": {
                                             "id": currentTicket.ticketId,
-                                            "status": 5
+                                            "status": 56
                                         },
                                         "email": {
                                             "subject": "Ticket retomado",
-                                            "html": "Se informa que se le ha retomado el ticket con folio: " + currentTicket.ticketId + "<br>" +
+                                            "html": "Se informa que se le ha retomado el ticket con folio: " + currentTicket.ticketId + "<br><br>"
                                             + "Comentarios: " +  comment + "<br><br>" +
                                             "Gracias, saludos."
                                         }

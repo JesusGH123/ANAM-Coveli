@@ -475,14 +475,14 @@ function RowTicket(props) {
                                     API_BASE_URL + "/home/sendEmail",
                                     {
                                         "ticket": {
-                                            "id": document.getElementById("hfticketId" + item).value,
+                                            "id": row.ticketId,
                                             "status": 5
                                         },
                                         "email": {
-                                            "subject": "Nuevo ticket",
-                                            "html": "Se informa que se le ha asignado el ticket con folio: " + document.getElementById("hfticketId" + item).value + "<br>" +
+                                            "subject": "Ticket asignado",
+                                            "html": "<div>Se informa que se le ha asignado el ticket con folio: " + row.ticketId + "<br><br>"
                                             + "Favor de atender a la brevedad y notificar a través del sistema cuando haya dado solución<br>" + 
-                                            "Gracias, saludos."
+                                            "Gracias, saludos.<div>"
                                         }
                                     }
                                 );
