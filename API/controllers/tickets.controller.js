@@ -1,6 +1,7 @@
 let mysql = require('mysql');
 let config = require('../helpers/config');
 let connection = mysql.createConnection(config);
+const nodemailer = require('nodemailer');
 
 module.exports.get_supervisor_home = async(req, res) => {  
   connection.query(
@@ -185,14 +186,6 @@ module.exports.get_admin_home = async (req, res) => {
   )
 }
 
-module.exports.get_monitor_home = async (req, res) => {}
-
-//Get a single ticket
-module.exports.get_ticket = async (req, res) => {}
-
-//Add a ticket
-module.exports.add_ticket = async (req, res) => {}
-
 //Change status of a ticket
 module.exports.update_ticket = (req, res) => {
   
@@ -259,24 +252,80 @@ module.exports.get_maintenance_report = async(req, res)=>{
     )
   }
 
-  module.exports.post_report_maintenance_sumary = async(req, res)=>{    
-    connection.query(    
-        'call db_coveli.get_tickets_by_date(?,?,?);',
-        [
-          req.body.status,
-          req.body.startDate,
-          req.body.finishDate
-        ],                
-        (error, reporte, fields) => {
-          if(error)
-            res.send(error);                                                                             
-          try {              
-              res.json({              
-                  'resumen_reporte_mantenimiento': reporte[0]
-              });
-          } catch (error) {        
-              console.log(error);
-          } 
-        }
-      )
+module.exports.post_report_maintenance_sumary = async(req, res)=>{    
+  connection.query(    
+      'call db_coveli.get_tickets_by_date(?,?,?);',
+      [
+        req.body.status,
+        req.body.startDate,
+        req.body.finishDate
+      ],                
+      (error, reporte, fields) => {
+        if(error)
+          res.send(error);                                                                             
+        try {              
+            res.json({              
+                'resumen_reporte_mantenimiento': reporte[0]
+            });
+        } catch (error) {        
+            console.log(error);
+        } 
+      }
+    )
+}
+
+module.exports.send_confirmation_email = async(req, res) => {
+  let tos = [];
+  let ccs = [];
+
+  let ticketInfo = req.body.ticket;
+  let emailInfo = req.body.email;
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    secureConnection: false,
+    auth: {
+        user: 'soporteanam@gmail.com',
+        pass: 'qbhp txbp ejsi vxzr',
     }
+  })
+
+  connection.query(
+    `CALL get_emails_by_ticket(?, ?)`,
+    [
+      ticketInfo["id"],
+      ticketInfo["status"]
+    ],
+    (error, results, fields) => {
+      for(mail of results[0]) {
+        if(mail["send"] == "TO")
+          tos.push(mail["email"]);
+        else
+          ccs.push(mail["email"]);
+      }
+    }
+  );
+
+  const mailOptions = {
+    from: 'soporteanam@gmail.com',
+    to: tos,
+    cc: ccs,
+    subject: emailInfo["subject"],
+    html: `
+    <img src='cid:ltpLogo' alt='Ltp logo' style={width: "100px"}>
+    ` + emailInfo["html"],
+    attachments: [{
+      filename: 'Ltp logo.png',
+      path: '../API/helpers/Ltp logo.png',
+      cid: 'ltpLogo'
+  }]
+  }
+
+  transporter.sendMail(mailOptions, (err, response) => {
+    if(err)
+        console.error("There was an errror: " + err);
+    else
+        res.send("Email sent");
+  });
+}

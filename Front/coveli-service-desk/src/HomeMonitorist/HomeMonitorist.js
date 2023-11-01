@@ -90,8 +90,6 @@ export default function HomeMonitorist(){
         setPage(0);
     };
 
-
-
     return(
     <div>
         {
@@ -289,7 +287,7 @@ export default function HomeMonitorist(){
                                         <tr style={{ height: 34 * emptyRowsReassigned }}>
                                         <td colSpan={10} aria-hidden />
                                         </tr>
-                                    )}                                                                                      
+                                    )}
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -472,6 +470,22 @@ function RowTicket(props) {
                                     icon: 'success',
                                     title: ""+ res.data["@p_message"] + ""
                                   })
+
+                                  axios.post(
+                                    API_BASE_URL + "/home/sendEmail",
+                                    {
+                                        "ticket": {
+                                            "id": document.getElementById("hfticketId" + item).value,
+                                            "status": 5
+                                        },
+                                        "email": {
+                                            "subject": "Nuevo ticket",
+                                            "html": "Se informa que se le ha asignado el ticket con folio: " + document.getElementById("hfticketId" + item).value + "<br>" +
+                                            + "Favor de atender a la brevedad y notificar a través del sistema cuando haya dado solución<br>" + 
+                                            "Gracias, saludos."
+                                        }
+                                    }
+                                );
                             }
                             else{
                                 Swal.fire({
