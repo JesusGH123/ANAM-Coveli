@@ -78,7 +78,7 @@ export default function HomeClient(){
         return () => clearInterval(intervalId);
     }, [])
     
-    function getEquipmentByLocation(locationId){        
+    function getEquipmentByLocation(locationId){    
         axios.get(`${API_BASE_URL}/homeC/get_equipments_by_Location_home/${locationId}`)
         .then((res) => {                
             setEquipments(res.data["equipments"]);     

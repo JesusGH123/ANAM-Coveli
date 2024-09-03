@@ -275,9 +275,6 @@ module.exports.post_report_maintenance_sumary = async(req, res)=>{
 }
 
 module.exports.send_confirmation_email = async(req, res) => {
-  let tos = [];
-  let ccs = [];
-
   let ticketInfo = req.body.ticket;
   let emailInfo = req.body.email;
 
@@ -291,27 +288,10 @@ module.exports.send_confirmation_email = async(req, res) => {
     }
   })
 
-  connection.query(
-    `CALL get_emails_by_ticket(?, ?)`,
-    [
-      ticketInfo["id"],
-      ticketInfo["status"]
-    ],
-    (error, results, fields) => {
-      for(mail of results[0]) {
-        if(mail["send"] == "TO")
-          tos.push(mail["email"]);
-        else
-          ccs.push(mail["email"]);
-      }
-    }
-  );
-
   const mailOptions = {
     from: 'soporteanam@gmail.com',
-    to: tos,
-    cc: ccs,
-    subject: emailInfo["subject"],
+    to: "ptascon@ltpglobal.onmicrosoft.com",
+    subject: emailInfo.subject,
     html: `
     <img src='cid:ltpLogo' alt='Ltp logo' style={width: "100px"}>
     ` + emailInfo["html"],

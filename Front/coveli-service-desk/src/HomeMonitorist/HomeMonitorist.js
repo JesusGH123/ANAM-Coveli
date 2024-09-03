@@ -221,14 +221,14 @@ export default function HomeMonitorist(){
                                     </tr>
                                 </thead>
                                 <tbody>                                     
-                                    {(rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
+                                    { (rowsPerPage > 0 ?tickets["recent_tickets"].slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage):                               
                                     tickets["recent_tickets"]).map((row) => (<RowTicket key={row.ticketId} row={row} priorities={tickets["priorities"]} technicals={tickets["technicals"]} />))
-                                    }  
+                                    }
                                     {emptyRowsRecent > 0 && (
                                         <tr style={{ height: 34 * emptyRowsRecent }}>
                                         <td colSpan={10} aria-hidden />
                                         </tr>
-                                    )}                                   
+                                    )}
                                 </tbody>
                                 <tfoot>
                                     <tr>
